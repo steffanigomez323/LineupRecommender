@@ -1,6 +1,11 @@
-import redis
+from redis import Redis
 
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
+class RedisDB(object):
+    connection = None
 
-r.set('foo', 'bar')
-print r.get('foo')
+    def __init__(self):
+        self.connection = Redis(host='localhost', port=6379, db=0)
+
+    def get_connection(self):
+        return self.connection
+
