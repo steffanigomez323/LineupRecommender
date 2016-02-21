@@ -4,3 +4,4 @@ dependencies:
 - python
 - anaconda
 - redis-py
+- flask
