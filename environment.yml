@@ -5,3 +5,5 @@ dependencies:
 - anaconda
 - redis-py
 - flask
+- requests
+- gunicorn
