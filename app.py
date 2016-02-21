@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for
 from redis import Redis
 
 app = Flask(__name__)
-db = Redis()
+app.database = Redis(host='localhost', port=6379, db=0)
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
