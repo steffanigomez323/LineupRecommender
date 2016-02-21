@@ -1,0 +1,6 @@
+name: lineup-recommender
+dependencies:
+- pip
+- python
+- anaconda
+- redis-py
