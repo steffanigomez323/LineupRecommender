@@ -1,7 +1,7 @@
 from app import app
 import unittest
 
-class FlaskTest(unittest.TestCase):
+class FlaskTestCase(unittest.TestCase):
     # test whether index loads
     def test_index_response(self):
         tester = app.test_client(self)
@@ -13,6 +13,13 @@ class FlaskTest(unittest.TestCase):
         tester = app.test_client(self)
         response = tester.get('/writeup', content_type='html/text')
         self.assertEqual(response.status_code, 200)
+
+class RedisTestCase(unittest.TestCase):
+    # test whether a connection to redis can be established
+    def test_redis_connection(self):
+        app.database.set('foo', 'bar')
+        self.assertEqual(app.database.get('foo'), 'bar')
+        app.database.delete('foo')
 
 if __name__ == '__main__':
     unittest.main()
