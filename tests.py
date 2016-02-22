@@ -21,5 +21,9 @@ class RedisTestCase(unittest.TestCase):
         self.assertEqual(app.database.get('foo'), 'bar')
         app.database.delete('foo')
 
+# class SwishTestCase(unittest.TestCase):
+    # test whether swish analytics nba optimus page can be accessed
+
+
 if __name__ == '__main__':
     unittest.main()
