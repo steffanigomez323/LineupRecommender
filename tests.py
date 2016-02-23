@@ -1,6 +1,7 @@
 from app import app
 import unittest
 
+
 class FlaskTestCase(unittest.TestCase):
     # test whether index loads
     def test_index_response(self):
@@ -13,6 +14,7 @@ class FlaskTestCase(unittest.TestCase):
         tester = app.test_client(self)
         response = tester.get('/writeup', content_type='html/text')
         self.assertEqual(response.status_code, 200)
+
 
 class RedisTestCase(unittest.TestCase):
     # test whether a connection to redis can be established

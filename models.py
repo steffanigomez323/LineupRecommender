@@ -1,14 +1,15 @@
-from app import app
-
 class Player(object):
+    # Replace once Team class is implemented
     teams = set(['BOS', 'BKN', 'NY', 'PHI', 'TOR', 'CHI', 'CLE', 'DET',
-                'IND', 'MIL', 'ATL', 'CHA', 'MIA', 'ORL', 'WAS', 'GS',
-                'LAC', 'LAL', 'PHO', 'SAC', 'DAL', 'HOU', 'MEM', 'NO',
-                'SA', 'DEN', 'MIN', 'OKC', 'POR', 'UTA'])
+                 'IND', 'MIL', 'ATL', 'CHA', 'MIA', 'ORL', 'WAS', 'GS',
+                 'LAC', 'LAL', 'PHO', 'SAC', 'DAL', 'HOU', 'MEM',
+                 'NO', 'SA', 'DEN', 'MIN', 'OKC', 'POR', 'UTA'])
 
+    # replace once Position class is implemented
     positions = set(['PG', 'SG', 'SF', 'PF', 'C'])
 
-    def __init__(self, player_id, name, team, position): # keep adding as necessary
+    # keep adding init fields as necessary
+    def __init__(self, player_id, name, team, position):
         self.player_id = player_id
         self.name = name
         if team not in self.teams:
@@ -24,3 +25,7 @@ class Player(object):
 
     def __eq__(self, other):
         return self.player_id == other.player_id
+
+# class Team(object): TODO
+
+# class Positions(object): TODO

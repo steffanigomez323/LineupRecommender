@@ -1,18 +1,24 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template
 from redis import Redis
-from swish import SwishScraper
-
-## CONFIG ##
-REDIS_HOST = 'aws-us-east-1-portal.6.dblayer.com'
-REDIS_PASSWORD = 'RYABQWHKVGXBKGUR'
-REDIS_PORT = 11509
+# import os
 
 app = Flask(__name__)
-app.database = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
 
-@app.route("/", methods=['GET', 'POST'])
-def home():    
-    return render_template('index.html', players=clean_data)
+# config
+app.config.from_object('config.DevelopmentConfig')
+# USE WHEN DEPLOYING | export APP_SETTINGS = config.ProductionConfig
+# app.config.from_object(os.environ['APP_SETTINGS'])
+
+# database
+app.database = Redis(host=app.config['REDIS_HOST'],
+                     port=app.config['REDIS_PORT'],
+                     password=app.config['REDIS_PASSWORD'])
+
+
+@app.route("/")
+def home():
+    return render_template('index.html')
+
 
 @app.route('/writeup')
 def writeup():
