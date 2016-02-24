@@ -1,5 +1,16 @@
+"""
+CS1951A Final Project
+Brown University
+Spring 2015
+
+Vann, Steffani, JJ, Chaitu
+
+Unit Testing
+"""
+
 from app import app
 import unittest
+from scrapers import SwishScraper
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -23,8 +34,19 @@ class RedisTestCase(unittest.TestCase):
         self.assertEqual(app.database.get('foo'), 'bar')
         app.database.delete('foo')
 
-# class SwishTestCase(unittest.TestCase):
-    # test whether swish analytics nba optimus page can be accessed
+
+class SwishTestCase(unittest.TestCase):
+    # test whether the data stored in our database
+    # is consistent with swish projections
+    def test_data_consistency(self):
+        ss = SwishScraper()
+        data = ss.get_projections_request()
+        projections = ss.clean_projections_data(
+            data, ['player_id', 'player_name', 'fd_pos', 'team_abr'])
+
+        for projection in projections:
+            player_id = projection['player_id']
+            self.assertTrue(app.database.exists(player_id))
 
 
 if __name__ == '__main__':

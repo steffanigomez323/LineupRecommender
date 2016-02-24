@@ -1,3 +1,14 @@
+"""
+CS1951A Final Project
+Brown University
+Spring 2015
+
+JJ, Chaitu, Vann, Steffani
+
+Config
+"""
+
+
 class BaseConfig(object):
     DEBUG = False
 

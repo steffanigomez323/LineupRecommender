@@ -1,5 +1,18 @@
+"""
+CS1951A Final Project
+Brown University
+Spring 2015
+
+Vann, Steffani, JJ, Chaitu
+
+Main
+"""
+
 from flask import Flask, render_template
+# from scrapers import SwishScraper
+# from models import Player
 from redis import Redis
+# from simple_recommender import SimpleRecommender
 # import os
 
 app = Flask(__name__)

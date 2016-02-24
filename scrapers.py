@@ -1,3 +1,13 @@
+"""
+CS1951A Final Project
+Brown University
+Spring 2015
+
+Vann, Steffani, JJ, Chaitu
+
+Scrapers
+"""
+
 import urllib
 import json
 import re
@@ -31,15 +41,17 @@ class SwishScraper(object):
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
         data = soup.find_all('script')[9].string
-        projections_data = re.search('self.model.masterPlayerArray = \
-         (....*?);', data).group(1)
+        projections_data = re.search(
+            'self.model.masterPlayerArray = (....*?);', data).group(1)
         projections_json = json.loads(projections_data)
         return projections_json
 
     def clean_projections_data(self, data, fields=['player_id',
+                                                   'player_name',
                                                    'proj_fantasy_pts_fd',
                                                    'fd_salary',
                                                    'fd_pos',
+                                                   'team_abr',
                                                    'injury_status']):
         for entry in data:
             for key in deepcopy(entry):
