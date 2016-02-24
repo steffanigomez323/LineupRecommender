@@ -1,7 +1,7 @@
 """
 CS1951A Final Project
 Brown University
-Spring 2015
+Spring 2016
 
 JJ, Chaitu, Vann, Steffani
 
