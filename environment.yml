@@ -6,3 +6,5 @@ dependencies:
 - redis-py
 - flask
 - requests
+- gunicorn
+- foreman

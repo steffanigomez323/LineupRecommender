@@ -11,7 +11,7 @@ Main
 from flask import Flask, render_template
 # from scrapers import SwishScraper
 # from models import Player
-from redis import Redis
+# from redis import Redis
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -23,9 +23,9 @@ app.config.from_object('config.DevelopmentConfig')
 # app.config.from_object(os.environ['APP_SETTINGS'])
 
 # database
-app.database = Redis(host=app.config['REDIS_HOST'],
-                     port=app.config['REDIS_PORT'],
-                     password=app.config['REDIS_PASSWORD'])
+# app.database = Redis(host=app.config['REDIS_HOST'],
+#                      port=app.config['REDIS_PORT'],
+#                      password=app.config['REDIS_PASSWORD'])
 
 
 @app.route("/")
