@@ -1,6 +1,7 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: osx-64
+beautiful-soup=4.3.2=py27_0
 flask=0.10.1=py27_1
 gunicorn=19.1.0=py27_0
 itsdangerous=0.24=py27_0

@@ -16,7 +16,7 @@ class RedisHelper(object):
     # populate the database with all players
     def populate_db(self):
         # add all teams
-        app.database.sadd('teams', 'BOS', 'BKN', 'NY', 'PHI',
+        app.redis_db.sadd('teams', 'BOS', 'BKN', 'NY', 'PHI',
                           'TOR', 'CHI', 'CLE', 'DET',
                           'IND', 'MIL', 'ATL', 'CHA',
                           'MIA', 'ORL', 'WAS', 'GS',
@@ -26,7 +26,7 @@ class RedisHelper(object):
                           'POR', 'UTA')
 
         # add all positions
-        app.database.sadd('positions', 'PG', 'SG', 'SF', 'PF', 'C')
+        app.redis_db.sadd('positions', 'PG', 'SG', 'SF', 'PF', 'C')
 
         # add all players
         ss = SwishScraper()
@@ -38,12 +38,12 @@ class RedisHelper(object):
             team = player['team_abbr']
             position = player['primary_pos_abbr']
 
-            if not app.database.sismember('teams', team):
+            if not app.redis_db.sismember('teams', team):
                 raise Exception("This player's team does not exist.")
 
-            if not app.database.sismember('positions', position):
+            if not app.redis_db.sismember('positions', position):
                 raise Exception("This player's position is invalid.")
 
-            app.database.hmset(player_id, {'name': name,
+            app.redis_db.hmset(player_id, {'name': name,
                                            'team': team,
                                            'position': position})

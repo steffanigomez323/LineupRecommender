@@ -30,9 +30,9 @@ class FlaskTestCase(unittest.TestCase):
 class RedisTestCase(unittest.TestCase):
     # test whether a connection to redis can be established
     def test_redis_connection(self):
-        app.database.set('foo', 'bar')
-        self.assertEqual(app.database.get('foo'), 'bar')
-        app.database.delete('foo')
+        app.redis_db.set('foo', 'bar')
+        self.assertEqual(app.redis_db.get('foo'), 'bar')
+        app.redis_db.delete('foo')
 
 
 class SwishTestCase(unittest.TestCase):
@@ -46,7 +46,7 @@ class SwishTestCase(unittest.TestCase):
 
         for projection in projections:
             player_id = projection['player_id']
-            self.assertTrue(app.database.exists(player_id))
+            self.assertTrue(app.redis_db.exists(player_id))
 
 
 if __name__ == '__main__':

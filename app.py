@@ -23,9 +23,9 @@ app.config.from_object('config.DevelopmentConfig')
 # app.config.from_object(os.environ['APP_SETTINGS'])
 
 # database
-# app.database = Redis(host=app.config['REDIS_HOST'],
-#                      port=app.config['REDIS_PORT'],
-#                      password=app.config['REDIS_PASSWORD'])
+app.redis_db = Redis(host=app.config['REDIS_HOST'],
+                     port=app.config['REDIS_PORT'],
+                     password=app.config['REDIS_PASSWORD'])
 
 
 @app.route("/")
