@@ -11,7 +11,7 @@ Main
 from flask import Flask, render_template
 # from scrapers import SwishScraper
 # from models import Player
-# from redis import Redis
+from redis import Redis
 # from simple_recommender import SimpleRecommender
 # import os
 
