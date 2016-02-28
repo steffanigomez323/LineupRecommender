@@ -1,10 +1,8 @@
 name: lineup-recommender
 dependencies:
-- pip
 - python
-- anaconda
 - redis-py
 - flask
 - requests
 - gunicorn
-- foreman
+- pip
