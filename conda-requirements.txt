@@ -6,6 +6,9 @@ flask=0.10.1=py27_1
 gunicorn=19.1.0=py27_0
 itsdangerous=0.24=py27_0
 jinja2=2.8=py27_0
+libxml2=2.9.2=0
+libxslt=1.1.28=2
+lxml=3.5.0=py27_0
 markupsafe=0.23=py27_0
 openssl=1.0.2f=0
 pastedeploy=1.5.2=py27_1

@@ -6,4 +6,5 @@ dependencies:
 - requests
 - gunicorn
 - beautiful-soup
+- lxml
 - pip
