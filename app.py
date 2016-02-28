@@ -12,7 +12,6 @@ from flask import Flask, render_template
 # from scrapers import SwishScraper
 # from models import Player
 from redis import Redis
-from flask.ext.sqlalchemy import SQLAlchemy
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -24,10 +23,9 @@ app.config.from_object('config.DevelopmentConfig')
 # app.config.from_object(os.environ['APP_SETTINGS'])
 
 # databases
-app.postgres_db = SQLAlchemy(app)
-app.redis_db = Redis(host=app.config['REDIS_HOST'],
-                     port=app.config['REDIS_PORT'],
-                     password=app.config['REDIS_PASSWORD'])
+redis_db = Redis(host=app.config['REDIS_HOST'],
+                 port=app.config['REDIS_PORT'],
+                 password=app.config['REDIS_PASSWORD'])
 
 
 @app.route("/")

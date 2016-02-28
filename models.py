@@ -8,29 +8,6 @@ Vann, Steffani, JJ, Chaitu
 Models
 """
 
-from app import app
-
-
-class Player(db.postgres_db.Model):
-
-    __tablename__ = "players"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    team = db.Column(db.String, nullable=False)
-    position = db.Column(db.String, nullable=False)
-    projected_points = db.Column(db.String) # Change later
-    salary = db.Column(db.Integer)
-    injury_status = db.Column(db.String)
-
-    def __init__(self, id, name, team, position):
-        self.id = id
-        self.name = name
-        self.team = team
-        self.position = position
-
-    def __repr__(self):
-        return '<title {}'.format(self.title)
 
 class Player(object):
     # keep adding init fields as necessary

@@ -8,7 +8,7 @@ Vann, Steffani, JJ, Chaitu
 Unit Testing
 """
 
-from app import app
+from app import redis_db
 import unittest
 from scrapers import SwishScraper
 
@@ -16,13 +16,13 @@ from scrapers import SwishScraper
 class FlaskTestCase(unittest.TestCase):
     # test whether index loads
     def test_index_response(self):
-        tester = app.test_client(self)
+        tester = test_client(self)
         response = tester.get('/', content_type='html/text')
         self.assertEqual(response.status_code, 200)
 
     # test whether writeup loads
     def test_writeup_response(self):
-        tester = app.test_client(self)
+        tester = test_client(self)
         response = tester.get('/writeup', content_type='html/text')
         self.assertEqual(response.status_code, 200)
 
@@ -30,9 +30,9 @@ class FlaskTestCase(unittest.TestCase):
 class RedisTestCase(unittest.TestCase):
     # test whether a connection to redis can be established
     def test_redis_connection(self):
-        app.redis_db.set('foo', 'bar')
-        self.assertEqual(app.redis_db.get('foo'), 'bar')
-        app.redis_db.delete('foo')
+        redis_db.set('foo', 'bar')
+        self.assertEqual(redis_db.get('foo'), 'bar')
+        redis_db.delete('foo')
 
 
 class SwishTestCase(unittest.TestCase):
@@ -46,7 +46,7 @@ class SwishTestCase(unittest.TestCase):
 
         for projection in projections:
             player_id = projection['player_id']
-            self.assertTrue(app.redis_db.exists(player_id))
+            self.assertTrue(redis_db.exists(player_id))
 
 
 if __name__ == '__main__':
