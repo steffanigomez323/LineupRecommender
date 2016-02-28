@@ -7,5 +7,4 @@ dependencies:
 - gunicorn
 - beautiful-soup
 - lxml
-- pip:
-  - flask-sqlalchemy
+- pip
