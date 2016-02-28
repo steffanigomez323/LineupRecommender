@@ -2,5 +2,4 @@
 .DS_Store
 .env
 *.rdb
-output.txt
-dummy.py
+local
