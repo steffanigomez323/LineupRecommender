@@ -11,7 +11,6 @@ Update Module
 from app import redis_db
 from models import Player
 from scrapers import SwishScraper
-from scrapers import NBAScraper
 
 
 class DailyUpdate(object):
