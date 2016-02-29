@@ -8,7 +8,6 @@ class NBA_API(object):
     def get_request(self, path, params={}):
         url = self.prefix_url + path
         r = requests.get(url, params=params)
-        print r
         return r.json()
 
     def get_gamelogs(self):
@@ -20,10 +19,6 @@ class NBA_API(object):
 def main():
     nba = NBA_API()
     gamelogs = nba.get_gamelogs()
-    '''
-    with open('gamelogs.json', 'w') as f:
-        json.dump(gamelogs, f)
-    '''
 
     headers_array = gamelogs['resultSets'][0]['headers']
     id_index = headers_array.index('PLAYER_ID')
