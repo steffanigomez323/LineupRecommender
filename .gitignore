@@ -4,4 +4,5 @@
 *.rdb
 *~
 dummy.py
-output.txt
+output*.txt
+players.json

@@ -11,7 +11,9 @@ Database
 from app import redis_db
 from scrapers import SwishScraper
 from scrapers import NBAScraper
-import namespace as ns
+import namespace
+import json
+import re
 
 
 class RedisHelper(object):
@@ -53,8 +55,67 @@ class RedisHelper(object):
 
     # update each players stats from nba.com
     def populate_stats(self):
-        ns = NBAScraper()
-        stats = ns.get_player_stats_request()
-        player_stats = ns.clean_player_stats_data(stats)
+        # dictionary from name to player_id
+        NAME_TO_PLAYER_ID = {}
 
-        return player_stats
+        # dictionary from nba_id to player_id
+        NBA_ID_TO_PLAYER_ID = {}
+
+        # ns = NBAScraper()
+        # stats = namespace.get_player_stats_request()
+        # player_stats = ns.clean_player_stats_data(stats)
+
+        player_json = open('players.json', 'r')
+        player_stats = json.load(player_json)
+
+        last_player_id = int(redis_db.get('player_id'))
+
+        for player_id in range(namespace.FIRST_PLAYER_ID, last_player_id + 1):
+            name = redis_db.hmget(player_id, 'name')
+
+            # f_l_name = name[0].split()
+
+            # f_l_name[0].replace(".", "")
+            # " ".join(f_l_name)
+
+            # print f_l_name
+            player_name = name[0]
+            match = re.search('.\..\.', player_name)
+            if match:
+                player_name = player_name.replace(".", "")
+            
+            if player_name == "Nene Hilario":
+                player_name = "Nene"
+            elif player_name == "Louis Amundson":
+                player_name = "Lou Amundson"
+            elif player_name == "JJ Barea":
+                player_name = "Jose Juan Barea"
+            elif player_name == "Kelly Oubre Jr.":
+                player_name = "Kelly Oubre"
+            elif player_name == "Glenn Robinson III":
+                player_name = "Glenn Robinson"
+            elif player_name == "Luc Richard Mbah a Moute":
+                player_name = "Luc Mbah a Moute"
+
+            player_name = player_name.lower()
+
+            NAME_TO_PLAYER_ID[player_name] = player_id
+
+        # check if name exists in NAME_TO_PLAYER_ID
+        for nba_id in player_stats:
+            # player_stats[nba_id] returns dictionaries of games
+            nba_name = player_stats[nba_id]['PLAYER_NAME']
+            match = re.search('.\..\.', nba_name)
+            if match:
+                nba_name = nba_name.replace(".", "")
+
+            nba_name = nba_name.lower()
+
+            if nba_name in NAME_TO_PLAYER_ID.iterkeys():
+                NBA_ID_TO_PLAYER_ID[nba_id] = NAME_TO_PLAYER_ID[nba_name]
+                # print "MATCHED: ", nba_name
+
+        # print it if it does not exist
+            else:
+                print "NOT MATCHED: ", nba_name
+
