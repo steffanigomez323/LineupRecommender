@@ -10,11 +10,12 @@ Database
 
 from app import redis_db
 from scrapers import SwishScraper
+from scraper import NBA
 import namespace as ns
 
 
 class RedisHelper(object):
-    # populate the database with all players
+    # populate the database with all players using swish
     def populate_db(self):
         # set player_id to 123455
         redis_db.set('player_id', ns.FIRST_PLAYER_ID - 1)
@@ -49,3 +50,11 @@ class RedisHelper(object):
                                        'name': name,
                                        'team': team,
                                        'position': position})
+
+    # update each players stats from nba.com
+    def populate_stats(self):
+        ns = NBAScraper()
+        stats = ns.get_player_stats_request()
+        player_stats = ns.clean_player_stats_data(stats)
+        
+        
