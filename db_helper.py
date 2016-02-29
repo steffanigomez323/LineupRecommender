@@ -10,7 +10,7 @@ Database
 
 from app import redis_db
 from scrapers import SwishScraper
-from scraper import NBA
+from scrapers import NBAScraper
 import namespace as ns
 
 
@@ -56,5 +56,5 @@ class RedisHelper(object):
         ns = NBAScraper()
         stats = ns.get_player_stats_request()
         player_stats = ns.clean_player_stats_data(stats)
-        
-        
+
+        return player_stats
