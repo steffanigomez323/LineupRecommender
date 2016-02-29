@@ -10,26 +10,22 @@ Database
 
 from app import redis_db
 from scrapers import SwishScraper
+import namespace as ns
 
 
 class RedisHelper(object):
     # populate the database with all players
     def populate_db(self):
         # set player_id to 123455
-        redis_db.set('player_id', 123455)
+        redis_db.set('player_id', ns.FIRST_PLAYER_ID - 1)
 
         # add all teams
-        redis_db.sadd('teams', 'BOS', 'BKN', 'NY', 'PHI',
-                      'TOR', 'CHI', 'CLE', 'DET',
-                      'IND', 'MIL', 'ATL', 'CHA',
-                      'MIA', 'ORL', 'WAS', 'GS',
-                      'LAC', 'LAL', 'PHO', 'SAC',
-                      'DAL', 'HOU', 'MEM', 'NO',
-                      'SA', 'DEN', 'MIN', 'OKC',
-                      'POR', 'UTA')
+        for team in ns.TEAMS:
+            redis_db.sadd('teams', team)
 
         # add all positions
-        redis_db.sadd('positions', 'PG', 'SG', 'SF', 'PF', 'C')
+        for position in ns.POSITIONS:
+            redis_db.sadd('positions', position)
 
         # add all players
         ss = SwishScraper()
