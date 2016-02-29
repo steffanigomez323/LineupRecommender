@@ -30,11 +30,28 @@ def gen_nba_relation_dict():
         name = redis_db.hmget(player_id, 'name')
         NAME_TO_PLAYER_ID[name] = player_id
 
-        # go over the json
-        # check if name exists in NAME_TO_PLAYER_ID
-        # print it if it does not exist
-        # if it does exist, set NBA_ID_TO_PLAYER_ID[nba_id] to
-        # player_id which you can get from NAME_TO_PLAYER_ID
+        # load players.json
+    players_json = open('players.json', 'r')
+    players = json.load(players_json)
+    # pprint(players)
+
+    # check if name exists in NAME_TO_PLAYER_ID
+    for nba_id in players:
+        # players[nba_id] returns dictionaries of games
+        player_name = players[nba_id]['PLAYER_NAME']
+        if player_name in NAME_TO_PLAYER_ID.iterkeys():
+            NBA_ID_TO_PLAYER_ID[nba_id] = NAME_TO_PLAYER_ID[player_name]
+            # print "MATCHED: ", player_name
+
+    # print it if it does not exist
+        else: 
+            # print "NOT MATCHED: ", players[nba_id]['PLAYER_NAME']
+            for name in NAME_TO_PLAYER_ID.iterkeys():
+                if player_name.split()[1] == name.split()[1]:
+                    # print "CHECK: ", player_name, name
+                    pass
+    # if it does exist, set NBA_ID_TO_PLAYER_ID[nba_id] to
+    # player_id which you can get from NAME_TO_PLAYER_ID
 
 
 if __name__ == '__main__':
