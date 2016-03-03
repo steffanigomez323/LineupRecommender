@@ -61,29 +61,23 @@ class RedisHelper(object):
         # dictionary from nba_id to player_id
         NBA_ID_TO_PLAYER_ID = {}
 
-        # ns = NBAScraper()
-        # stats = namespace.get_player_stats_request()
-        # player_stats = ns.clean_player_stats_data(stats)
+        ns = NBAScraper()
+        stats = ns.get_player_stats_request()
+        player_stats = ns.clean_player_stats_data(stats)
 
-        player_json = open('players.json', 'r')
-        player_stats = json.load(player_json)
+        # player_json = open('players.json', 'r')
+        # player_stats = json.load(player_json)
 
         last_player_id = int(redis_db.get('player_id'))
 
         for player_id in range(namespace.FIRST_PLAYER_ID, last_player_id + 1):
             name = redis_db.hmget(player_id, 'name')
 
-            # f_l_name = name[0].split()
-
-            # f_l_name[0].replace(".", "")
-            # " ".join(f_l_name)
-
-            # print f_l_name
             player_name = name[0]
             match = re.search('.\..\.', player_name)
             if match:
                 player_name = player_name.replace(".", "")
-            
+
             if player_name == "Nene Hilario":
                 player_name = "Nene"
             elif player_name == "Louis Amundson":

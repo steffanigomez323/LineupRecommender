@@ -8,4 +8,5 @@ dependencies:
 - beautiful-soup
 - lxml
 - ipython
+- pandas
 - pip
