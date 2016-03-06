@@ -10,35 +10,35 @@ Update Module
 
 from app import redis_db
 from models import Player
-from scrapers import SwishScraper
+from app import swish_scraper
+from app import nba_scraper
+from app import id_manager
 
 
 class DailyUpdate(object):
-    def get_update(self):
-        ss = SwishScraper()
-        data = ss.get_projections_request()
-        projections = ss.clean_projections_data(data)
+    def get_projections(self):
+        data = swish_scraper.get_projections()
+        projections = swish_scraper.clean_projections(data)
         players = list()
 
         for projection in projections:
-            player_id = projection['player_id']
-            name = projection['player_name']
-            stored_name = redis_db.hget(player_id, 'name')
-            if stored_name != name:
-                redis_db.hset(player_id, 'name', name)
-            team = projection['team_abr']
-            stored_team = redis_db.hget(player_id, 'team')
-            if stored_team != team:
-                redis_db.hset(player_id, 'team', team)
-            position = projection['fd_pos']
-            stored_position = redis_db.hget(player_id, 'position')
-            if stored_position != position:
-                redis_db.hset(player_id, 'position', position)
-            projected_points = projection['proj_fantasy_pts_fd']
-            salary = projection['fd_salary']
-            injury_status = projection['injury_status']
+            # rjust to make sure that it is 20 in length
+            swish_id = id_manager.get_swish_id(projection['player_id'])
+            if redis_db.get(swish_id):
+                player_id = id_manager.get_player_id_from_swish_id(swish_id)
+                name = redis_db.hget(player_id, 'name')
+                team = redis_db.hget(player_id, 'team')
+                position = redis_db.hget(player_id, 'position')
+                projected_points = projection['proj_fantasy_pts_fd']
+                salary = projection['fd_salary']
+                injury_status = projection['injury_status']
 
-            players.append(Player(player_id, name, team, position,
-                           projected_points, salary, injury_status))
+                players.append(Player(player_id, name, team, position,
+                               projected_points, salary, injury_status))
 
         return players
+
+    def get_stats(self):
+        data = nba_scraper.get_player_stats()
+        player_stats = nba_scraper.clean_player_stats(data)
+        print player_stats

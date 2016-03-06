@@ -9,9 +9,10 @@ Main
 """
 
 from flask import Flask, render_template
-# from scrapers import SwishScraper
-# from models import Player
 from redis import Redis
+from scrapers import SwishScraper
+from scrapers import NBAScraper
+from id_manager import IDManager
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -26,6 +27,11 @@ app.config.from_object('config.DevelopmentConfig')
 redis_db = Redis(host=app.config['REDIS_HOST'],
                  port=app.config['REDIS_PORT'],
                  password=app.config['REDIS_PASSWORD'])
+
+# scrapers
+swish_scraper = SwishScraper()
+nba_scraper = NBAScraper()
+id_manager = IDManager()
 
 
 @app.route("/")

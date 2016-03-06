@@ -9,7 +9,7 @@ Scrapers
 """
 
 import urllib
-import requests
+from custom_request import CustomRequest
 import json
 import re
 from bs4 import BeautifulSoup
@@ -18,7 +18,7 @@ from copy import deepcopy
 
 class SwishScraper(object):
 
-    def get_players_request(self):
+    def get_players(self):
         url = 'https://www.swishanalytics.com/nba/players/'
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
@@ -27,17 +27,24 @@ class SwishScraper(object):
         players_json = json.loads(players_data)
         return players_json
 
-    def clean_players_data(self, data, fields=['player_id',
-                                               'player_name',
-                                               'team_abbr',
-                                               'primary_pos_abbr']):
+    def clean_players(self, data, fields=['player_id',
+                                          'player_name',
+                                          'team_abbr',
+                                          'primary_pos_abbr']):
         for entry in data:
             for key in deepcopy(entry):
                 if key not in fields:
                     del(entry[key])
-        return data
 
-    def get_projections_request(self):
+        swish_dict = {}
+        for entry in data:
+            swish_dict[entry['player_name']] = (entry['player_id'],
+                                                entry['team_abbr'],
+                                                entry['primary_pos_abbr'])
+
+        return swish_dict
+
+    def get_projections(self):
         url = 'https://www.swishanalytics.com/optimus/nba/optimus-x/'
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
@@ -47,13 +54,10 @@ class SwishScraper(object):
         projections_json = json.loads(projections_data)
         return projections_json
 
-    def clean_projections_data(self, data, fields=['player_id',
-                                                   'player_name',
-                                                   'proj_fantasy_pts_fd',
-                                                   'fd_salary',
-                                                   'fd_pos',
-                                                   'team_abr',
-                                                   'injury_status']):
+    def clean_projections(self, data, fields=['player_id',
+                                              'proj_fantasy_pts_fd',
+                                              'fd_salary',
+                                              'injury_status']):
         for entry in data:
             for key in deepcopy(entry):
                 if key not in fields:
@@ -63,14 +67,54 @@ class SwishScraper(object):
 
 class NBAScraper(object):
 
-    def get_player_stats_request(self):
-        url = ('http://stats.nba.com/stats/leaguegamelog?Direction=DESC'
-               '&LeagueID=00&PlayerOrTeam=P&Season=2015-16&SeasonType=R'
-               'egular+Season&Sorter=PTS')
-        r = requests.get(url)
-        return r.json()
+    def __init__(self):
+        self.nba_request = CustomRequest("http://stats.nba.com/stats/")
 
-    def clean_player_stats_data(self, data):
+    def get_players(self):
+        modifier = 'commonallplayers'
+        params = {'IsOnlyCurrentSeason': '1',
+                  'LeagueID': '00',
+                  'Season': '2015-16'}
+        result = self.nba_request.get_request(modifier, params)
+        return result.json()
+
+    def clean_players(self, data):
+        headers = data['resultSets'][0]['headers']
+        values = data['resultSets'][0]['rowSet']
+
+        player_id_index = headers.index('PERSON_ID')
+        name_index = headers.index('DISPLAY_FIRST_LAST')
+        team_id_index = headers.index('TEAM_ID')
+        team_abbr_index = headers.index('TEAM_ABBREVIATION')
+
+        nba_dict = {}
+
+        for value in values:
+            name = value[name_index]
+            match = re.search('.\..\.', name)
+            if match:
+                name = name.replace(".", "")
+            name = name.lower()
+            nba_dict[name] = (str(value[player_id_index]),
+                              value[team_id_index],
+                              value[team_abbr_index],
+                              value[name_index])
+
+        return nba_dict
+
+    def get_player_stats(self):
+        modifier = 'leaguegamelog'
+        params = {'Direction': 'DESC',
+                  'LeagueID': '00',
+                  'PlayerOrTeam': 'P',
+                  'Season': '2015-16',
+                  'SeasonType': 'Regular Season',
+                  'Sorter': 'PTS'}
+
+        result = self.nba_request.get_request(modifier, params)
+        return result.json()
+
+    def clean_player_stats(self, data):
         headers_array = data['resultSets'][0]['headers']
         id_index = headers_array.index('PLAYER_ID')
         name_index = headers_array.index('PLAYER_NAME')

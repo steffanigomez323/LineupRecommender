@@ -9,18 +9,21 @@ Database
 """
 
 from app import redis_db
-from scrapers import SwishScraper
-from scrapers import NBAScraper
-import namespace
-import json
+from app import swish_scraper
+from app import nba_scraper
+from app import id_manager
+import namespace as ns
 import re
 
 
 class RedisHelper(object):
-    # populate the database with all players using swish
+    # populate the database with all players using swish and nba
     def populate_db(self):
-        # set player_id to 123455
-        redis_db.set('player_id', ns.FIRST_PLAYER_ID - 1)
+        # flush the db
+        redis_db.flushall()
+
+        # set base_id to 123455
+        redis_db.set('base_id', int(id_manager.INITIAL_BASE_PLAYER_ID) - 1)
 
         # add all teams
         for team in ns.TEAMS:
@@ -30,17 +33,33 @@ class RedisHelper(object):
         for position in ns.POSITIONS:
             redis_db.sadd('positions', position)
 
-        # add all players
-        ss = SwishScraper()
-        data = ss.get_players_request()
-        players = ss.clean_players_data(data)
-        for player in players:
-            redis_db.incr('player_id')
-            player_id = redis_db.get('player_id')
-            swish_id = player['player_id']
-            name = player['player_name']
-            team = player['team_abbr']
-            position = player['primary_pos_abbr']
+        # get all players from nba
+        nba_raw = nba_scraper.get_players()
+        nba_players = nba_scraper.clean_players(nba_raw)
+
+        # get all players from swish
+        swish_raw = swish_scraper.get_players()
+        swish_players = swish_scraper.clean_players(swish_raw)
+
+        # get unified player list
+        players = self.unify(nba_players, swish_players)
+
+        # write players to redis
+        for player, data in players.iteritems():
+            team = data[2]
+            team_id = data[3]
+            position = data[4]
+
+            # increment base_id
+            redis_db.incr('base_id')
+            base_id = redis_db.get('base_id')
+
+            # get final unique id
+            player_id = id_manager.get_player_id(base_id, data[0], data[1])
+
+            # write swish_id to player_id and nba_id to player_id
+            # mappings to redis
+            id_manager.write_id_maps(data[0], data[1], player_id)
 
             if not redis_db.sismember('teams', team):
                 raise Exception("This player's team does not exist.")
@@ -48,68 +67,55 @@ class RedisHelper(object):
             if not redis_db.sismember('positions', position):
                 raise Exception("This player's position is invalid.")
 
-            redis_db.hmset(player_id, {'swish_id': swish_id,
-                                       'name': name,
+            redis_db.hmset(player_id, {'name': player,
                                        'team': team,
+                                       'team_id': team_id,
                                        'position': position})
 
-    # update each players stats from nba.com
-    def populate_stats(self):
-        # dictionary from name to player_id
-        NAME_TO_PLAYER_ID = {}
+    def unify(self, nba_players, swish_players):
+        unified_dict = {}
 
-        # dictionary from nba_id to player_id
-        NBA_ID_TO_PLAYER_ID = {}
-
-        ns = NBAScraper()
-        stats = ns.get_player_stats_request()
-        player_stats = ns.clean_player_stats_data(stats)
-
-        # player_json = open('players.json', 'r')
-        # player_stats = json.load(player_json)
-
-        last_player_id = int(redis_db.get('player_id'))
-
-        for player_id in range(namespace.FIRST_PLAYER_ID, last_player_id + 1):
-            name = redis_db.hmget(player_id, 'name')
-
-            player_name = name[0]
-            match = re.search('.\..\.', player_name)
+        for player_name in swish_players.iterkeys():
+            modified_name = player_name
+            match = re.search('.\..\.', modified_name)
             if match:
-                player_name = player_name.replace(".", "")
+                modified_name = modified_name.replace(".", "")
 
-            if player_name == "Nene Hilario":
-                player_name = "Nene"
-            elif player_name == "Louis Amundson":
-                player_name = "Lou Amundson"
-            elif player_name == "JJ Barea":
-                player_name = "Jose Juan Barea"
-            elif player_name == "Kelly Oubre Jr.":
-                player_name = "Kelly Oubre"
-            elif player_name == "Glenn Robinson III":
-                player_name = "Glenn Robinson"
-            elif player_name == "Luc Richard Mbah a Moute":
-                player_name = "Luc Mbah a Moute"
+            if modified_name == "Nene Hilario":
+                modified_name = "Nene"
+            elif modified_name == "Louis Amundson":
+                modified_name = "Lou Amundson"
+            elif modified_name == "JJ Barea":
+                modified_name = "Jose Juan Barea"
+            elif modified_name == "Kelly Oubre Jr.":
+                modified_name = "Kelly Oubre"
+            elif modified_name == "Glenn Robinson III":
+                modified_name = "Glenn Robinson"
+            elif modified_name == "Luc Richard Mbah a Moute":
+                modified_name = "Luc Mbah a Moute"
 
-            player_name = player_name.lower()
+            modified_name = modified_name.lower()
 
-            NAME_TO_PLAYER_ID[player_name] = player_id
+            if modified_name in nba_players.iterkeys():
+                swish_player = swish_players[player_name]
+                nba_player = nba_players[modified_name]
+                swish_id = swish_player[0]
+                swish_team = swish_player[1]
+                if swish_team not in ns.TEAMS:
+                    swish_team = ns.SWISH_NBA_TEAM_NAME_MAP[swish_team]
+                swish_position = swish_player[2]
+                nba_id = nba_player[0]
+                nba_team_id = nba_player[1]
+                nba_team = nba_player[2]
+                nba_name = nba_player[3]
 
-        # check if name exists in NAME_TO_PLAYER_ID
-        for nba_id in player_stats:
-            # player_stats[nba_id] returns dictionaries of games
-            nba_name = player_stats[nba_id]['PLAYER_NAME']
-            match = re.search('.\..\.', nba_name)
-            if match:
-                nba_name = nba_name.replace(".", "")
+                if nba_team != swish_team:
+                    raise Exception("There is a mismatch in the teams.")
 
-            nba_name = nba_name.lower()
+                unified_dict[nba_name] = (nba_id, swish_id, nba_team,
+                                          nba_team_id, swish_position)
 
-            if nba_name in NAME_TO_PLAYER_ID.iterkeys():
-                NBA_ID_TO_PLAYER_ID[nba_id] = NAME_TO_PLAYER_ID[nba_name]
-                # print "MATCHED: ", nba_name
+        return unified_dict
 
-        # print it if it does not exist
-            else:
-                print "NOT MATCHED: ", nba_name
-
+    # implement update db
+    # def update_db(self):

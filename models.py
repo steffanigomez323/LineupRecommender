@@ -25,7 +25,7 @@ class Player(object):
         else:
             self.injury_status = injury_status
 
-    def __str__(self):
+    def __repr__(self):
         return "\n" + "########## Player ##########" + "\n" \
                 + "Name: " + self.name + "\n" + "Team: " + self.team + "\n" \
                 + "Position: " + self.position + "\n" \
