@@ -1,7 +1,6 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: osx-64
-appnope=0.1.0=py27_0
 beautiful-soup=4.3.2=py27_0
 decorator=4.0.9=py27_0
 flask=0.10.1=py27_1
