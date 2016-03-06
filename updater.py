@@ -23,9 +23,10 @@ class DailyUpdate(object):
 
         for projection in projections:
             # rjust to make sure that it is 20 in length
-            swish_id = id_manager.get_swish_id(projection['player_id'])
+            swish_id = id_manager.get_normalized_swish_id(
+                projection['player_id'])
             if redis_db.get(swish_id):
-                player_id = id_manager.get_player_id_from_swish_id(swish_id)
+                player_id = redis_db.get(swish_id)
                 name = redis_db.hget(player_id, 'name')
                 team = redis_db.hget(player_id, 'team')
                 position = redis_db.hget(player_id, 'position')

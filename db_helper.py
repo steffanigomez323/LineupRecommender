@@ -57,9 +57,14 @@ class RedisHelper(object):
             # get final unique id
             player_id = id_manager.get_player_id(base_id, data[0], data[1])
 
+            # rjust nba by 10
+            nba_rjust = data[0].rjust(10, '0')
+            # rjust swish by 20
+            swish_rjust = data[1].rjust(20, '0')
             # write swish_id to player_id and nba_id to player_id
             # mappings to redis
-            id_manager.write_id_maps(data[0], data[1], player_id)
+            redis_db.set(nba_rjust, player_id)
+            redis_db.set(swish_rjust, player_id)
 
             if not redis_db.sismember('teams', team):
                 raise Exception("This player's team does not exist.")
