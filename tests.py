@@ -10,8 +10,8 @@ Unit Testing
 
 from app import app
 from app import redis_db
+from app import swish_scraper
 import unittest
-from scrapers import SwishScraper
 
 
 class FlaskTestCase(unittest.TestCase):
@@ -37,17 +37,13 @@ class RedisTestCase(unittest.TestCase):
 
 
 class SwishTestCase(unittest.TestCase):
-    # test whether the data stored in our database
-    # is consistent with swish projections
+    # test whether we're able to get data from swish analytics
     def test_data_consistency(self):
-        ss = SwishScraper()
-        data = ss.get_projections_request()
-        projections = ss.clean_projections_data(
-            data, ['player_id', 'player_name', 'fd_pos', 'team_abr'])
+        data = swish_scraper.get_projections()
+        projections = swish_scraper.clean_projections(
+            data, ['player_id'])
 
-        for projection in projections:
-            player_id = projection['player_id']
-            self.assertTrue(redis_db.exists(player_id))
+        self.assertTrue(len(projections) > 0)
 
 
 if __name__ == '__main__':
