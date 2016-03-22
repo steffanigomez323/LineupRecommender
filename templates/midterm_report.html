@@ -22,7 +22,7 @@
             <br><br>
             <p>We also obtain projections and salary data from Swish Analytics (shown below). We currently used this data to calculate the optimal lineup which is what we use in the Visualization section below. We are also using this data as an example to compare with the projections we make in the ML section below.</p>
             <img class="img-responsive" src="../static/images/swish_data.png"></img>
-            <br><br>
+            <br>
 
             <h3>Useful Features</h3>
             We've built the following small modules to make our lives easier for the rest of the semester:
@@ -33,6 +33,7 @@
                 <li>Reusable scraping module that uses beautiful soup and requests to get data from swish and any subdomain of stats.nba.com with a data endpoint.</li>
                 <li>Finally, we've deployed the app to heroku. So, we don't need to use WordPress! :)</li>
             </ul>
+            <hr>
 
             <h2>Part 2: Visualization</h2>
             <img class="img-responsive" src="../static/images/mainviz.png"></img>
@@ -59,25 +60,34 @@
 
                 Then, for this visualization, we pick the player with the highest point from each position. Thus, the visualization recommends 5 players for 5 positions.
             </p>
-
+            
+            <hr>
 
             <h2>Part 3: Machine Learning</h2>
             <p>Once we have our NBA player data, we can apply machine learning to predict projected player scores. We decided to use logistic regression to make the projections.</p>
             <p>We transform our player data from their goals, freethrows, assists, etc. into a single FanDuel score. Then, we associate each player's FanDuel score for a game with the average FanDuel score of their prior games.</p>
 
-
+            <hr>
             <h2>Part 4: Discussion</h2>
             <ul>
-                <li>What is hardest part of the project that you've encountered so far?
-                <p>
-                    
-                </p>
+                <li><b>What is hardest part of the project that you've encountered so far?</b>
+                    <p>For fantasy scoring, it is not possible to rely on just one source of data to get all information because NBA does not provide fantasy salaries and the fantasy websites do not provide historical data. So, we had to combine data from two sources - NBA and Swish Analytics. We need this data to be updated every day, so we needed to build a module that can just be run each day to update the data. But, the module has to take into account the possibilities of data changing and inconsistent data. Building this module was definitely the hardest part of the project so far.</p>
                 </li>
-                <li>What are your initial insights?</li>
-                <li>Are there any concrete results you can show at this point? If not, why not?</li>
-                <li>Going forward, what are the current biggest problems you're facing?</li>
-                <li>Do you think you are on track with your project? If not, what parts do you need to dedicate more time to?</li>
-                <li>Given your initial exploration of the data, is it worth proceeding with your project?</li>
+                <li><b>What are your initial insights?</b>
+                    <p>We're able to come up with reasonable projections that are quite comparable to those of Swish Analytics. We haven't been able to evaluate how good our results were against real data yet but we'll be doing that as the next step.</p>
+                </li>
+                <li><b>Are there any concrete results you can show at this point? If not, why not?</b>
+                    <p>We've been able to get the optimal lineup given projection data and we've been able to project fantasy scores based on historical data.</p>
+                </li>
+                <li><b>Going forward, what are the current biggest problems you're facing?</b>
+                    <p>One problem we're facing is trying to figure out which ML algorithms or what kind of pure stats could help us improve our predictions. Other than that, we're not facing any specific problems.</p>
+                </li>
+                <li><b>Do you think you are on track with your project? If not, what parts do you need to dedicate more time to?</b>
+                    <p>We think we're on track especially considering the fact that we'll be able to dedicate a lot more time to the project after Spring Break because the workload from the class reduces.</p>
+                </li>
+                <li><b>Given your initial exploration of the data, is it worth proceeding with your project?</b>
+                    <p>Definitely! The initial exploration has proven to be very exciting. Especially the insight that last 7 games is a good indicator of performance. We're excited to see where else we can go with this project.
+                </li>
             </ul>
 
             
