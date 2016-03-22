@@ -7,38 +7,36 @@
                 <h1>Lineup Recommender <small>&laquo;Writeup&raquo;</small></h1>
             </div>
 
-            <h2>Overview</h2>
+            <h1>Midterm Report</h1>
+
+            <h2>Part I: Visualization</h2>
+            <img src="../images/mainviz.png" style="width:458px;height:458px;"></img>
+            <img src="../images/tooltip1.png" style="width:470px;height:458px;"></img>
+            <img src="../images/tooltip2.png" style="width:470px;height:458px;"></img>
+
+            <h3>Overview</h3>
             <p>
-                As you build features, document them here!
+                This visualization shows a basketball chart, where each circle represents a player on their strong positions. It gives recommendation on which player to choose for a specific position. When hovering over each circle, i.e. each player, there's a tooltip that tells information about the player, such as their salary, position, projected points, and team name. The color scale also gives information as to which player is projected to earn the most points - darkest representing most points.
+
             </p>
 
+            <h3>Data Used</h3>
             <p>
-                Hopefully you have this page open in both a browser (like Chrome, Firefox, Safari, or Edge) and a text editor (like Sublime or Atom). In the browser, you should see a nicely formatted page (albeit not terribly extravagant) and in the text editor you should see a mix of plain text (like this!) and these weird pointy things called <em>tags</em>, like <code>&lt;div&gt;</code> and <code>&lt;p&gt;</code>.
+                First, data about players and games are scraped from NBA. Data about daily projected points for players are taken from Swish Analytics. These two pieces of data are combined together and stored in Redis.
+             
             </p>
-            
-            <p>
-                Tags denote <em>elements</em>, which are individual components in a web page. They begin with a less than sign, <code>&lt;</code>, and end with a greater than sign, <code>&gt;</code>. This element, for example, is a paragraph. This chunk of text is surrounded by <code>&lt;p&gt;</code> and <code>&lt;/p&gt;</code>. These are <em>start</em> and <em>closing</em> tags respectively. Closing tags are the same as starting tags, except they begin with a forward slash, <code>/</code>. Most tags have both start and closing tags. For proper HTML, you must nest your tags correctly. For example:
+
+            <h3>How to get an optimal lineup</h3>
+            <p> 
+                First, the players are sorted by their projected points from highest to lowest. With the sorted list, the players are filtered by their salary and injury status. In order for them to be in the lineup, they have to have salary less than or equal to 60,000/9 and have no injury. We want to recommend players whose salary is affordable and performs well.
+
+                There are 9 players in a lineup - one in the Center position, and 2 players in other positions each.
+
+                Then, for this visualization, we pick the player with the highest point from each position. Thus, the visualization recommends 5 players for 5 positions.
             </p>
+
             
-            <pre>
-            &lt;em&gt;It is Arthur, &lt;strong&gt;King of the Britons!&lt;/strong&gt;&lt;/em&gt; <!-- Valid HTML! -->
-            &lt;em&gt;It is Arthur, &lt;strong&gt;King&lt;/em&gt; of the Britons!&lt;/strong&gt; <!-- Invalid HTML! -->
-            </pre>
-            
-            <p>
-                Some elements are made up of only one tag, such as <code>&lt;img src="example.gif" alt="Alt text on hover over"&gt;</code>. These are known as <strong>empty</strong> elements and need no closing tag. You may see some people use syntax similar to <code>&lt;img src="thing.jpg" /></code>. <strong>Do not do this.</strong> It is bad and should be avoided.
-            </p>
-                
-            <p>
-                If you've been following along in the source, you may also note that when the tags are displayed in text, we can't use <code>&lt;</code> and <code>&gt;</code>. Instead, we use ampersands to denote special characters, like the less than (&lt;) and greater than (&gt;) signs. They also work for other characters like &yen;, &pound;, &infin;, and &asymp;. Additionally, if your page is encoded in Unicode (specified by <code>&lt;meta charset="utf-8"&gt;</code> in your <code>head</code> element) you can just type the symbols directly: ¥, £, ∞, and ≈. 
-            </p>
-            
-            <h4>Basic sturucture</h4>
-            
-            <p>
-                A basic HTML page looks like this:
-            </p>
-            
+        <!-- In case this is legit
             <pre>
             &lt;html&gt;
                 &lt;head&gt;
@@ -49,141 +47,10 @@
                 &lt;/body&gt;
             &lt;/html&gt;
             </pre>
+        -->
             
-            <p>
-                The entire page is wrapped in <code>&lt;html&gt;</code> tags. At the top of the source code is a <code>&lt;head&gt;</code> element, which contains metadata (the data about data) for the web page along with the page's title. After the head comes <code>&lt;body&gt;</code>, in which all of the page's content goes. Most of the time, you'll be editing content within the page's <code>body</code>.
-            </p>
-            
-            <h4>Basic tags</h4>
-            
-            <p>
-                Let's go over some basic tags. We've already introduced you to the <code>&lt;p&gt;</code> tag, which denotes a paragraph. If you've been reading through the source code for this page, you'll probably have noticed tags that begin with an <code>h</code> and end with a number, like <code>&lt;h1&gt;</code>. These denote <em>headers</em>, go from 1 as the largest header to 6 as the smallest.
-            </p>
-            
-            <p>
-                Now that you have knowledge of a few tags, why don't you make a paragraph with a header below this line:
-            </p>
-            
-            <!-- Insert your paragraph here! By the way, this is a comment. Comments start with <!-- and end with -->
-            
-            <p>
-                Good job! (Well, hopefully you did it. I'm going to congratulate you whether you did or not.)
-            </p>
-            
-            <p>
-                Now let's move on to some more tags. The <code>&lt;div&gt;</code> tag represents a division of the page. These are useful for formatting blocks of the page according to some style. We'll get to CSS and styles in a little bit, don't worry. <code>&lt;span&gt;</code> is similar. <code>&lt;div&gt;</code>s are block level elements and <code>&lt;span&gt;</code>s are inline elements. For more information on the difference, see <a href="http://www.impressivewebs.com/difference-block-inline-css/">this link</a>. Both elements are used to logically group other elements.
-            </p>
-            
-            <p>
-                In the above paragraph, you may have noticed I made a link using the <code>&lt;a&gt;</code> tag. This is the "anchor" tag and takes a <code>href</code> to another web page or file on your disk. Go ahead and make this sentence into a link for any website you want. Great! Now when you click the previous sentence, you should be taken to the website that you chose.
-            </p>
-            
-            <p>
-                There are tons of tags in HTML; so many that we can't go over them here. There's a fairly exhaustive list <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element">here</a>, if you ever need a reference.
-            </p>
-
-            <hr>
-
-            <h2>Attributes and Style</h2>
-            <p>
-                Another important part of HTML is being able to style your page with CSS. CSS (Cascading StyleSheets) is used to apply style to web pages. We won't go over how to create CSS here, but we will go over how to use it. If you want to learn, and it may be helpful for visualization later, visit <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_started">this page.</a> That website, MDN, will be immensely helpful for all things HTML, CSS, and JavaScript related.
-            </p>
-
-            <p>
-                You may have noticed a few tags that have attributes, or <code>something="somethingElse"</code>. For example, <code>&lt;div class="page-header center"&gt;</code> This <code>div</code> element has a class attribute with two values, <code>page-header</code> and <code>center</code>. These are provided to you by <a href="http://getbootstrap.com/">Bootstrap</a>, which we included at the top of the page via a <code>&lt;link&gt;</code> tag. Bootstrap provides a multitude of classes and IDs which allow you to easily style your pages. The HTML stencils we provide you will all already have Bootstrap included. Classes come from CSS, and provide styling to any elements of them class. IDs are similar, except only one element should ever be of a certain ID. (Web browsers won't enforce this and it generally won't matter, but you should generally prefer classes to IDs).
-            </p>
-            
-            <p>
-                Above, the <code>page-header</code> class denotes an element as the header of a page. By applying it to a <code>div</code>, everything within that div will also be recognized as part of the <code>page-header</code> class. The <code>center</code> class centers elements. Now, create a paragraph where its class is equal to <code>lead</code>. This should make the paragraph stand out.
-            </p>
-            
-            <p class=""> <!-- Make this paragraph have the class attribute set to "lead" -->
-                I am a leading paragraph!
-            </p>
-            
-            <p>
-                Good job! You should now see how adding classes to elements can style them. You should always be enclosing your attribute values in quotes, either <code>'</code> or <code>"</code>.
-            </p>
-            
-            <p>
-                There are also some tags that provide styling. These include <code>&lt;mark&gt;</code> which <mark>highlights text</mark>, <code>&lt;u&gt;</code> for <u>underlined text</u>, and <code>&lt;small&gt;</code> for <small>small text</small>. A full list of these would be impossible to provide here. If you ever need to apply a certain style, such as bold or italic, a quick Google search should give you the answer.
-            </p>
-            
-            <p>
-                At this point, you've probably seen a lot of the <code>&lt;code&gt;</code> tag if you've been following along in the source. This makes a portion of text look like source code. You'll likely wind up using this a lot during your writeups. However, it doesn't really work for multiple lines. Look:
-            </p>
-            
-            <p>
-                <code>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempus lectus non dolor malesuada varius. Donec lacinia dapibus erat, ac lacinia lectus aliquet at. Curabitur a sagittis orci. Aliquam sollicitudin efficitur semper. Why are you still reading this? It's not even real Latin...</code>
-            </p>
-            
-            <p>
-                For multi-line code blocks you'll want to use the <code>&lt;pre&gt;</code> tag. Everything within a <code>pre</code> element will be treated as raw text. There is one catch though: unlike normal HTML which ignores whitespace of more than one space, <code>pre</code> will interpret all whitespace literally. For example:
-            </p>
-            
-            <pre>
-                This is somewhat undesireble, isn't it?
-                I mean, look at how indented this is...
-            </pre>
-            
-            <p>
-                Instead, you'll want to do something like this:
-            </p>
-          
-            <pre>
-            Look at me! I'm all the way on the left!
-            Aren't I awesome?
-            </pre>
-
 
             <hr> <!-- In case you haven't noticed, this is a horizontal rule. It makes a horizontal line in the page. -->
-
-            <p>
-                Finally, let's go over greating lists and tables. You may have to create one of each of these.
-            </p>
-            
-            <ul>
-                <li>Lists are created with either the <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> tag. These are for unordered and ordered lists respectively.</li>
-                <li>Each item in the list is denoted by <code>&lt;li&gt;</code> for a list item.</li>
-            </ul>
-            
-            <p>
-                Tables are a little more complicated. Tables begin and end with the <code>&lt;table&gt;</code> tag. If you set the class to <code>table</code> Bootstrap will make your table much prettier than it otherwise will be. Tables can begin with an optional <code>&lt;thead&gt;</code> row for the table's head. Next comes the table's body in <code>&lt;tbody&gt;</code>. Every row is denoted by <code>&lt;tr&gt;</code> and each element is denoted by <code>&lt;td&gt;</code> (or <code>&lt;th&gt;</code> in table headers).
-            </p>
-
-            <table class="table">
-                <thead>
-                    <tr>
-                    <th>Furniture</th>
-                    <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>BESTA TV set</td>
-                        <td>$999.99</td>
-                    </tr>
-                    <tr>
-                        <td>MALM Coffee Table</td>
-                        <td>$29.98</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Adding images</h3>
-                <p>
-                    Although you may not have created a visualization, you should link to an image to learn how to do it.
-                    Use the <code>&lt;img&gt;</code> tag for an image. You'll want to provide a link to the image using <code>src="image location"</code>.
-                    We've given you an image called <code>example.gif</code>. Add it to this page by creating an image tag with <code>example.gif</code> as its <code>src</code>.
-                </p>
-                <p>
-                    Once you've done that, you may notice that the image isn't centered. That's okay! If you scroll up to the top of this page, you'll notice a <code>&lt;style&gt;</code> tag containing a class called <code>img-responsive</code>. Set the image's class to <code>img-responsive</code> and you'll notice that your image becomes centered.
-                </p>
-            
-            <p>
-                We've provided a very brief, but hopefully helpful, introduction to HTML. Hopefully at this point you know enough to at least edit the stencil we give you. If you want to learn more, take <a href="https://developer.mozilla.org/en-US/Learn/HTML">a look at this MDN learning site</a>.
-            </p>
-
         <div class="col-md-2"></div>
     </div> 
 {% endblock %}

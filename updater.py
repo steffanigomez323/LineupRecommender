@@ -19,12 +19,14 @@ class DailyUpdate(object):
     def get_projections(self):
         data = swish_scraper.get_projections()
         projections = swish_scraper.clean_projections(data)
+        print "here"
         players = list()
 
         for projection in projections:
             # rjust to make sure that it is 20 in length
             swish_id = id_manager.get_normalized_swish_id(
                 projection['player_id'])
+            print "if"
             if redis_db.get(swish_id):
                 player_id = redis_db.get(swish_id)
                 name = redis_db.hget(player_id, 'name')
@@ -37,9 +39,12 @@ class DailyUpdate(object):
                 players.append(Player(player_id, name, team, position,
                                projected_points, salary, injury_status))
 
+        print players
         return players
+
 
     def get_stats(self):
         data = nba_scraper.get_player_stats()
         player_stats = nba_scraper.clean_player_stats(data)
+
         print player_stats

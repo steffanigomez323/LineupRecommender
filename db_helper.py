@@ -77,6 +77,22 @@ class RedisHelper(object):
                                        'team_id': team_id,
                                        'position': position})
 
+    def add_nba_stats(self):
+        
+        # game_ID_dict
+        # our game ID = 000001
+
+        # loop through each player ID:
+            # get the nba game IDs associated with each player
+            # if nba ID isn't in dictionary:
+                # dict[nba_game_id] = our game ID
+                # our game ID += 1
+                # playerID || our game ID
+
+            # else:
+                # playerID || our game ID
+
+
     def unify(self, nba_players, swish_players):
         unified_dict = {}
 
