@@ -43,9 +43,9 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/writeup')
+@app.route('/midterm_report')
 def writeup():
-    return render_template('writeup.html')
+    return render_template('midterm_report.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

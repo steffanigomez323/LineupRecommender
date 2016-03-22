@@ -4,22 +4,35 @@
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <div class="page-header center">
-                <h1>Lineup Recommender <small>&laquo;Writeup&raquo;</small></h1>
+                <h1>Lineup Recommender <small>&laquo;Midterm Report&raquo;</small></h1>
             </div>
 
-            <h1>Midterm Report</h1>
             <h2>Part 1: Introduction</h2>
             <p>For our project, we decided to analyze NBA player scores by game in order to find optimal fantasy basketball lineups for website like FanDuel and DraftKings. We want to look at a player's historical game performance and then predict that player's performance in a future game. We can then take these projected scores to recommend the optimal lineup of players for users of the websites mentioned above. Below are some specific questions we're hoping to tackle in the process.</p>
+
             <ul>
                 <li>Can we consistently predict the performance of low variance players? If so, should we tend to lean towards selecting low variance players to become more risk averse in the long run.</li>
                 <li>Can we predict success of low salaried players who have a high variance in their performances? This would help us replace the least useful high salaried players and consequently give us better odds of winning contests because most users tend to choose high salary players.</li>
                 <li>Can we incorporate metrics opposing team, home or away, etc. into our prediction model? If so, can we determine what subset of these metrics provides best results and why?</li>
             </ul>
-            <p>The NBA player data is obtained from stats.nba.com. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers.</p>
-            
+
+            <p>The NBA player data (shown below) is obtained from stats.nba.com. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers.</p>
             <img class="img-responsive" src="../static/images/nba_stats.png"></img>
             
-            <p>We also obtain data from Swish Analytics, which provides player score projections based on their own models. We use this data as an example to compare with the projections we make.</p>
+            <br><br>
+            <p>We also obtain projections and salary data from Swish Analytics (shown below). We currently used this data to calculate the optimal lineup which is what we use in the Visualization section below. We are also using this data as an example to compare with the projections we make in the ML section below.</p>
+            <img class="img-responsive" src="../static/images/swish_data.png"></img>
+            <br><br>
+
+            <h3>Useful Features</h3>
+            We've built the following small modules to make our lives easier for the rest of the semester:
+            <ul>
+                <li>Reusable populate db module that will flush the redis db and repopulate it with combined data from swish and nba after cleaning them. The module is general enough to adapt to changes in the data.</li>
+                <li>Reusable updater module that will get stats at any given point of time from both nba and swish and update the db to keep up with daily changes.</li>
+                <li>Testing module that has unittests for different functionalities provided by Flask, Redis, Swish Analytics and NBA.</li>
+                <li>Reusable scraping module that uses beautiful soup and requests to get data from swish and any subdomain of stats.nba.com with a data endpoint.</li>
+                <li>Finally, we've deployed the app to heroku. So, we don't need to use WordPress! :)</li>
+            </ul>
 
             <h2>Part 2: Visualization</h2>
             <img class="img-responsive" src="../static/images/mainviz.png"></img>
@@ -49,15 +62,27 @@
 
 
             <h2>Part 3: Machine Learning</h2>
-            <p>Once we have our NBA player data, we can apply machine learning to predict projected player scores. We decided to use logistic regression as our learning algorithm.</p>
-            <p>We transform our player data from their goals, freethrows, assists, etc. into a single FanDuel score. Then, we associate each player's FanDuel score for a game with the average FanDuel score of their prior games</p>
+            <p>Once we have our NBA player data, we can apply machine learning to predict projected player scores. We decided to use logistic regression to make the projections.</p>
+            <p>We transform our player data from their goals, freethrows, assists, etc. into a single FanDuel score. Then, we associate each player's FanDuel score for a game with the average FanDuel score of their prior games.</p>
 
-            <h2>Discussion</h2>
-            <p></p>
+
+            <h2>Part 4: Discussion</h2>
+            <ul>
+                <li>What is hardest part of the project that you've encountered so far?
+                <p>
+                    
+                </p>
+                </li>
+                <li>What are your initial insights?</li>
+                <li>Are there any concrete results you can show at this point? If not, why not?</li>
+                <li>Going forward, what are the current biggest problems you're facing?</li>
+                <li>Do you think you are on track with your project? If not, what parts do you need to dedicate more time to?</li>
+                <li>Given your initial exploration of the data, is it worth proceeding with your project?</li>
+            </ul>
 
             
-        <!-- In case this is legit
-            <pre>
+        <!-- In case this is legit -->
+<!--             <pre>
             &lt;html&gt;
                 &lt;head&gt;
                     &lt;title&gt;Title goes here&lt;/title&gt;
@@ -66,8 +91,8 @@
                     &lt;p&gt;This is a basic web page!&lt;/p&gt;
                 &lt;/body&gt;
             &lt;/html&gt;
-            </pre>
-        -->
+            </pre> -->
+       
             
 
             <hr> <!-- In case you haven't noticed, this is a horizontal rule. It makes a horizontal line in the page. -->
