@@ -102,12 +102,12 @@ class NBAScraper(object):
 
         return nba_dict
 
-    def get_player_stats(self):
+    def get_player_stats(self, season='2015-16'):
         modifier = 'leaguegamelog'
         params = {'Direction': 'DESC',
                   'LeagueID': '00',
                   'PlayerOrTeam': 'P',
-                  'Season': '2015-16',
+                  'Season': season,
                   'SeasonType': 'Regular Season',
                   'Sorter': 'PTS'}
 

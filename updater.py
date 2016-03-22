@@ -50,10 +50,20 @@ class DailyUpdate(object):
         return player_stats
 
     def get_scores(self):
-        data = nba_scraper.get_player_stats()
-        player_stats = nba_scraper.clean_player_stats(data)
+        seasons = ['2015-16', '2014-15', '2013-14', '2012-13']
 
-        raw_scores = fanduel_scorer.score_all_players(player_stats)
+        raw_scores = {}
+        for season in seasons:
+            data = nba_scraper.get_player_stats(season)
+            player_stats = nba_scraper.clean_player_stats(data)
+
+            season_scores = fanduel_scorer.score_all_players(player_stats)
+            for player, info in season_scores.items():
+                if player in raw_scores:
+                    raw_scores[player]['GAME_SCORES'].extend(info['GAME_SCORES'])
+                else:
+                    raw_scores[player] = info
+
         # convert to players ids mapped to a sorted list of scores, by ascending dates
         ordered_scores = {
             info['PLAYER_NAME']:
@@ -65,3 +75,6 @@ class DailyUpdate(object):
             for k, games in ordered_scores.items()}
         
         return player_scores
+
+dlyup = DailyUpdate()
+print dlyup.get_scores()
