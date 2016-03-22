@@ -9,4 +9,6 @@ dependencies:
 - lxml
 - ipython
 - pandas
+- numpy
+- scikit-learn
 - pip

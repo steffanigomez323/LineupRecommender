@@ -73,7 +73,7 @@ class DailyUpdate(object):
             k:
                 [g['SCORE'] for g in games]
             for k, games in ordered_scores.items()}
-        
+
         return player_scores
 
 dlyup = DailyUpdate()
