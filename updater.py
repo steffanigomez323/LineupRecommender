@@ -75,6 +75,3 @@ class DailyUpdate(object):
             for k, games in ordered_scores.items()}
 
         return player_scores
-
-dlyup = DailyUpdate()
-print dlyup.get_scores()
