@@ -13,6 +13,7 @@ from models import Player
 from app import swish_scraper
 from app import nba_scraper
 from app import id_manager
+from app import fanduel_scorer
 
 
 class DailyUpdate(object):
@@ -42,4 +43,25 @@ class DailyUpdate(object):
     def get_stats(self):
         data = nba_scraper.get_player_stats()
         player_stats = nba_scraper.clean_player_stats(data)
-        print player_stats
+
+        # TODO: insert into redis db
+        #print fanduel_scorer.score_all_players(player_stats)
+        
+        return player_stats
+
+    def get_scores(self):
+        data = nba_scraper.get_player_stats()
+        player_stats = nba_scraper.clean_player_stats(data)
+
+        raw_scores = fanduel_scorer.score_all_players(player_stats)
+        # convert to players ids mapped to a sorted list of scores, by ascending dates
+        ordered_scores = {
+            info['PLAYER_NAME']:
+                sorted(info['GAME_SCORES'], key=lambda g: g['DATE'])
+            for k, info in raw_scores.items()}
+        player_scores = {
+            k:
+                [g['SCORE'] for g in games]
+            for k, games in ordered_scores.items()}
+        
+        return player_scores
