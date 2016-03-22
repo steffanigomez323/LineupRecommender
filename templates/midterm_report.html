@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+    <link href="static/css/midterm_report_style.css" rel="stylesheet" media="screen">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
@@ -17,12 +18,12 @@
             </ul>
 
             <p>The NBA player data (shown below) is obtained from stats.nba.com. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers.</p>
-            <img class="img-responsive" src="../static/images/nba_stats.png"></img>
+            <img class="img-responsive" src="static/images/nba_stats.png"></img>
             
             <br><br>
             <p>We also obtain projections and salary data from Swish Analytics (shown below). We currently used this data to calculate the optimal lineup which is what we use in the Visualization section below. We are also using this data as an example to compare with the projections we make in the ML section below.</p>
-            <img class="img-responsive" src="../static/images/swish_data.png"></img>
-            <br><br>
+            <img class="img-responsive" src="static/images/swish_data.png"></img>
+            <br>
 
             <h3>Useful Features</h3>
             We've built the following small modules to make our lives easier for the rest of the semester:
@@ -33,6 +34,7 @@
                 <li>Reusable scraping module that uses beautiful soup and requests to get data from swish and any subdomain of stats.nba.com with a data endpoint.</li>
                 <li>Finally, we've deployed the app to heroku. So, we don't need to use WordPress! :)</li>
             </ul>
+            <hr>
 
             <h2>Part 2: Visualization</h2>
             <script src="../static/viz.js"></script>
@@ -49,46 +51,55 @@
               <div id="PF">
               </div>
             </div>
+            <img class="img-responsive" src="static/images/mainviz.png"></img>
+            <img class="img-responsive" src="static/images/tooltip1.png"></img>
+            <img class="img-responsive" src="static/images/tooltip2.png"></img>
 
-            <h3>Overview</h3>
             <p>
                 This visualization shows a basketball chart, where each circle represents a player on their strong positions. It gives recommendation on which player to choose for a specific position. When hovering over each circle, i.e. each player, there's a tooltip that tells information about the player, such as their salary, position, projected points, and team name. The color scale also gives information as to which player is projected to earn the most points - darkest representing most points.
 
             </p>
-
-            <h3>Data Used</h3>
-            <p>
-                First, data about players and games are scraped from NBA. Data about daily projected points for players are taken from Swish Analytics. These two pieces of data are combined together and stored in Redis.
-             
-            </p>
-
             <h3>How to get an optimal lineup</h3>
             <p> 
+                First, data about players and games are scraped from NBA. Data about daily projected points for players are taken from Swish Analytics. These two pieces of data are combined together and stored in Redis.
+            </p>
+            <p>
                 First, the players are sorted by their projected points from highest to lowest. With the sorted list, the players are filtered by their salary and injury status. In order for them to be in the lineup, they have to have salary less than or equal to 60,000/9 and have no injury. We want to recommend players whose salary is affordable and performs well.
-
+            </p>
+            <p>
                 There are 9 players in a lineup - one in the Center position, and 2 players in other positions each.
-
+            </p>
+            <p>
                 Then, for this visualization, we pick the player with the highest point from each position. Thus, the visualization recommends 5 players for 5 positions.
             </p>
-
+            
+            <hr>
 
             <h2>Part 3: Machine Learning</h2>
             <p>Once we have our NBA player data, we can apply machine learning to predict projected player scores. We decided to use logistic regression to make the projections.</p>
             <p>We transform our player data from their goals, freethrows, assists, etc. into a single FanDuel score. Then, we associate each player's FanDuel score for a game with the average FanDuel score of their prior games.</p>
 
-
+            <hr>
             <h2>Part 4: Discussion</h2>
             <ul>
-                <li>What is hardest part of the project that you've encountered so far?
-                <p>
-                    
-                </p>
+                <li><b>What is hardest part of the project that you've encountered so far?</b>
+                    <p>For fantasy scoring, it is not possible to rely on just one source of data to get all information because NBA does not provide fantasy salaries and the fantasy websites do not provide historical data. So, we had to combine data from two sources - NBA and Swish Analytics. We need this data to be updated every day, so we needed to build a module that can just be run each day to update the data. But, the module has to take into account the possibilities of data changing and inconsistent data. Building this module was definitely the hardest part of the project so far.</p>
                 </li>
-                <li>What are your initial insights?</li>
-                <li>Are there any concrete results you can show at this point? If not, why not?</li>
-                <li>Going forward, what are the current biggest problems you're facing?</li>
-                <li>Do you think you are on track with your project? If not, what parts do you need to dedicate more time to?</li>
-                <li>Given your initial exploration of the data, is it worth proceeding with your project?</li>
+                <li><b>What are your initial insights?</b>
+                    <p>We're able to come up with reasonable projections that are quite comparable to those of Swish Analytics. We haven't been able to evaluate how good our results were against real data yet but we'll be doing that as the next step.</p>
+                </li>
+                <li><b>Are there any concrete results you can show at this point? If not, why not?</b>
+                    <p>We've been able to get the optimal lineup given projection data and we've been able to project fantasy scores based on historical data.</p>
+                </li>
+                <li><b>Going forward, what are the current biggest problems you're facing?</b>
+                    <p>One problem we're facing is trying to figure out which ML algorithms or what kind of pure stats could help us improve our predictions. Other than that, we're not facing any specific problems.</p>
+                </li>
+                <li><b>Do you think you are on track with your project? If not, what parts do you need to dedicate more time to?</b>
+                    <p>We think we're on track especially considering the fact that we'll be able to dedicate a lot more time to the project after Spring Break because the workload from the class reduces.</p>
+                </li>
+                <li><b>Given your initial exploration of the data, is it worth proceeding with your project?</b>
+                    <p>Definitely! The initial exploration has proven to be very exciting. Especially the insight that last 7 games is a good indicator of performance. We're excited to see where else we can go with this project.
+                </li>
             </ul>
 
             

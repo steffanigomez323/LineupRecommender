@@ -37,7 +37,6 @@ id_manager = IDManager()
 # scorers
 fanduel_scorer = FanDuelScorer()
 
-
 @app.route("/")
 def home():
     return render_template('index.html')
