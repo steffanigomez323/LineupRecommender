@@ -8,8 +8,18 @@
             </div>
 
             <h1>Midterm Report</h1>
+            <h2>Part 1: Introduction</h2>
+            <p>For our project, we decided to analyze NBA player scores per game in order to find optimal fantasy basketball lineups. We want to look at a player's historical game performance and then predict the performance of that player in a future game. We can then take these projected scores to recommend the optimal lineup of players to use for sites like FanDuel and DraftKings. Below are some specific questions we're hoping to tackle in the process.</p>
+            <ul>
+                <li>Can we consistently predict the performance of low variance players? If so, we should tend to lean towards selecting low variance players.
+                <li>Can we predict success of low salary players who have a high variance in their performances? This would help us replace the least useful high salary players and consequently give us better odds of winning contests because most users tend to choose high salary players.
+                <li>Can we incorporate metrics like the team the player is playing against, whether they are playing at home or away, etc. into our prediction model? If so, can we determine what subset of these metrics provides best results and why?
+            </ul>
+            <p>The NBA player data is obtained from the NBA website. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point goals, freethrows, steals, blocks, rebounds, assists, and turnovers.</p>
+            
+            <p>We also obtain data from Swish Analytics, which provides player score projections based on their own models. We use this data as an example to compare with the projections we make.</p>
 
-            <h2>Part I: Visualization</h2>
+            <h2>Part 2: Visualization</h2>
             <img src="../images/mainviz.png" style="width:458px;height:458px;"></img>
             <img src="../images/tooltip1.png" style="width:470px;height:458px;"></img>
             <img src="../images/tooltip2.png" style="width:470px;height:458px;"></img>
@@ -34,6 +44,14 @@
 
                 Then, for this visualization, we pick the player with the highest point from each position. Thus, the visualization recommends 5 players for 5 positions.
             </p>
+
+
+            <h2>Part 3: Machine Learning</h2>
+            <p>Once we have our NBA player data, we can apply machine learning to predict projected player scores. We decided to use logistic regression as our learning algorithm.</p>
+            <p>We transform our player data from their goals, freethrows, assists, etc. into a single FanDuel score. Then, we associate each player's FanDuel score for a game with the average FanDuel score of their prior games</p>
+
+            <h2>Discussion</h2>
+            <p></p>
 
             
         <!-- In case this is legit

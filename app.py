@@ -13,6 +13,7 @@ from redis import Redis
 from scrapers import SwishScraper
 from scrapers import NBAScraper
 from id_manager import IDManager
+from scorer import FanDuelScorer
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -32,6 +33,9 @@ redis_db = Redis(host=app.config['REDIS_HOST'],
 swish_scraper = SwishScraper()
 nba_scraper = NBAScraper()
 id_manager = IDManager()
+
+# scorers
+fanduel_scorer = FanDuelScorer()
 
 
 @app.route("/")
