@@ -1,3 +1,57 @@
 .img-responsive {
     margin: 0 auto;
 }
+
+#positionchart {
+      background-image: url('http://sports.cbsimg.net/images/collegebasketball/gamecenter/shotchart/bg_court_300x252.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      width: 720px;
+      height: 600px;
+    }
+
+    #PG {
+      left: 47%;
+      top: 66%;
+      position: relative;
+    }
+
+    #SG {
+      left: 75%;
+      top: 42%;
+      position: relative;
+    }
+
+    #C {
+      left: 31%;
+      top: 10%;
+      position: relative;
+    }
+
+    #PF {
+      left: 62%;
+      top: -23%;
+      position: relative;
+    }
+
+    #SF {
+      left: 22%;
+      top: -16%;
+      position: relative;
+    }
+
+    .d3-tip {
+      line-height: 1;
+      width: 150px;
+      height: 120px;
+      line-height: 1;
+      font: sans-serif;
+      font-size: 13px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      border-radius: 2px;
+    }
+    svg {
+    	cursor: default;
+    }
