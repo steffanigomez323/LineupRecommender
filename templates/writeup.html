@@ -20,28 +20,26 @@
             <p>We also obtain data from Swish Analytics, which provides player score projections based on their own models. We use this data as an example to compare with the projections we make.</p>
 
             <h2>Part 2: Visualization</h2>
-            <img src="../images/mainviz.png" style="width:458px;height:458px;"></img>
-            <img src="../images/tooltip1.png" style="width:470px;height:458px;"></img>
-            <img src="../images/tooltip2.png" style="width:470px;height:458px;"></img>
+            <img src="../static/images/mainviz.png" style="width:458px;height:458px;"></img>
+            <img src="../static/images/tooltip1.png" style="width:470px;height:458px;"></img>
+            <img src="../static/images/tooltip2.png" style="width:470px;height:458px;"></img>
 
             <h3>Overview</h3>
             <p>
-                This visualization shows a basketball chart, where each circle represents a player on their strong positions. It gives recommendation on which player to choose for a specific position. When hovering over each circle, i.e. each player, there's a tooltip that tells information about the player, such as their salary, position, projected points, and team name. The color scale also gives information as to which player is projected to earn the most points - darkest representing most points.
-
+                This visualization shows a basketball chart, where each circle represents a player on their strong positions. It gives recommendation on which player to choose for a specific position. When hovering over each circle, i.e. each player, there's a tooltip that tells information about the player, such as their salary, position, projected points, and team name. The color scale also gives information as to which player is projected to earn the most points - darkest representing highest points.
             </p>
 
-            <h3>Data Used</h3>
-            <p>
-                First, data about players and games are scraped from NBA. Data about daily projected points for players are taken from Swish Analytics. These two pieces of data are combined together and stored in Redis.
-             
-            </p>
-
-            <h3>How to get an optimal lineup</h3>
+            <h3>How we get an optimal lineup</h3>
             <p> 
-                First, the players are sorted by their projected points from highest to lowest. With the sorted list, the players are filtered by their salary and injury status. In order for them to be in the lineup, they have to have salary less than or equal to 60,000/9 and have no injury. We want to recommend players whose salary is affordable and performs well.
-
+                For this visualization, the data used is from Swish Analytics. Since Swish Analytics updates their projections everyday, our database also updates the prejected scores and our goal is to also update our lineup visualization.
+            </p>
+            <p>
+                To make a simple optimal lineup, first, the players are sorted by their projected points from highest to lowest. With the sorted list, the players are filtered by their salary and injury status. In order for them to be in the lineup, they have to have salary less than or equal to 60,000/9 and have no injury. We want to recommend players whose salary is affordable and performs well.
+            </p>
+            <p>
                 There are 9 players in a lineup - one in the Center position, and 2 players in other positions each.
-
+            </p>
+            <p>
                 Then, for this visualization, we pick the player with the highest point from each position. Thus, the visualization recommends 5 players for 5 positions.
             </p>
 
