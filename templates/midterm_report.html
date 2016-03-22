@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+    <link href="static/css/midterm_report_style.css" rel="stylesheet" media="screen">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
@@ -17,11 +18,11 @@
             </ul>
 
             <p>The NBA player data (shown below) is obtained from stats.nba.com. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers.</p>
-            <img class="img-responsive" src="../static/images/nba_stats.png"></img>
+            <img class="img-responsive" src="static/images/nba_stats.png"></img>
             
             <br><br>
             <p>We also obtain projections and salary data from Swish Analytics (shown below). We currently used this data to calculate the optimal lineup which is what we use in the Visualization section below. We are also using this data as an example to compare with the projections we make in the ML section below.</p>
-            <img class="img-responsive" src="../static/images/swish_data.png"></img>
+            <img class="img-responsive" src="static/images/swish_data.png"></img>
             <br>
 
             <h3>Useful Features</h3>
@@ -36,9 +37,9 @@
             <hr>
 
             <h2>Part 2: Visualization</h2>
-            <img class="img-responsive" src="../static/images/mainviz.png"></img>
-            <img class="img-responsive" src="../static/images/tooltip1.png"></img>
-            <img class="img-responsive" src="../static/images/tooltip2.png"></img>
+            <img class="img-responsive" src="static/images/mainviz.png"></img>
+            <img class="img-responsive" src="static/images/tooltip1.png"></img>
+            <img class="img-responsive" src="static/images/tooltip2.png"></img>
 
             <p>
                 This visualization shows a basketball chart, where each circle represents a player on their strong positions. It gives recommendation on which player to choose for a specific position. When hovering over each circle, i.e. each player, there's a tooltip that tells information about the player, such as their salary, position, projected points, and team name. The color scale also gives information as to which player is projected to earn the most points - darkest representing most points.
