@@ -57,9 +57,9 @@ class SimpleProjector(object):
 
     def get_projection(self, scores, averages, last_n):
         classifier = LogisticRegression()
-        print "#### SCORES"
-        print scores
-        print "#### AVERAGES"
-        print averages
+        #print "#### SCORES"
+        #print scores
+        #print "#### AVERAGES"
+        #print averages
         classifier.fit(numpy.array([numpy.array([average]) for average in averages]), numpy.array([int(score) for score in scores]))
         return classifier.predict(self.avg(scores[::-last_n]))
