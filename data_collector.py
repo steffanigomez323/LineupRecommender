@@ -65,10 +65,34 @@ class SwishScraper(object):
         return data
 
 
-class NBAScraper(object):
+class NBAStattleShip(object):
+    headers = {'content-type': 'application/json',
+               'authorization': 'Token token=067adb3fdbd52c6a8c12331152bf262f',
+               'accept': 'application/vnd.stattleship.com; version=1'}
 
     def __init__(self):
-        self.nba_request = CustomRequest("http://stats.nba.com/stats/")
+        self.nba_request = \
+            CustomRequest("https://www.stattleship.com/basketball/nba/",
+                          self.headers)
+
+    def get_players(self):
+        modifier = 'players'
+
+        result = self.nba_request.get_request(modifier)
+
+        return result.json()
+
+    def get_game_logs(self):
+        
+
+
+class NBAScraper(object):
+    headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 \
+               (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
+
+    def __init__(self):
+        self.nba_request = CustomRequest("http://stats.nba.com/stats/",
+                                         self.headers)
 
     def get_players(self):
         modifier = 'commonallplayers'

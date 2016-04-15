@@ -14,6 +14,7 @@ from scrapers import SwishScraper
 from scrapers import NBAScraper
 from id_manager import IDManager
 from scorer import FanDuelScorer
+from stattleship import NBAStattleShip
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -32,7 +33,12 @@ redis_db = Redis(host=app.config['REDIS_HOST'],
 # scrapers
 swish_scraper = SwishScraper()
 nba_scraper = NBAScraper()
+
+# id manager
 id_manager = IDManager()
+
+# stattleship
+nba_stattleship = NBAStattleShip()
 
 # scorers
 fanduel_scorer = FanDuelScorer()
@@ -43,8 +49,12 @@ def home():
 
 
 @app.route('/midterm_report')
-def writeup():
+def midterm_report():
     return render_template('midterm_report.html')
+
+@app.route('/blog_post_1')
+def blog_post_1():
+    return render_template('blog_post_1.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

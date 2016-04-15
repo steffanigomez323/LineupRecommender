@@ -15,12 +15,13 @@ class BaseConfig(object):
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
-    REDIS_HOST = 'aws-us-east-1-portal.4.dblayer.com'
-    REDIS_PASSWORD = 'BWJXVIZXCPLORQLA'
-    REDIS_PORT = 11333
+    REDIS_HOST = 'aws-us-east-1-portal.9.dblayer.com'
+    REDIS_PASSWORD = 'IVXUMLRMMGGGXNDC'
+    REDIS_PORT = 10876
+
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
-    REDIS_HOST = 'aws-us-east-1-portal.4.dblayer.com'
-    REDIS_PASSWORD = 'BWJXVIZXCPLORQLA'
-    REDIS_PORT = 11333
+    REDIS_HOST = 'aws-us-east-1-portal.9.dblayer.com'
+    REDIS_PASSWORD = 'IVXUMLRMMGGGXNDC'
+    REDIS_PORT = 10876
