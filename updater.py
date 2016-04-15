@@ -48,9 +48,6 @@ class DailyUpdate(object):
         data = nba_scraper.get_player_stats()
         player_stats = nba_scraper.clean_player_stats(data)
 
-<<<<<<< HEAD
-        print player_stats
-=======
         # TODO: insert into redis db
         #print fanduel_scorer.score_all_players(player_stats)
         
@@ -82,4 +79,3 @@ class DailyUpdate(object):
             for k, games in ordered_scores.items()}
 
         return player_scores
->>>>>>> 6aef1f7567acc7b9bbc3c986961d951b40f43055
