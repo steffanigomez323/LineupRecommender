@@ -5,7 +5,7 @@ Spring 2016
 
 Vann, Steffani, JJ, Chaitu
 
-Scrapers
+Requests Module
 """
 
 import requests

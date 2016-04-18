@@ -5,9 +5,9 @@ Spring 2016
 
 Vann, Steffani, JJ, Chaitu
 
-Simple Optimal Lineup Recommender
+Lineup Optimizer
 """
-import random
+
 
 class SimpleRecommender(object):
     salary_cap = 60000
@@ -19,7 +19,7 @@ class SimpleRecommender(object):
     def print_all_players(self):
         for player in self.players:
             print player
-    
+
     """
     This is a method returns a simple, optimal lineup based on the salaries from swish analytics.
     """
@@ -32,7 +32,7 @@ class SimpleRecommender(object):
         sf = 0
         pf = 0
         c = 0
-        
+
         playersSorted = sorted(self.players, key=lambda x: float(x.projected_points), reverse=True)
 
         for p in playersSorted:
