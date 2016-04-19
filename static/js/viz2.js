@@ -1,7 +1,6 @@
 d3.csv("static/data/lineup.csv", function(data) {
     
     data.forEach(function(d) {
-        console.log(d);
         
         var table = document.getElementById("viz").getElementsByTagName('tbody')[0];
         
