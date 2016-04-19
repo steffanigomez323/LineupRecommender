@@ -5,11 +5,11 @@ Spring 2016
 
 Vann, Steffani, JJ, Chaitu
 
-Scrapers
+Data Collector
 """
 
 import urllib
-from custom_request import CustomRequest
+from requestor import CustomRequest
 import json
 import re
 from bs4 import BeautifulSoup
@@ -75,15 +75,143 @@ class NBAStattleShip(object):
             CustomRequest("https://www.stattleship.com/basketball/nba/",
                           self.headers)
 
-    def get_players(self):
+    def get_player_data(self):
         modifier = 'players'
 
-        result = self.nba_request.get_request(modifier)
+        response = self.nba_request.get_request(modifier)
+        data = response.json()['players']
 
-        return result.json()
+        while 'next' in response.links:
+            modifier = re.match(self.nba_request.base_url + '(.*)',
+                                response.links['next']['url']).group(1)
+            response = self.nba_request.get_request(modifier)
+            data.extend(response.json()['players'])
 
-    def get_game_logs(self):
-        
+        return data
+
+    def clean_player_data(self, data, fields=['slug',
+                                              'active',
+                                              'name']):
+        for entry in data:
+            for key in deepcopy(entry):
+                if key not in fields:
+                    del(entry[key])
+
+        return data
+
+    def get_player_stats_data(self, player_id, fields={
+                             'basketball_defensive_stat':
+                             ['blocks', 'steals'],
+                             'basketball_offensive_stat':
+                             ['points', 'turnovers'],
+                             'basketball_player_stat':
+                             ['plus_minus', 'time_played_total'],
+                             'basketball_rebounding_stat':
+                             ['rebounds_total']}):
+        # STATS #
+        # defensive - basketball_defensive_stat #
+        # - blocks
+        # - steals
+        # offensive - basketball_offensive_stat #
+        # - assists
+        # - field_goals_attempted
+        # - field_goals_made
+        # - free_throws_attempted
+        # - free_throws_made
+        # - points
+        # - three_pointers_attempted
+        # - three_pointers_made
+        # - turnovers
+        # player - basketball_player_stat #
+        # - disqualifications
+        # - personal_fouls
+        # - plus_minus
+        # - points
+        # - technical_fouls
+        # - time_played_total
+        # rebounding - basketball_rebounding_stat #
+        # - rebounds_defensive
+        # - rebounds_offensive
+        # - rebounds_total
+        data = dict()
+
+        for stat_type, stat_list in fields.iteritems():
+            for stat_name in stat_list:
+                modifier = 'stats?type=' + stat_type + \
+                           '&stat=' + stat_name + \
+                           '&player_id=' + player_id + \
+                           '&interval_type=regularseason'
+
+                response = self.nba_request.get_request(modifier)
+
+                data[stat_name] = list()
+                for game in response.json()['stats']:
+                    data[stat_name].append(game['stat'])
+
+                while 'next' in response.links:
+                    modifier = re.match(self.nba_request.base_url + '(.*)',
+                                        response.links['next']['url']).group(1)
+                    response = self.nba_request.get_request(modifier)
+                    for game in response.json()['stats']:
+                        data[stat_name].append(game['stat'])
+
+        return data
+
+    def clean_player_stats_data(self, data):
+        time_played = deepcopy(data['time_played_total'])
+
+        for i in range(len(time_played)):
+            if time_played[i] is None:
+                for stat in data.iterkeys():
+                    del data[stat][i]
+
+        for stat_name, per_game_list in data.iteritems():
+            for i, stat in enumerate(per_game_list):
+                if stat is None:
+                    per_game_list[i] = 0
+
+        return data
+
+    def get_game_log_data(self, player_id):
+        modifier = 'game_logs?player_id=' + \
+                   player_id + \
+                   '&interval_type=regularseason'
+
+        response = self.nba_request.get_request(modifier)
+        data = {"game_logs": response.json()['game_logs'],
+                "games": response.json()['games']}
+
+        while 'next' in response.links:
+            modifier = re.match(self.nba_request.base_url + '(.*)',
+                                response.links['next']['url']).group(1)
+            response = self.nba_request.get_request(modifier)
+            data['game_logs'].extend(response.json()['game_logs'])
+            data['games'].extend(response.json()['games'])
+
+        return data
+
+    def clean_game_log_data(self, data, fields={"game_logs": ['assists',
+                                                              'field_goals_made',
+                                                              'free_throws_made',
+                                                              'turnovers',
+                                                              'steals',
+                                                              'blocks',
+                                                              'rebounds_total',
+                                                              'team_id']}):
+        for game_log, game in zip(data['game_logs'], data['games']):
+            game_log['started_at'] = game['started_at']
+            if game_log['team_id'] == game['home_team_id']:
+                game_log['played_at_home'] = True
+            else:
+                game_log['played_at_home'] = False
+
+            for key in deepcopy(game_log):
+                if key not in fields['game_logs']:
+                    del(game_log[key])
+
+        del data['games']
+
+        return data
 
 
 class NBAScraper(object):

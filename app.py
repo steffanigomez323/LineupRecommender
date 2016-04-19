@@ -10,11 +10,11 @@ Main
 
 from flask import Flask, render_template
 from redis import Redis
-from scrapers import SwishScraper
-from scrapers import NBAScraper
+from data_collector import SwishScraper
+from data_collector import NBAScraper
+from data_collector import NBAStattleShip
 from id_manager import IDManager
 from scorer import FanDuelScorer
-from stattleship import NBAStattleShip
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -43,6 +43,7 @@ nba_stattleship = NBAStattleShip()
 # scorers
 fanduel_scorer = FanDuelScorer()
 
+
 @app.route("/")
 def home():
     return render_template('index.html')
@@ -51,6 +52,7 @@ def home():
 @app.route('/midterm_report')
 def midterm_report():
     return render_template('midterm_report.html')
+
 
 @app.route('/blog_post_1')
 def blog_post_1():
