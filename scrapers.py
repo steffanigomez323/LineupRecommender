@@ -52,9 +52,12 @@ class SwishScraper(object):
         projections_data = re.search(
             'self.model.masterPlayerArray = (....*?);', data).group(1)
         projections_json = json.loads(projections_data)
+
         return projections_json
 
-    def clean_projections(self, data, fields=['player_id',
+    def clean_projections(self, data, fields=['player_id', 
+                                                'player_name',
+                                                'fd_pos',
                                               'proj_fantasy_pts_fd',
                                               'fd_salary',
                                               'injury_status']):
@@ -62,6 +65,10 @@ class SwishScraper(object):
             for key in deepcopy(entry):
                 if key not in fields:
                     del(entry[key])
+
+        with open('projections.json', 'w') as f:
+            json.dump(data, f)
+
         return data
 
 
