@@ -60,50 +60,38 @@
             
             <hr>
 
-            <h2>Part 4: Machine Learning</h2>
-            <p>
-                Once we have our NBA player data, we can apply machine learning to predict projected player scores. We decided to use logistic regression to make the projections.
-            </p>
-            <p>
-                We transform our player data from their goals, freethrows, assists, etc. into a single FanDuel score. Then, we associate each player's FanDuel score for a game with the average FanDuel score of the prior <i>n</i> games. We create an aggregation of these scores-to-averages for all games a player has played.
-            </p>
-            <p>
-                In order to find the most optimal <i>n</i> prior games to compute the scores-to-averages aggregation, we looked for an <i>n</i> that maximized its respective aggregation's R<sup>2</sup> score. To do this, we first gathered the scores-to-averages aggregations from <i>n=1</i> prior games to <i>n=40</i> prior games for all players. Then we calculated the R<sup>2</sup> score for all of these scores-to-averages aggregations, and picked the <i>n</i> aggregation per player that had the maximal R<sup>2</sup> score. Finally, out of the best <i>n</i> values per player, we found the most common <i>n</i> value that maximized a player aggregation's R<sup>2</sup> score. Interestingly, the most common <i>n</i> value turned out to be 7. This suggests that we only need to look at the 7 prior games for a player to make an accurate projection of their performance.
-            </p>
-            <p>
-                Finally, we applied our ML algorithm to make predictions. For a given player, we take their historic game scores and perform a scores-to-averages aggregation; this aggregation looks at the averaged 7 prior game scores per game score (based on our findings above). We give this to a logistic regression as training data, with scores as the training features and averages as training labels.
-            </p>
-            <p>
-                With this trained logistic regression for a player, we can then give it the player's most recent 7 games, and predict their next game's FanDuel score. We also compared this to Swish Analytics' FanDuel projection for that player, and found similar results. Below are sample projections and actual scores for games played on 3/22/2016:
-            </p>
+            <h2>Part 4: Projection Performance</h2>
+            <p>When we begin generating player projections, we also need metrics to gauge how well our projector compares to the actual player scores. In order to do this, we wrote an evaluator module to calculate statistics on projected vs. actual scores.</p>
+            <p>For an individual player's projected score, we decided to look at absolute error and percent error. For an overall analysis of projections, we decided to measure mean squared error (using sklearn.metrics) and mean signed deviation. We chose mean squared error to measure overall error of projections, and mean signed deviation to look at projection bias.</p>
+            <p>Here is an analysis of our projection sample from our midterm report:</p>
             <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
                 <tr>
                     <td>Player Name</td>
                     <td>Logistic Regression</td>
-                    <td>Swish Analytics</td>
-                    <td>Actual Score</td>
+                    <td>Actual FanDuel Score</td>
+                    <td>Absolute Error</td>
                 </tr>
                 <tr>
                     <td>Jrue Holiday</td>
                     <td>42</td>
-                    <td>52.24</td>
                     <td>47.5</td>
+                    <td>5.5</td>
                 </tr>
                 <tr>
                     <td>Goran Dragic</td>
                     <td>28</td>
-                    <td>32.34</td>
                     <td>37.1</td>
+                    <td>9.1</td>
                 </tr>
                 <tr>
                     <td>Dion Waiters</td>
                     <td>23</td>
-                    <td>11.76</td>
                     <td>28</td>
+                    <td>5</td>
                 </tr>
             </table>
             <p>
-                We chose these examples to show players with high, medium, and low projection scores.
+                The overall mean squared error was 46.02, and the mean signed deviation is -6.53.
             </p>
 
             
