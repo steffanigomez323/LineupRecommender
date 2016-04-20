@@ -9,7 +9,7 @@
             </div>
 
             <h2>Part 1: Introduction</h2>
-            <p>For our project, we decided to analyze NBA player scores by game in order to find optimal fantasy basketball lineups for website like FanDuel and DraftKings. We want to look at a player's historical game performance and then predict that player's performance in a future game. We can then take these projected scores to recommend the optimal lineup of players for users of the websites mentioned above. For a more in-depth introduction, please read our <a href="midterm_report.html">midterm report</a></p>
+            <p>For our project, we decided to analyze NBA player scores by game in order to find optimal fantasy basketball lineups for website like FanDuel and DraftKings. We want to look at a player's historical game performance and then predict that player's performance in a future game. We can then take these projected scores to recommend the optimal lineup of players for users of the websites mentioned above. For a more in-depth introduction, please read our <a href="midterm_report">midterm report</a></p>
 
             <h2>Part 2: Data Migration and Scraping</h2>
             <p>For our final project, we wanted to begin using <a href="https://www.stattleship.com/">Stattleship</a> as our primary data source for player statistics. We felt that compared to scraping the NBA website, Stattleship provided a more intuitive and better formatted API for sports data. Thus, we began migrating our scrapers from the NBA site to Stattleship.</p>
@@ -62,7 +62,7 @@
 
             <h2>Part 4: Projection Performance</h2>
             <p>When we begin generating player projections, we also need metrics to gauge how well our projector compares to the actual player scores. In order to do this, we wrote an evaluator module to calculate statistics on projected vs. actual scores.</p>
-            <p>For an individual player's projected score, we decided to look at absolute error and percent error. For an overall analysis of projections, we decided to measure mean squared error (using sklearn.metrics) and mean signed deviation. We chose mean squared error to measure overall error of projections, and mean signed deviation to look at projection bias.</p>
+            <p>For an individual player's projected score, we decided to look at absolute error and percent error. For an overall analysis of projections, we decided to measure mean squared error (using sklearn.metrics) and mean signed deviation. We chose mean squared error to measure overall error of projections, and mean signed deviation to look at projection bias. We hope to add additional metrics, such as R-squared value, for analysis. Additionally, we also want to provide metrics analyzing per-lineup performance, from our recommended lineups vs. the actual optimal lineups.</p>
             <p>Here is an analysis of our projection sample from our midterm report:</p>
             <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
                 <tr>
