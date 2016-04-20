@@ -61,16 +61,19 @@
             </p>
             <h3>How to get an optimal lineup</h3>
             <p> 
-                First, data about players and games are scraped from NBA. Data about daily projected points for players are taken from Swish Analytics. These two pieces of data are combined together and stored in Redis.
+                We want to come up with a simple lineup of 9 players. We have considered two ways of coming up with an algorith: brute-force and dynamic programming.
             </p>
             <p>
-                First, the players are sorted by their projected points from highest to lowest. With the sorted list, the players are filtered by their salary and injury status. In order for them to be in the lineup, they have to have salary less than or equal to 60,000/9 and have no injury. We want to recommend players whose salary is affordable and performs well.
+                We wrote the brute-force solution, so that we could potentially compare that lineup (which should be optimal, meaning the lineup gives the highest projected score for a game) with our solution using dynamic programming. Unfortuantely, brute-force takes too long to run, which makes sense because we're comparing every possible combinations of lineups (9 players from different positions). It didn't run.
             </p>
             <p>
-                There are 9 players in a lineup - one in the Center position, and 2 players in other positions each.
+                We realized that it is really difficult to come up with an optimal lineup, otherwise, too. Thus, this is our simple solution for now.
             </p>
             <p>
-                Then, for this visualization, we pick the player with the highest point from each position. Thus, the visualization recommends 5 players for 5 positions.
+                The players are grouped by positions, and sorted by points in descending order. For example, all players with the Center position are in one list, and the player with the highest projected score appears first in the list. At this point, we have a list of 5 lists (representing 5 positions). We are selecting one player for the Center position, and 2 players for the other 4 positions - this makes a total of 9 players in a lineup.
+            </p>
+            <p>
+                We have a salary cap of 60 million dollars to give to one lineup. Thus, we are giving 60,000,000/9 dollars to a player. When choosing the first player, for the Center position for instance, we pick the one with the highest point, and if his salary falls under 60,000,000/9. When choosing the second player, we pick the player with the highest point, and if his salary plus the first player's salary falls under (60,000,000/9)*2. We continue doing this process till we have chosen the 9th player. In case, the first player's salary is under 60,000,000/9 and the second player's is over 60,000,000/9, we should still want to pick the 2nd player if he has the highest projected point. This is the best we can do to best allocate our money in accordance to the salary cap.
             </p>
             
             <hr>
