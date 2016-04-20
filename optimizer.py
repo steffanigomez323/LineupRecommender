@@ -97,17 +97,16 @@ class SimpleOptimizer(object):
         while value_2d[0][j][2] >= salary_cap/9:
             j += 1
 
-        lineup.append(value_2d[0][j][0])
+        lineup.append((value_2d[0][j][0], value_2d[0][j][1], value_2d[0][j][2]))
         update.append(value_2d[0][j][2]) # salary
 
         for i in range(1, 9):
             k = 0
             while (lineup[i-1] == value_2d[i][k][0] or (value_2d[i][k][2] + update[i-1]) >= (salary_cap/9)*(i+1)):
                 k += 1
-            lineup.append(value_2d[i][k][0])
+            lineup.append((value_2d[i][k][0], value_2d[i][k][1], value_2d[i][k][2]))
             update.append(value_2d[i][k][2])
 
-        print lineup
         return lineup
 
     '''
