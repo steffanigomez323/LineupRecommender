@@ -5,21 +5,19 @@ Spring 2016
 
 Vann, Steffani, JJ, Chaitu
 
-Scrapers
+Requests Module
 """
 
 import requests
 
 
 class CustomRequest(object):
-    headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 \
-               (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
-
     read_timeout = 10.0
     connect_timeout = 10.0
 
-    def __init__(self, base_url):
+    def __init__(self, base_url, headers):
         self.base_url = base_url
+        self.headers = headers
 
         # setup session
         self.session = requests.Session()

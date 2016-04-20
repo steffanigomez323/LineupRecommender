@@ -5,7 +5,7 @@ Spring 2016
 
 Vann, Steffani, JJ, Chaitu
 
-Simple Optimal Lineup Recommender
+Player Performance Projector
 """
 
 
@@ -14,6 +14,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import r2_score
 from collections import Counter
 import numpy
+
 
 class SimpleProjector(object):
     def __init__(self, players):
