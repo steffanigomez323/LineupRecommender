@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <link href="static/css/midterm_report_style.css" rel="stylesheet" media="screen">
+    <link href="static/css/blog_post_1_style.css" rel="stylesheet" media="screen">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
@@ -37,25 +38,26 @@
             <hr>
 
             <h2>Part 2: Visualization</h2>
-            <script src="static/js/viz.js"></script>
-            <script src="static/js/d3_tip.js"></script>
+            <script src="static/js/viz2.js"></script>
 
-            <div id="positionchart">
-              <div id="PG">
-              </div>
-              <div id="SG">
-              </div>
-              <div id="C">
-              </div>
-              <div id="SF">
-              </div>
-              <div id="PF">
-              </div>
+            <div id="lineup">
+              <table class="table table-striped" align="center" style="width:70%;" id="viz">
+                <thead>
+                  <tr>
+                    <th>Position</th> 
+                    <th>Name</th>
+                    <th>Game</th>
+                    <th>Projection</th>
+                    <th>Salary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
             </div>
             <br>
             <p>
-                This visualization shows a basketball chart, where each circle represents a player on their strong positions. It gives recommendation on which player to choose for a specific position. When hovering over each circle, i.e. each player, there's a tooltip that tells information about the player, such as their salary, position, projected points, and team name. The color scale also gives information as to which player is projected to earn the most points - darkest representing most points.
-
+                This visualization shows the lineup in a visual list, as it is done on FanDuel or DraftKings. This is how our lineup will be displayed on the page as the end product, detailing the player's position, name, team, projected fantasy points, and salary. 
             </p>
             <h3>How to get an optimal lineup</h3>
             <p> 
