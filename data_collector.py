@@ -14,7 +14,6 @@ import json
 import re
 from bs4 import BeautifulSoup
 from copy import deepcopy
-import dryscrape
 
 class SwishScraper(object):
 
@@ -349,23 +348,22 @@ class NBAScraper(object):
 
         return players
 
-class FanDuelScraper(object):
+# class FanDuelScraper(object):
 	#contest pages have a download players button
 	#it uses angular for js
 	#draft.downloadPlayers() is the angular function
-	def __init__(self):
-        self.fanduel_request =
-            dryscrape.Session(base_url = "https://www.fanduel.com/")
-        self.fanduel_request.set_attribute('auto_load_images', False)
+	# def __init__(self):
+ #        self.fanduel_request = dryscrape.Session(base_url = "https://www.fanduel.com/")
+ #        self.fanduel_request.set_attribute('auto_load_images', False)
 
-    #url format is https://www.fanduel.com/games/{game_id}/contests/{game_id}-{contest_id}/enter
-    def get_contest_players(self, contest_url):
-        self.fanduel_request.visit(contest_url)
-        players = self.fanduel_request.eval_script("Z.players")
+ #    #url format is https://www.fanduel.com/games/{game_id}/contests/{game_id}-{contest_id}/enter
+ #    def get_contest_players(self, contest_url):
+ #        self.fanduel_request.visit(contest_url)
+ #        players = self.fanduel_request.eval_script("Z.players")
 
-        return players
+ #        return players
         #response = session.body()
         #soup = BeautifulSoup(response)
 
-    def clean_contest_players(self, contest_data):
+    # def clean_contest_players(self, contest_data):
     	
