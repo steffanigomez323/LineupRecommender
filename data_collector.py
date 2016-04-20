@@ -89,7 +89,7 @@ class NBAStattleShip(object):
 
         return data
 
-    def clean_player_data(self, data, fields=['slug',
+    def get_player_fields(self, data, fields=['slug',
                                               'active',
                                               'name']):
         for entry in data:
@@ -98,6 +98,40 @@ class NBAStattleShip(object):
                     del(entry[key])
 
         return data
+
+    def get_team_data(self):
+        modifier = 'teams'
+
+        response = self.nba_request.get_request(modifier)
+        data = response.json()['teams']
+
+        while 'next' in response.links:
+            modifier = re.match(self.nba_request.base_url + '(.*)',
+                                response.links['next']['url']).group(1)
+            response = self.nba_request.get_request(modifier)
+            data.extend(response.json()['teams'])
+
+        return data
+
+    def get_team_fields(self, data, fields=['id',
+                                            'slug']):
+        for entry in data:
+            for key in deepcopy(entry):
+                if key not in fields:
+                    del(entry[key])
+
+        return data
+
+    def get_team_id_to_slug(self):
+        team_data = self.get_team_data()
+        relevant_data = self.get_team_fields(team_data)
+
+        id_to_slug = {}
+
+        for field in relevant_data:
+            id_to_slug[field['id']] = field['slug']
+
+        return id_to_slug
 
     def get_player_stats_data(self, player_id, fields={
                              'basketball_defensive_stat':
@@ -157,21 +191,6 @@ class NBAStattleShip(object):
 
         return data
 
-    def clean_player_stats_data(self, data):
-        time_played = deepcopy(data['time_played_total'])
-
-        for i in range(len(time_played)):
-            if time_played[i] is None:
-                for stat in data.iterkeys():
-                    del data[stat][i]
-
-        for stat_name, per_game_list in data.iteritems():
-            for i, stat in enumerate(per_game_list):
-                if stat is None:
-                    per_game_list[i] = 0
-
-        return data
-
     def get_game_log_data(self, player_id):
         modifier = 'game_logs?player_id=' + \
                    player_id + \
@@ -190,26 +209,48 @@ class NBAStattleShip(object):
 
         return data
 
-    def clean_game_log_data(self, data, fields={"game_logs": ['assists',
-                                                              'field_goals_made',
-                                                              'free_throws_made',
-                                                              'turnovers',
-                                                              'steals',
-                                                              'blocks',
-                                                              'rebounds_total',
-                                                              'team_id']}):
-        for game_log, game in zip(data['game_logs'], data['games']):
-            game_log['started_at'] = game['started_at']
-            if game_log['team_id'] == game['home_team_id']:
-                game_log['played_at_home'] = True
+    def prepare_data_for_projections(self, player_id):
+        # id_to_slug = self.get_team_id_to_slug()
+
+        stats = self.get_player_stats_data(player_id)
+        game_logs = self.get_game_log_data(player_id)
+
+        stats['game_time'] = list()
+        stats['played_at_home'] = list()
+        # stats['played_against'] = list()
+
+        for i in range(len(stats['plus_minus'])):
+            game_time = game_logs['games'][i]['started_at']
+            stats['game_time'].append(game_time)
+
+            # opponent = id_to_slug[game_logs['game_logs'][i]['opponent_id']]
+            # stats['played_against'].append(opponent)
+
+            if game_logs['game_logs'][i]['team_id'] == \
+                    game_logs['games'][i]['home_team_id']:
+                stats['played_at_home'].append(True)
             else:
-                game_log['played_at_home'] = False
+                stats['played_at_home'].append(False)
 
-            for key in deepcopy(game_log):
-                if key not in fields['game_logs']:
-                    del(game_log[key])
+        data = self.clean_data_for_projections(stats)
 
-        del data['games']
+        return data
+
+    def clean_data_for_projections(self, data):
+        time_played = deepcopy(data['time_played_total'])
+
+        deleted_count = 0
+
+        for i in range(len(time_played)):
+            if time_played[i] is None:
+                for stat in data.iterkeys():
+                    del data[stat][i - deleted_count]
+                deleted_count += 1
+
+        for stat_name, per_game_list in data.iteritems():
+            for i, stat in enumerate(per_game_list):
+                if stat is None:
+                    per_game_list[i] = 0
 
         return data
 

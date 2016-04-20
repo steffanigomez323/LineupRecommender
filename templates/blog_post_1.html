@@ -9,14 +9,17 @@
                 <h1>Lineup Recommender <small>&laquo;Blog Post 1&raquo;</small></h1>
             </div>
 
-            <h2>Part 1: Introduction</h2>
-            <p>For our project, we decided to analyze NBA player scores by game in order to find optimal fantasy basketball lineups for website like FanDuel and DraftKings. We want to look at a player's historical game performance and then predict that player's performance in a future game. We can then take these projected scores to recommend the optimal lineup of players for users of the websites mentioned above. Below are some specific questions we're hoping to tackle in the process.</p>
+            <h2>Introduction</h2>
+            <p>This week we set out to accomplish 4 goals:</p>
+            <ol>
+                <li>Migrate to Stattleship for data.
+                <li>Improve the lineup visualization.
+                <li>Write the lineup optimization algorithm.
+                <li>Create a evaluation module for projections.
+            </ol>
 
-            <ul>
-                <li>Can we consistently predict the performance of low variance players? If so, should we tend to lean towards selecting low variance players to become more risk averse in the long run.</li>
-                <li>Can we predict success of low salaried players who have a high variance in their performances? This would help us replace the least useful high salaried players and consequently give us better odds of winning contests because most users tend to choose high salary players.</li>
-                <li>Can we incorporate metrics opposing team, home or away, etc. into our prediction model? If so, can we determine what subset of these metrics provides best results and why?</li>
-            </ul>
+            <h2>Part 1: Migrating to Stattleship</h2>
+            <p>
 
             <p>The NBA player data (shown below) is obtained from stats.nba.com. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers.</p>
             <img class="img-responsive" src="static/images/nba_stats.png"></img>
