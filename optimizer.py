@@ -5,42 +5,27 @@ Spring 2016
 
 Vann, Steffani, JJ, Chaitu
 
-Lineup Optimizer
+Simple Optimal Lineup Recommender
 """
-<<<<<<< HEAD:simple_recommender.py
 import random
 import json
-=======
 
->>>>>>> 0bbfb3ba6759305f37c6d8852f8bde04bd910817:optimizer.py
-
-class SimpleRecommender(object):
+class SimpleOptimizer(object):
     global salary_cap 
     salary_cap = 60000000;
     lineup_size = 9
 
-<<<<<<< HEAD:simple_recommender.py
     # input: projections.json
     f = open('projections.json', 'r')
     global projections 
     projections= json.load(f)
     
     
-=======
-    def __init__(self, players):
-        self.players = players
-
-    def print_all_players(self):
-        for player in self.players:
-            print player
-
->>>>>>> 0bbfb3ba6759305f37c6d8852f8bde04bd910817:optimizer.py
     """
     This is a method returns a simple, optimal lineup based on the salaries from swish analytics.
     """
 
     def get_simple_lineup(self):
-<<<<<<< HEAD:simple_recommender.py
         # lineup = [(None, 0.0)] * lineup_size # need 2 best players for each position except the center
         value_2d = []
         salary_2d = [] # keeps track of the salary given so far to a potential player; same size as value_2d
@@ -104,60 +89,6 @@ class SimpleRecommender(object):
             salary_2d[7].append(pf[2])
             salary_2d[8].append(pf[2])
 """
-=======
-        lineup = list()
-        salary = 0
-        pg = 0
-        sg = 0
-        sf = 0
-        pf = 0
-        c = 0
-
-        playersSorted = sorted(self.players, key=lambda x: float(x.projected_points), reverse=True)
-
-        for p in playersSorted:
-            if p.injury_status == "Not Injured" and int(p.salary) <= (self.salary_cap / 9):
-                if p.position == 'PG':                     
-                    if p not in lineup:
-                        if (pg <= 1):
-                            salary = salary + int(p.salary)
-                            lineup.append(p)
-                            pg = pg + 1
-
-                elif p.position == 'SG':
-                    if p not in lineup:
-                        if (sg <= 1):
-                            salary = salary + int(p.salary)
-                            lineup.append(p)
-                            sg = sg + 1
-                            
-                elif p.position == 'SF':
-                    if p not in lineup:
-                        if (sf <= 1):
-                            salary = salary + int(p.salary)
-                            lineup.append(p)
-                            sf = sf + 1
-
-                elif p.position == 'PF':
-                    if p not in lineup:
-                        if (pf <= 1):
-                            salary = salary + int(p.salary)
-                            lineup.append(p)
-                            pf = pf + 1
-                            
-                else: # the position is C (Center)
-                    if p not in lineup:
-                        if (c <= 0):
-                            salary = salary + int(p.salary)
-                            lineup.append(p)
-                            c = c + 1
-                            
-            if c > 0 and pf > 1 and sf > 1 and sg > 1 and pg > 1:
-                break
-                               
-        assert(len(lineup) == 9)
-        assert(salary <= self.salary_cap)
->>>>>>> 0bbfb3ba6759305f37c6d8852f8bde04bd910817:optimizer.py
 
         update = []
         lineup = []
