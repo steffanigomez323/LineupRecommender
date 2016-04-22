@@ -15,6 +15,7 @@ import re
 from bs4 import BeautifulSoup
 from copy import deepcopy
 
+
 class SwishScraper(object):
 
     def get_players(self):
@@ -90,7 +91,10 @@ class NBAStattleShip(object):
 
     def get_player_fields(self, data, fields=['slug',
                                               'active',
-                                              'name']):
+                                              'name',
+                                              'weight',
+                                              'height',
+                                              'years_of_experience']):
         for entry in data:
             for key in deepcopy(entry):
                 if key not in fields:
@@ -209,21 +213,21 @@ class NBAStattleShip(object):
         return data
 
     def prepare_data_for_projections(self, player_id):
-        # id_to_slug = self.get_team_id_to_slug()
+        id_to_slug = self.get_team_id_to_slug()
 
         stats = self.get_player_stats_data(player_id)
         game_logs = self.get_game_log_data(player_id)
 
         stats['game_time'] = list()
         stats['played_at_home'] = list()
-        # stats['played_against'] = list()
+        stats['played_against'] = list()
 
         for i in range(len(stats['plus_minus'])):
             game_time = game_logs['games'][i]['started_at']
             stats['game_time'].append(game_time)
 
-            # opponent = id_to_slug[game_logs['game_logs'][i]['opponent_id']]
-            # stats['played_against'].append(opponent)
+            opponent = id_to_slug[game_logs['game_logs'][i]['opponent_id']]
+            stats['played_against'].append(opponent)
 
             if game_logs['game_logs'][i]['team_id'] == \
                     game_logs['games'][i]['home_team_id']:
