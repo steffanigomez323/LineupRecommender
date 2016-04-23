@@ -78,3 +78,31 @@ class DailyUpdate(object):
             for k, games in ordered_scores.items()}
 
         return player_scores
+
+    def store_stattleship_gamelogs(self, stattleship_gamelogs):
+        TIME_ID_LEN = 19 # length of time component of id, ex: -201602011900000500
+        
+        player_games = {}
+        for player_game_id, player_gamelogs in stattleship_gamelogs.items():
+            '''
+            player_gamelogs['steals_pg']
+            player_gamelogs['rebounds_pg']
+            player_gamelogs['points_pg']
+            player_gamelogs['turnovers_pg']
+            player_gamelogs['blocks_pg']
+            player_gamelogs['minutes_pg']
+            player_gamelogs['plus_minus_pg']
+            player_gamelogs['hva']
+            player_gamelogs['opponent']
+            player_gamelogs['time_stamp']
+            '''
+            redis_db.hmset(player_game_id, gamelog)
+
+            # generate player_id to games_id mapping
+            player_id = player_game_id[:-TIME_ID_LEN]
+            games_list = player_games.get(player_id, default=[])
+            games_list.append(player_game_id)
+            player_games[player_id] = games_list
+
+        for player_id, games_list in player_games.items():
+            redis_db.lpush(player_id, *games_list) #pass in list as arguments using *args syntax
