@@ -7,7 +7,7 @@ Vann, Steffani, JJ, Chaitu
 
 Database
 """
-
+from app import nba_stattleship
 from app import redis_db
 from app import swish_scraper
 from app import nba_scraper
@@ -17,6 +17,42 @@ import re
 
 
 class RedisHelper(object):
+
+    # populate the database with all players using stattleship
+    def populate_db_2(self):
+        #flush the db
+        redis_db.flushall()
+
+        stattleship_data = nba_stattleship.get_player_data()
+        stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
+
+        for player in stattleship_players:
+
+            nba_names = player["slug"].split("nba-")
+            name = nba_names[len(nba_names) - 1].replace("-", " ")
+            weight = player["weight"]
+            height = player["height"]
+            active = player["active"]
+            years_of_experience = player["years_of_experience"]
+
+
+            redis_db.hmset(player["slug"], {'name': name,
+                                       'height': height,
+                                       'weight': weight,
+                                       'active': active,
+                                       'years_of_experience': years_of_experience})
+
+    #def getNames():
+    #    names = set([])
+    #    stattleship_data = nba_stattleship.get_player_data()
+    #    stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
+    #    for player in stattleship_players:
+    #        nba_names = player["slug"].split("nba-")
+    #        n = nba_names[len(nba_names) - 1].replace("-", " ")
+    #        names.add(n)
+    #    return names
+
+
     # populate the database with all players using swish and nba
     def populate_db(self):
         # flush the db
@@ -77,7 +113,7 @@ class RedisHelper(object):
                                        'team_id': team_id,
                                        'position': position})
 
-    def add_nba_stats(self):
+    #def add_nba_stats(self):
         
         # game_ID_dict
         # our game ID = 000001
