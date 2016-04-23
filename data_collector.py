@@ -140,7 +140,7 @@ class NBAStattleShip(object):
                              'basketball_defensive_stat':
                              ['blocks', 'steals'],
                              'basketball_offensive_stat':
-                             ['points', 'turnovers'],
+                             ['points', 'turnovers', 'assists'],
                              'basketball_player_stat':
                              ['plus_minus', 'time_played_total'],
                              'basketball_rebounding_stat':
