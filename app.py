@@ -56,5 +56,9 @@ def midterm_report():
 def blog_post_1():
     return render_template('blog_post_1.html')
 
+@app.route('/blog_post_2')
+def blog_post_2():
+    return render_template('blog_post_2.html')
+
 if __name__ == "__main__":
     app.run(debug=True)
