@@ -45,7 +45,7 @@ class RedisHelper(object):
         nf_ids = nf_scraper.get_all_player_data()
 
         id_not_match = list(nf_ids - stattleship_ids)
-        assert id_not_match == 16
+        assert len(id_not_match) == 16
         # Cristiano Felicio is shown as 'Chistiano Felicio' in Stattleship
         redis_db.set('jj-redick', 'j-j-redick')
         redis_db.set('jose-barea', 'jose-juan-barea')
