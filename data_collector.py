@@ -88,14 +88,14 @@ class NBAStattleShip(object):
         return id_to_slug
 
     def get_player_stats_data(self, player_id, fields={
-                             'basketball_defensive_stat':
-                             ['blocks', 'steals'],
-                             'basketball_offensive_stat':
-                             ['points', 'turnovers', 'assists'],
-                             'basketball_player_stat':
-                             ['plus_minus', 'time_played_total'],
-                             'basketball_rebounding_stat':
-                             ['rebounds_total']}):
+                              'basketball_defensive_stat':
+                              ['blocks', 'steals'],
+                              'basketball_offensive_stat':
+                              ['points', 'turnovers', 'assists'],
+                              'basketball_player_stat':
+                              ['plus_minus', 'time_played_total'],
+                              'basketball_rebounding_stat':
+                              ['rebounds_total']}):
         # STATS #
         # defensive - basketball_defensive_stat #
         # - blocks
@@ -216,7 +216,7 @@ class NumberFireScraper(object):
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
 
-        data = soup.find_all('p', attrs={'class':'sb'})
+        data = soup.find_all('p', attrs={'class': 'sb'})
 
         name_set = set()
         id_set = set()
@@ -227,9 +227,9 @@ class NumberFireScraper(object):
             id_set.add(link_match.group(1))
             name_text = d.text
             name_match = re.search('[A-Z]{1,2},\s.*', name_text)
-            remove = name_match.group(0)            
+            remove = name_match.group(0)
             name_set.add(name_text.replace(remove, ""))
-            
+
         return name_set, id_set
 
     def get_todays_players(self):
