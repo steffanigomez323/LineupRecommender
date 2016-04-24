@@ -16,55 +16,6 @@ from bs4 import BeautifulSoup
 from copy import deepcopy
 
 
-class SwishScraper(object):
-
-    def get_players(self):
-        url = 'https://www.swishanalytics.com/nba/players/'
-        page = urllib.urlopen(url)
-        soup = BeautifulSoup(page, 'lxml')
-        data = soup.find_all('script')[4].string
-        players_data = re.search('this.all_players = (.*?);', data).group(1)
-        players_json = json.loads(players_data)
-        return players_json
-
-    def clean_players(self, data, fields=['player_id',
-                                          'player_name',
-                                          'team_abbr',
-                                          'primary_pos_abbr']):
-        for entry in data:
-            for key in deepcopy(entry):
-                if key not in fields:
-                    del(entry[key])
-
-        swish_dict = {}
-        for entry in data:
-            swish_dict[entry['player_name']] = (entry['player_id'],
-                                                entry['team_abbr'],
-                                                entry['primary_pos_abbr'])
-
-        return swish_dict
-
-    def get_projections(self):
-        url = 'https://www.swishanalytics.com/optimus/nba/optimus-x/'
-        page = urllib.urlopen(url)
-        soup = BeautifulSoup(page, 'lxml')
-        data = soup.find_all('script')[9].string
-        projections_data = re.search(
-            'self.model.masterPlayerArray = (....*?);', data).group(1)
-        projections_json = json.loads(projections_data)
-        return projections_json
-
-    def clean_projections(self, data, fields=['player_id',
-                                              'proj_fantasy_pts_fd',
-                                              'fd_salary',
-                                              'injury_status']):
-        for entry in data:
-            for key in deepcopy(entry):
-                if key not in fields:
-                    del(entry[key])
-        return data
-
-
 class NBAStattleShip(object):
     headers = {'content-type': 'application/json',
                'authorization': 'Token token=067adb3fdbd52c6a8c12331152bf262f',
@@ -140,7 +91,7 @@ class NBAStattleShip(object):
                              'basketball_defensive_stat':
                              ['blocks', 'steals'],
                              'basketball_offensive_stat':
-                             ['points', 'turnovers'],
+                             ['points', 'turnovers', 'assists'],
                              'basketball_player_stat':
                              ['plus_minus', 'time_played_total'],
                              'basketball_rebounding_stat':
@@ -258,6 +209,107 @@ class NBAStattleShip(object):
         return data
 
 
+class NumberFireScraper(object):
+
+    def get_all_players(self):
+        url = 'https://www.numberfire.com/nba/players/'
+        page = urllib.urlopen(url)
+        soup = BeautifulSoup(page, 'lxml')
+
+        data = soup.find_all('p', attrs={'class':'sb'})
+
+        name_set = set()
+        id_set = set()
+
+        for d in data:
+            link_text = d.a['href']
+            link_match = re.search('/nba/players/(.*)', link_text)
+            id_set.add(link_match.group(1))
+            name_text = d.text
+            name_match = re.search('[A-Z]{1,2},\s.*', name_text)
+            remove = name_match.group(0)            
+            name_set.add(name_text.replace(remove, ""))
+            
+        return name_set, id_set
+
+    def get_todays_players(self):
+        url = 'https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections'
+        page = urllib.urlopen(url)
+        soup = BeautifulSoup(page, 'lxml')
+
+        data = soup.find_all('td', attrs={'class':'player'})
+
+        players = list()
+
+        for d in data:
+            link_text = d.a['href']
+            link_match = re.search('/nba/players/(.*)', link_text)
+            player_id = link_match.group(1)
+            name_text = d.text
+            name_match = re.search('(.*)\s\(.*', name_text)
+            name = name_match.group(1)
+            players.append([player_id, name])
+
+        data = soup.find_all('td', attrs={'class': 'sep'})
+        print data
+
+        # for i in range(len(data)):
+        #     if '@' in data[i].text:
+        #         players[i].append('AWAY')
+        #     else:
+        #         players[i].append('HOME')
+
+        print players
+
+class SwishScraper(object):
+
+    def get_players(self):
+        url = 'https://www.swishanalytics.com/nba/players/'
+        page = urllib.urlopen(url)
+        soup = BeautifulSoup(page, 'lxml')
+        data = soup.find_all('script')[4].string
+        players_data = re.search('this.all_players = (.*?);', data).group(1)
+        players_json = json.loads(players_data)
+        return players_json
+
+    def clean_players(self, data, fields=['player_id',
+                                          'player_name',
+                                          'team_abbr',
+                                          'primary_pos_abbr']):
+        for entry in data:
+            for key in deepcopy(entry):
+                if key not in fields:
+                    del(entry[key])
+
+        swish_dict = {}
+        for entry in data:
+            swish_dict[entry['player_name']] = (entry['player_id'],
+                                                entry['team_abbr'],
+                                                entry['primary_pos_abbr'])
+
+        return swish_dict
+
+    def get_projections(self):
+        url = 'https://www.swishanalytics.com/optimus/nba/optimus-x/'
+        page = urllib.urlopen(url)
+        soup = BeautifulSoup(page, 'lxml')
+        data = soup.find_all('script')[9].string
+        projections_data = re.search(
+            'self.model.masterPlayerArray = (....*?);', data).group(1)
+        projections_json = json.loads(projections_data)
+        return projections_json
+
+    def clean_projections(self, data, fields=['player_id',
+                                              'proj_fantasy_pts_fd',
+                                              'fd_salary',
+                                              'injury_status']):
+        for entry in data:
+            for key in deepcopy(entry):
+                if key not in fields:
+                    del(entry[key])
+        return data
+
+
 class NBAScraper(object):
     headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 \
                (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
@@ -351,23 +403,4 @@ class NBAScraper(object):
             players[player_id]['GAMES'].append(game)
 
         return players
-
-# class FanDuelScraper(object):
-	#contest pages have a download players button
-	#it uses angular for js
-	#draft.downloadPlayers() is the angular function
-	# def __init__(self):
- #        self.fanduel_request = dryscrape.Session(base_url = "https://www.fanduel.com/")
- #        self.fanduel_request.set_attribute('auto_load_images', False)
-
- #    #url format is https://www.fanduel.com/games/{game_id}/contests/{game_id}-{contest_id}/enter
- #    def get_contest_players(self, contest_url):
- #        self.fanduel_request.visit(contest_url)
- #        players = self.fanduel_request.eval_script("Z.players")
-
- #        return players
-        #response = session.body()
-        #soup = BeautifulSoup(response)
-
-    # def clean_contest_players(self, contest_data):
     	
