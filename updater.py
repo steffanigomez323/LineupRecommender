@@ -14,6 +14,9 @@ from app import swish_scraper
 from app import nba_scraper
 from app import id_manager
 from app import fanduel_scorer
+from app import nba_stattleship
+import re
+
 
 
 class DailyUpdate(object):
@@ -78,3 +81,58 @@ class DailyUpdate(object):
             for k, games in ordered_scores.items()}
 
         return player_scores
+
+    def create_stattleship_games(self, stattleship_id_list):
+
+        games_dict = {}
+        for nba_player_id in stattleship_id_list:
+            games_data = nba_stattleship.prepare_data_for_projections('nba-lebron-james')
+            
+            list_size = len(games_data['blocks'])
+
+            for i in range(0, list_size):
+
+                features = {}
+                game_id = re.sub(r'\W', '', games_data['game_time'][i].encode('utf-8')).replace('T', '')
+                features['steals'] = games_data['steals'][i]
+                features['assists'] = games_data['assists'][i]
+                features['rebounds_total'] = games_data['rebounds_total'][i]
+                features['points'] = games_data['points'][i]
+                features['turnovers'] = games_data['turnovers'][i]
+                features['blocks'] = games_data['blocks'][i]
+                features['min_PG'] = games_data['time_played_total'][i] / 60
+                features['plus_minus_PG'] = games_data['plus_minus'][i]
+                features['hva'] = 'home' if games_data['played_at_home'][i] == 'True' else 'away'
+                features['opponent'] = games_data['played_against'][i].encode('utf-8')
+                games_dict[game_id] = features
+
+        return games_dict
+
+    def store_stattleship_gamelogs(self, stattleship_gamelogs):
+        TIME_ID_LEN = 19 # length of time component of id, ex: -201602011900000500
+        
+        player_games = {}
+        for player_game_id, player_gamelogs in stattleship_gamelogs.items():
+            '''
+            player_gamelogs['steals_pg']
+            player_gamelogs['rebounds_pg']
+            player_gamelogs['points_pg']
+            player_gamelogs['turnovers_pg']
+            player_gamelogs['blocks_pg']
+            player_gamelogs['minutes_pg']
+            player_gamelogs['plus_minus_pg']
+            player_gamelogs['hva']
+            player_gamelogs['opponent']
+            player_gamelogs['time_stamp']
+            '''
+            redis_db.hmset(player_game_id, gamelog)
+
+            # generate player_id to games_id mapping
+            player_id = player_game_id[:-TIME_ID_LEN]
+            games_list = player_games.get(player_id, default=[])
+            games_list.append(player_game_id)
+            player_games[player_id] = games_list
+
+        for player_id, games_list in player_games.items():
+            redis_db.lpush(player_id, *games_list) #pass in list as arguments using *args syntax
+
