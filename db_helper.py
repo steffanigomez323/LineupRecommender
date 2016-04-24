@@ -26,6 +26,7 @@ class RedisHelper(object):
         stattleship_data = nba_stattleship.get_player_data()
         stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
 
+        stattleship_ids = []
         for player in stattleship_players:
 
             nba_names = player["slug"].split("nba-")
@@ -42,6 +43,31 @@ class RedisHelper(object):
                                        'active': active,
                                        'years_of_experience': years_of_experience})
 
+
+            nba_id = player["slug"].split("nba-")[-1]
+            stattleship_ids.add(nba_id.encode('utf-8'))
+
+        nf_names, nf_ids = nf_scraper.get_all_players()
+
+        id_not_match = list(nf_ids - stattleship_ids)
+        assert id_not_match == 16
+        # Cristiano Felicio is shown as 'Chistiano Felicio' in Stattleship
+        redis_db.set('jj-redick', 'j-j-redick')
+        redis_db.set('jose-barea', 'jose-juan-barea')
+        redis_db.set('chris-johnson1', 'chris-johnson')
+        redis_db.set('amare-stoudemire', 'amar-e-stoudemire')
+        redis_db.set('oj-mayo', 'o-j-mayo')
+        redis_db.set('nene-hilario', 'nene')
+        redis_db.set('cj-miles', 'c-j-miles')
+        redis_db.set('jr-smith', 'j-r-smith')
+        redis_db.set('cj-watson', 'c-j-watson')
+        redis_db.set('dj-augustin', 'd-j-augustin')
+        redis_db.set('ishmael-smith', 'ish-smith')
+        redis_db.set('cristiano-felicio', 'chistiano-felicio') 
+        redis_db.set('louis-amundson', 'lou-amundson')
+        redis_db.set('etwaun-moore', 'e-twaun-moore')
+        redis_db.set('jj-hickson', 'j-j-hickson')
+        redis_db.set('roy-devyn-marble', 'devyn-marble')
     #def getNames():
     #    names = set([])
     #    stattleship_data = nba_stattleship.get_player_data()
@@ -101,6 +127,7 @@ class RedisHelper(object):
             # mappings to redis
             redis_db.set(nba_rjust, player_id)
             redis_db.set(swish_rjust, player_id)
+
 
             if not redis_db.sismember('teams', team):
                 raise Exception("This player's team does not exist.")
