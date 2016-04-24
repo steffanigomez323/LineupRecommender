@@ -22,7 +22,7 @@ class RedisHelper(object):
         stattleship_data = nba_stattleship.get_player_data()
         stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
 
-        stattleship_ids = []
+        stattleship_ids = set([])
         for player in stattleship_players:
 
             nba_names = player["slug"].split("nba-")
