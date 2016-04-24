@@ -10,9 +10,8 @@ Main
 
 from flask import Flask, render_template
 from redis import Redis
-from data_collector import SwishScraper
-from data_collector import NBAScraper
 from data_collector import NBAStattleShip
+from data_collector import NumberFireScraper
 from id_manager import IDManager
 from scorer import FanDuelScorer
 # from simple_recommender import SimpleRecommender
@@ -30,15 +29,14 @@ redis_db = Redis(host=app.config['REDIS_HOST'],
                  port=app.config['REDIS_PORT'],
                  password=app.config['REDIS_PASSWORD'])
 
-# scrapers
-swish_scraper = SwishScraper()
-nba_scraper = NBAScraper()
-
 # id manager
 id_manager = IDManager()
 
 # stattleship
 nba_stattleship = NBAStattleShip()
+
+# numberfire
+nf_scraper = NumberFireScraper()
 
 # scorers
 fanduel_scorer = FanDuelScorer()
