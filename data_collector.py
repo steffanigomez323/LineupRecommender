@@ -218,48 +218,64 @@ class NumberFireScraper(object):
 
         data = soup.find_all('p', attrs={'class': 'sb'})
 
-        name_set = set()
         id_set = set()
 
         for d in data:
             link_text = d.a['href']
             link_match = re.search('/nba/players/(.*)', link_text)
             id_set.add(link_match.group(1))
-            name_text = d.text
-            name_match = re.search('[A-Z]{1,2},\s.*', name_text)
-            remove = name_match.group(0)
-            name_set.add(name_text.replace(remove, ""))
 
-        return name_set, id_set
+        return id_set
 
     def get_todays_players(self):
         url = 'https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections'
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
 
-        data = soup.find_all('td', attrs={'class':'player'})
+        # data = soup.find_all('td', attrs={'class':'player'})
+        data = soup.find_all('tr')
 
         players = list()
 
-        for d in data:
-            link_text = d.a['href']
-            link_match = re.search('/nba/players/(.*)', link_text)
+        for i in range(len(data)):
+            if i < 2:
+                continue
+
+            player_raw = data[i].find('td', attrs={'class': 'player'})
+            playing_at_home_raw = data[i].find('td', attrs={'class': 'sep'})
+            salary_raw = data[i].find('td', attrs={'class': 'col-salary'})
+
+            # working with playing_at_home
+            if '@' in playing_at_home_raw.text:
+                playing_at_home = False
+            else:
+                playing_at_home = True
+
+            # working with salary
+            salary_match = re.match('\$(.*)', salary_raw.text)
+            if salary_match:
+                salary = salary_match.group(1)
+
+            # working with player
+            link = player_raw.a['href']
+            link_match = re.search('/nba/players/(.*)', link)
             player_id = link_match.group(1)
-            name_text = d.text
-            name_match = re.search('(.*)\s\(.*', name_text)
-            name = name_match.group(1)
-            players.append([player_id, name])
 
-        data = soup.find_all('td', attrs={'class': 'sep'})
-        print data
+            position_match = re.search('\((.*),', player_raw.text)
+            if position_match:
+                position = position_match.group(1)
 
-        # for i in range(len(data)):
-        #     if '@' in data[i].text:
-        #         players[i].append('AWAY')
-        #     else:
-        #         players[i].append('HOME')
+            status = player_raw.find('span', attrs={'class': 'injury-tag-OUT'})
+            if status:
+                out = (status.text == "OUT")
+            else:
+                out = False
 
-        print players
+            if salary_match and position_match and not out:
+                players.append([player_id, position, playing_at_home, salary])
+
+        return players
+
 
 class SwishScraper(object):
 

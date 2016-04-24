@@ -18,7 +18,6 @@ from app import nba_stattleship
 import re
 
 
-
 class DailyUpdate(object):
     def get_projections(self):
         data = swish_scraper.get_projections()
@@ -29,7 +28,7 @@ class DailyUpdate(object):
             # rjust to make sure that it is 20 in length
             swish_id = id_manager.get_normalized_swish_id(
                 projection['player_id'])
-            
+
             if redis_db.get(swish_id):
                 player_id = redis_db.get(swish_id)
                 name = redis_db.hget(player_id, 'name')

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+    <link href="static/css/blog_post_1_style.css" rel="stylesheet" media="screen">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="page-header center">
+                <h1>Lineup Recommender <small>&laquo;Blog Post 1&raquo;</small></h1>
+            </div>
+
+            <h2>Introduction</h2>
+            <p>This week we set out to accomplish 4 goals:</p>
+            <ol>
+                <li>Migrate to Stattleship for data.
+                <li>Improve the lineup visualization.
+                <li>Write the lineup optimization algorithm.
+                <li>Create a evaluation module for projections.
+            </ol>
+
+            <h2>Part 1: Data Migration and Scraping</h2>
+            <p>For our final project, we wanted to begin using <a href="https://www.stattleship.com/">Stattleship</a> as our primary data source for player statistics. We felt that compared to scraping the NBA website, Stattleship provided a more intuitive and better formatted API for sports data. Thus, we began migrating our scrapers from the NBA site to Stattleship.</p>
+            <p>First, we started gathering player data from Stattleship's /basketball/nba/players endpoint. For each player, we gathered their names, API slug, and active status. Next, we gathered player game log data, by using the /basketball/nba/game_logs endpoint. With each game that a player plays, we store the opposing team slug, the game's starting time, and whether it was a home or away game. Additionally, we record the player's total time played, disqualifications, personal fouls, technical fouls, <a href="http://www.basketballinsiders.com/the-virtues-of-plus-minus-statistics/">plus-minus</a>, and total points scored per game. We also record the player's defensive performance using blocks and steals, and offensive performance with assists, field goals made/attempted, free throws made/attempted, three pointers made/attempted, and turnovers. Finally, we get player's per-game rebounds for both offensive and defensive rebounds.</p>
+            <p>Once we have the data from Stattleship, we then clean and format the data for insertion into our Redis database. We want to be able to collect daily Stattleship game logs, and update them in the database. Compared to our previous NBA data source, we are collecting many more attributes from Stattleship for use of projection.</p>
+            <p>Aside from Stattleship, we are also incorporating data from FanDuel. Specifically, we want to be able to gather individual contest constraints to use for recommending lineups. For each contest, there is a list of eligible players that can be used for it. Each player has a position and salary, and a contestant's lineup must have the correct number of positions and not exceed a given budget for salary.</p>
+            <p>We initially wanted to scrape this data from the FanDuel site directly, but ran into difficulties. Since FanDuel uses AngularJS to provide JS-rendered webpages, we couldn't use python's request module to gather the data. We decided to use dryscrape to provide webkit-based rendering, so we could programmatically render the FanDuel contest page's html and scrape the eligible player table. For the future, we are also looking at Google's Selenium browser automator for a more robust solution. As a fallback, we have also implemented a NumberFire scraper, whcih gathers the same data from the NumberFire website.</p>
+
+            <h2>Part 2: Visualization</h2>
+            <script src="static/js/viz2.js"></script>
+
+            <div id="lineup">
+              <table class="table table-striped" align="center" style="width:70%;" id="viz">
+                <thead>
+                  <tr>
+                    <th>Position</th> 
+                    <th>Name</th>
+                    <th>Game</th>
+                    <th>Projection</th>
+                    <th>Salary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+            <br>
+            <p>
+                In the previous visualization, we displayed the lineup in a very graphically visual manner, choosing the represent the lineup as actual positions on a court. However, this was not the visualization we wanted for our final project. This visualization shows the lineup in a visual list, as it is done on FanDuel or DraftKings when one is choosing players for a lineup to enter in a contest. This is how our lineup will be displayed on the page as the end product, detailing the player's position, name, team, projected fantasy points, and salary. 
+            </p>
+            <h2>Part 3: Getting the Optimal Lineup</h2>
+            <p> 
+                We want to come up with a simple lineup of 9 players. We have considered two ways of coming up with an algorith: brute-force and dynamic programming.
+            </p>
+            <p>
+                We wrote the brute-force solution, so that we could potentially compare that lineup (which should be optimal, meaning the lineup gives the highest projected score for a game) with our solution using dynamic programming. Unfortuantely, brute-force takes too long to run, which makes sense because we're comparing every possible combinations of lineups (9 players from different positions). It didn't run.
+            </p>
+            <p>
+                We realized that it is really difficult to come up with an optimal lineup, otherwise, too. Thus, this is our simple solution for now.
+            </p>
+
+            <p>
+                The players are grouped by positions, and sorted by points in descending order. For example, all players with the Center position are in one list, and the player with the highest projected score appears first in the list. At this point, we have a list of 5 lists (representing 5 positions). We are selecting one player for the Center position, and 2 players for the other 4 positions - this makes a total of 9 players in a lineup.
+            </p>
+            <p>
+                We have a salary cap of 60 million dollars to give to one lineup. Thus, we are giving 60,000,000/9 dollars to a player. When choosing the first player, for the Center position for instance, we pick the one with the highest point, and if his salary falls under 60,000,000/9. When choosing the second player, we pick the player with the highest point, and if his salary plus the first player's salary falls under (60,000,000/9)*2. We continue doing this process till we have chosen the 9th player. In case, the first player's salary is under 60,000,000/9 and the second player's is over 60,000,000/9, we should still want to pick the 2nd player if he has the highest projected point. This is the best we can do to best allocate our money in accordance to the salary cap.
+            </p>
+            
+            <hr>
+
+            <h2>Part 4: Projection Performance</h2>
+            <p>When we begin generating player projections, we also need metrics to gauge how well our projector compares to the actual player scores. In order to do this, we wrote an evaluator module to calculate statistics on projected vs. actual scores.</p>
+            <p>For an individual player's projected score, we decided to look at absolute error and percent error. For an overall analysis of projections, we decided to measure mean squared error (using sklearn.metrics) and mean signed deviation. We chose mean squared error to measure overall error of projections, and mean signed deviation to look at projection bias. We hope to add additional metrics, such as R-squared value, for analysis. Additionally, we also want to provide metrics analyzing per-lineup performance, from our recommended lineups vs. the actual optimal lineups.</p>
+            <p>Here is an analysis of our projection sample from our midterm report:</p>
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <td>Player Name</td>
+                    <td>Logistic Regression</td>
+                    <td>Actual FanDuel Score</td>
+                    <td>Absolute Error</td>
+                </tr>
+                <tr>
+                    <td>Jrue Holiday</td>
+                    <td>42</td>
+                    <td>47.5</td>
+                    <td>5.5</td>
+                </tr>
+                <tr>
+                    <td>Goran Dragic</td>
+                    <td>28</td>
+                    <td>37.1</td>
+                    <td>9.1</td>
+                </tr>
+                <tr>
+                    <td>Dion Waiters</td>
+                    <td>23</td>
+                    <td>28</td>
+                    <td>5</td>
+                </tr>
+            </table>
+            <p>
+                The overall mean squared error was 46.02, and the mean signed deviation is -6.53.
+            </p>
+       
+            
+
+            <hr> <!-- In case you haven't noticed, this is a horizontal rule. It makes a horizontal line in the page. -->
+        <div class="col-md-2"></div>
+    </div> 
+{% endblock %}
