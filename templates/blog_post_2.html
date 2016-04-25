@@ -17,7 +17,14 @@
             </ol>
 
             <h2>Part 1: Setting up Data</h2>
-            <p>Vann fill this up please. Go into gory detail.</p>
+            <p>The data sources are NumberFire and Stattleship. From Stattleship, we got information about a player, such as the games they've played in, the dates the games were held, the player's points, etc. From that, we create a list of Stattleship games, whose features include points, information about each game, etc. 
+            </p>
+
+            <p>In order to make projections, we need data from NumberFire because it has fantasy salary for the players, as oppose to Stattleship which only has actual salary. Thus, we write a function to get daily update about the players. The information we're storing are player IDs, positions, salary and whether or not they're playing at home.</p>
+
+            <p>Player positions are different between NumberFire and Stattleship. However, since we are relying on NumberFire data to make projections, we are also using player positions from NumberFire.</p>
+
+            <p>In the process of cleaning our data, we found 16 mismatches in the player IDs between the two data sources, i.e. there are some NumberFire player IDs that don't match in the IDs in Stattleship. We move the NF player ids to match in Stattleship, and store them in Redis.</p>
 
             <hr>
 
