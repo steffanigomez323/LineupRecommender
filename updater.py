@@ -156,8 +156,10 @@ class DailyUpdate(object):
             data = redis_db.hgetall("nba-" + p[0])
             game_data = None
             if (len(data) == 0):
-                game_data = nbda_stattleship.get_game_log_data("nba-" + redis_db.get(p[0]))
+                game_data = nba_stattleship.get_game_log_data("nba-" + redis_db.get(p[0]))
+                games["nba-" + redis_db.get(p[0])] = game_data
             else:
                 game_data = nba_stattleship.get_game_log_data("nba-" + p[0])
-            print game_data
-            print "NEW"
+                games["nba-" + p[0]] = game_data
+
+        return games
