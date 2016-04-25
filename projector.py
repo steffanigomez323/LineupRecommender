@@ -13,6 +13,7 @@ import operator
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import r2_score
 from collections import Counter
+from scorer import FanDuelScorer
 import numpy
 
 
@@ -64,3 +65,57 @@ class SimpleProjector(object):
         #print averages
         classifier.fit(numpy.array([numpy.array([average]) for average in averages]), numpy.array([int(score) for score in scores]))
         return classifier.predict(self.avg(scores[::-last_n]))
+
+
+class PlayerProjector(object):
+    def __init__(self, player_stats, player_gamelogs, avg_gamelogs):
+        self.p_height = player_stats['']
+        self.p_weight = player_stats['']
+        self.p_experience = player_stats['']
+
+        self.g_steals = player_gamelogs['']
+        self.g_assists = player_gamelogs['']
+        self.g_rebounds = player_gamelogs['']
+        self.g_points = player_gamelogs['']
+        self.g_turnovers = player_gamelogs['']
+        self.g_blocks = player_gamelogs['']
+        self.g_minutes = player_gamelogs['']
+        self.g_plus_minus = player_gamelogs['']
+        self.g_hva = player_gamelogs['']
+        self.g_opponent = player_gamelogs['']
+
+        self.a_steals = avg_gamelogs['']
+        self.a_assists = avg_gamelogs['']
+        self.a_rebounds = avg_gamelogs['']
+        self.a_points = avg_gamelogs['']
+        self.a_turnovers = avg_gamelogs['']
+        self.a_blocks = avg_gamelogs['']
+        self.a_minutes = avg_gamelogs['']
+
+    def get_projection(self, last_n):
+        stl = self.project_steals(last_n)
+        ast = self.project_assists(last_n)
+        reb = self.project_rebounds(last_n)
+        tov = self.project_turnovers(last_n)
+        blk = self.project_blocks(last_n)
+
+        game = {}
+        game['3PT_FG'] = 
+        game['2PT_FG'] = 
+        game['FT'] = 
+        game['REB'] = reb
+        game['AST'] = ast
+        game['BLK'] = blk
+        game['STL'] = stl
+        game['TOV'] = tov
+        return FanDuelScorer.get_score(game)
+
+    def project_steals(self, last_n):
+    
+    def project_assists(self, last_n):
+
+    def project_rebounds(self, last_n):
+
+    def project_turnovers(self, last_n):
+
+    def project_blocks(self, last_n):
