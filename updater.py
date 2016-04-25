@@ -10,11 +10,12 @@ Update Module
 
 from app import redis_db
 from models import Player
-from app import swish_scraper
-from app import nba_scraper
+#from app import swish_scraper
+#from app import nba_scraper
 from app import id_manager
 from app import fanduel_scorer
 from app import nba_stattleship
+from app import nf_scraper
 import re
 
 
@@ -135,3 +136,28 @@ class DailyUpdate(object):
         for player_id, games_list in player_games.items():
             redis_db.lpush(player_id, *games_list) #pass in list as arguments using *args syntax
 
+
+    def nf_playerlookup(self):
+        player_data = nf_scraper.get_todays_player_data()
+        players = {}
+        for p in player_data:
+            data = redis_db.hgetall("nba-" + p[0])
+            if (len(data) == 0):
+                data.update(redis_db.hgetall("nba-" + redis_db.get(p[0])))
+                players["nba-" + redis_db.get(p[0])] = data
+            else:
+                players["nba-" + p[0]] = data
+        return players
+
+    def stattleship_gameloglookup(self):
+        player_data = nf_scraper.get_todays_player_data()
+        games = {}
+        for p in player_data:
+            data = redis_db.hgetall("nba-" + p[0])
+            game_data = None
+            if (len(data) == 0):
+                game_data = nbda_stattleship.get_game_log_data("nba-" + redis_db.get(p[0]))
+            else:
+                game_data = nba_stattleship.get_game_log_data("nba-" + p[0])
+            print game_data
+            print "NEW"
