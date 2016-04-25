@@ -8,6 +8,24 @@ Vann, Steffani, JJ, Chaitu
 Models
 """
 
+class GameLogs(object):
+    def __init__(self, steals, rebounds, points,
+                 turnovers, blocks, minutes, plus_minus,
+                 hva, opponent, time_stamp):
+        '''
+        player_gamelogs['steals_pg']
+        player_gamelogs['rebounds_pg']
+        player_gamelogs['points_pg']
+        player_gamelogs['turnovers_pg']
+        player_gamelogs['blocks_pg']
+        player_gamelogs['minutes_pg']
+        player_gamelogs['plus_minus_pg']
+        player_gamelogs['hva']
+        player_gamelogs['opponent']
+        player_gamelogs['time_stamp']
+        '''
+        
+
 
 class Player(object):
     # keep adding init fields as necessary
