@@ -27,9 +27,24 @@
             <hr>
 
             <h2>Part 3: Lineup Optimization Algorithm</h2>
-            <p>
-                
+            <p>Fanduel has daily contests for the games that are occurring on that day. In the below image, you can see the information about one such contest.</p>
+            <img class="img-responsive" src="static/images/fanduel_contest_information.png"></img>
+            <p>As seen above, the user needs to pick 9 players (collectively called a lineup) from the 3 games to enter the contest with.<br>Below is an image of the screen after I built my lineup.</p>
+            <img class="img-responsive" src="static/images/fanduel_contest_entry.png"></img>
+            <p>Two details are important to understanding how a lineup works:
+            <ol>
+                <li>A player can be playing in one of these positions - Point Guard (PG), Shooting Guard (SG), Small Forward (SF), Power Forward (PF) or Center (C). 
+                <li>Each player has a salary that is not their real salary but their fantasy salary assigned to them by Fanduel based on how well they have been performing.
+            </ol>
             </p>
+            <p>Given the above information there are two constraints to keep in mind when creating the lineup:
+            <ol>
+                <li>The user needs to choose two players for each of the PG, SG, SF, and PF positions and one player for the C position. This adds up to a total of 9 players.
+                <li>The sum of the salaries of the 9 players cannot exceed the salary cap which in the above contest was $60,000 (it almost always is 60,000).
+            </ol>
+            <p>So, the lineup optimizer algorithm needs to take the projections from Part 2 and the constraints above and give the top n optimal lineups.</p>
+            <p>To do this, we did a lot of searching and we finally found that we need to implement a knapsack algorithm. A basic knapsack algorithm can take tuples containing values and weights and find the best n tuples based on values that do not exceed some maximum weight. This is very similar to what we need. The only difference is that we have multiple constraints. Fortunately, we found a python package (called openopt) that contains an implementation of a multi-constraint knapsack algorithm. We used this to get the optimal lineup.</p>
+
         <div class="col-md-2"></div>
     </div> 
 {% endblock %}
