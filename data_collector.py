@@ -231,7 +231,6 @@ class NumberFireScraper(object):
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
 
-        # data = soup.find_all('td', attrs={'class':'player'})
         data = soup.find_all('tr')
 
         players = list()
@@ -270,8 +269,9 @@ class NumberFireScraper(object):
             else:
                 out = False
 
+            # get who they are playing against as well
             if salary_match and position_match and not out:
-                players.append([player_id, position, playing_at_home, salary])
+                players.append((player_id, position, playing_at_home, salary))
 
         return players
 

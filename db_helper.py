@@ -22,7 +22,7 @@ class RedisHelper(object):
         stattleship_data = nba_stattleship.get_player_data()
         stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
 
-        stattleship_ids = []
+        stattleship_ids = set([])
         for player in stattleship_players:
 
             nba_names = player["slug"].split("nba-")
@@ -42,10 +42,10 @@ class RedisHelper(object):
             nba_id = player["slug"].split("nba-")[-1]
             stattleship_ids.add(nba_id.encode('utf-8'))
 
-        nf_names, nf_ids = nf_scraper.get_all_players()
+        nf_ids = nf_scraper.get_all_player_data()
 
         id_not_match = list(nf_ids - stattleship_ids)
-        assert id_not_match == 16
+        assert len(id_not_match) == 16
         # Cristiano Felicio is shown as 'Chistiano Felicio' in Stattleship
         redis_db.set('jj-redick', 'j-j-redick')
         redis_db.set('jose-barea', 'jose-juan-barea')
