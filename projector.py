@@ -80,7 +80,7 @@ class SimpleFeatureProjector(object):
         self.players = players
 
     def get_projection(self, player_id):
-	print "Getting projection for " + player_id
+        print "Getting projection for " + player_id
 
         pts = self.project_points(player_id)
         stl = self.project_steals(player_id)
@@ -111,7 +111,7 @@ class SimpleFeatureProjector(object):
                 'score': total_score}
 
     def project_feature(self, feature_id, player_id):
-        player_features = {k: v[feature_id] for k,v in players.items()}
+        player_features = {k: v[feature_id] for k,v in self.players.items()}
 
         sp = SimpleProjector(player_features)
         player_models = sp.get_models(self.BEST_N_MAX)
