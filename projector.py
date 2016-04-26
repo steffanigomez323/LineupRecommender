@@ -125,22 +125,22 @@ class SimpleFeatureProjector(object):
         return sp.get_projection(scores, averages, best_last_n)
 
     def project_points(self, player_id):
-        return project_feature(self.POINT_ID, player_id)
+        return self.project_feature(self.POINT_ID, player_id)
 
     def project_steals(self, player_id):
-        return project_feature(self.STEAL_ID, player_id)
+        return self.project_feature(self.STEAL_ID, player_id)
     
     def project_assists(self, player_id):
-        return project_feature(self.ASSIST_ID, player_id)
+        return self.project_feature(self.ASSIST_ID, player_id)
 
     def project_rebounds(self, player_id):
-        return project_feature(self.REBOUND_ID, player_id)
+        return self.project_feature(self.REBOUND_ID, player_id)
 
     def project_turnovers(self, player_id):
-        return project_feature(self.TURNOVER_ID, player_id)
+        return self.project_feature(self.TURNOVER_ID, player_id)
 
     def project_blocks(self, player_id):
-        return project_feature(self.BLOCK_ID, player_id)
+        return self.project_feature(self.BLOCK_ID, player_id)
 
 '''
 class PlayerProjector(object):
