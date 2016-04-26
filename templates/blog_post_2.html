@@ -35,6 +35,172 @@
             <p>For this blog post, we extended our simple projector to project player gamelogs, rather than player FanDuel scores. The overall algorithm remains the same (projecting on the best <i>n</i> value per player), but now each player's game features are independently projected. Instead of calculating a player's per-game FanDuel score and then projecting on their scores, we can now project a player's game performance (in terms of features: steals, assists, points, blocks, turnovers, and rebounds). Our new algorithm is more adaptive, since it now tailors its best <i>n</i> value to each player and each feature, rather than finding a best <i>n</i> value to use for every player for a single score.</p>
             <p>The new projection algorithm allows us to have more granular control of our projections, and enables us to analyze the projector's performance in regards to specific game features. Additionally, by projecting each feature, we can score a player using any fantasy basketball rules. Currently, we just use the projected features to calculate a projected FanDuel score:</p>
 
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <td>Player Name</td>
+                    <td>Projected Points</td>
+                    <td>Actual Points Made</td>
+                    <td>Absolute Error</td>
+                    <td>Projected FanDuel Score</td>
+                </tr>
+                <tr>
+                    <td>Jeff Teague</td>
+                    <td>16</td>
+                    <td>13</td>
+                    <td>3</td>
+                    <td>23.4</td>
+                </tr>
+                <tr>
+                    <td>Jae Crowder</td>
+                    <td>16</td>
+                    <td>12</td>
+                    <td>4</td>
+                    <td>23.3</td>
+                </tr>
+                <tr>
+                    <td>Kyle Lowry</td>
+                    <td>17</td>
+                    <td>12</td>
+                    <td>5</td>
+                    <td>32.8</td>
+                </tr>
+            </table>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <td>Player Name</td>
+                    <td>Projected Rebounds</td>
+                    <td>Actual Rebounds Made</td>
+                    <td>Absolute Error</td>
+                </tr>
+                <tr>
+                    <td>Jeff Teague</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Jae Crowder</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Kyle Lowry</td>
+                    <td>17</td>
+                    <td>12</td>
+                    <td>5</td>
+                </tr>
+            </table>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <td>Player Name</td>
+                    <td>Projected Assists</td>
+                    <td>Actual Assists Made</td>
+                    <td>Absolute Error</td>
+                </tr>
+                <tr>
+                    <td>Jeff Teague</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Jae Crowder</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Kyle Lowry</td>
+                    <td>6</td>
+                    <td>5</td>
+                    <td>1</td>
+                </tr>
+            </table>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <td>Player Name</td>
+                    <td>Projected Steals</td>
+                    <td>Actual Steals Made</td>
+                    <td>Absolute Error</td>
+                </tr>
+                <tr>
+                    <td>Jeff Teague</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Jae Crowder</td>
+                    <td>0</td>
+                    <td>2</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Kyle Lowry</td>
+                    <td>2</td>
+                    <td>0</td>
+                    <td>2</td>
+                </tr>
+            </table>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <td>Player Name</td>
+                    <td>Projected Turnovers</td>
+                    <td>Actual Turnovers Made</td>
+                    <td>Absolute Error</td>
+                </tr>
+                <tr>
+                    <td>Jeff Teague</td>
+                    <td>3</td>
+                    <td>3</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Jae Crowder</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Kyle Lowry</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>1</td>
+                </tr>
+            </table>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <td>Player Name</td>
+                    <td>Projected Blocks</td>
+                    <td>Actual Blocks Made</td>
+                    <td>Absolute Error</td>
+                </tr>
+                <tr>
+                    <td>Jeff Teague</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Jae Crowder</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Kyle Lowry</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+            </table>
+
             <hr>
 
             <h2>Part 3: Lineup Optimization Algorithm</h2>
