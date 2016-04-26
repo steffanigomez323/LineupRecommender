@@ -17,6 +17,7 @@ from app import fanduel_scorer
 from app import nba_stattleship
 from app import nf_scraper
 import re
+import datetime
 
 
 class DailyUpdate(object):
@@ -82,11 +83,12 @@ class DailyUpdate(object):
 
         return player_scores
 
-    def create_stattleship_games(self, stattleship_id_list):
+    def create_stattleship_games(self, stattleship_id_list, player_id):
 
         games_dict = {}
         for nba_player_id in stattleship_id_list:
-            games_data = nba_stattleship.prepare_data_for_projections('nba-lebron-james')
+            
+            #games_data = nba_stattleship.prepare_data_for_projections('nba-lebron-james')
             
             list_size = len(games_data['blocks'])
 
@@ -149,17 +151,55 @@ class DailyUpdate(object):
                 players["nba-" + p[0]] = data
         return players
 
-    def stattleship_gameloglookup(self):
-        player_data = nf_scraper.get_todays_player_data()
-        games = {}
-        for p in player_data:
-            data = redis_db.hgetall("nba-" + p[0])
-            game_data = None
-            if (len(data) == 0):
-                game_data = nba_stattleship.get_game_log_data("nba-" + redis_db.get(p[0]))
-                games["nba-" + redis_db.get(p[0])] = game_data
-            else:
-                game_data = nba_stattleship.get_game_log_data("nba-" + p[0])
-                games["nba-" + p[0]] = game_data
+    def get_feature_scores(self, players, last_n):
+        players = players.keys()
+        player_stats = {}
+        for player in players:
 
-        return games
+            data = nba_stattleship.prepare_data_for_projections(player)
+            points_tup = zip(data["game_time"], data["points"])
+            rebounds_tup = zip(data["game_time"], data["rebounds_total"])
+            steals_tup = zip(data["game_time"], data["steals"])
+            assists_tup = zip(data["game_time"], data["assists"])
+            turnovers_tup = zip(data["game_time"], data["turnovers"])
+            blocks_tup = zip(data["game_time"], data["blocks"])
+
+            points_tup_sort = []
+            rebounds_tup_sort = []
+            steals_tup_sort = []
+            assists_tup_sort = []
+            turnovers_tup_sort = []
+            blocks_tup_sort = []
+            for i in range(0, len(points_tup)):
+                time = points_tup[i][0][0:10].split("-")
+                day = datetime.date(int(time[0]), int(time[1]), int(time[2]))
+                points_tup_sort.append((day, points_tup[i][1]))
+                rebounds_tup_sort.append((day, rebounds_tup[i][1]))
+                steals_tup_sort.append((day, steals_tup[i][1]))
+                assists_tup_sort.append((day, assists_tup[i][1]))
+                turnovers_tup_sort.append((day, turnovers_tup[i][1]))
+                blocks_tup_sort.append((day, blocks_tup[i][1]))
+
+            points_tup_sort.sort(key=lambda tup: tup[0])
+            rebounds_tup_sort.sort(key=lambda tup: tup[0])
+            steals_tup_sort.sort(key=lambda tup: tup[0])
+            assists_tup_sort.sort(key=lambda tup: tup[0])
+            turnovers_tup_sort.sort(key=lambda tup: tup[0])
+            blocks_tup_sort.sort(key=lambda tup: tup[0])
+
+            d, points = zip(*points_tup_sort)
+            d, rebounds = zip(*rebounds_tup_sort)
+            d, steals = zip(*steals_tup_sort)
+            d, assists = zip(*assists_tup_sort)
+            d, turnovers = zip(*turnovers_tup_sort)
+            d, blocks = zip(*blocks_tup_sort)
+
+            player_stats[player] = {
+            "points": points[len(points) - last_n:],
+            "rebounds": rebounds[len(rebounds) - last_n:],
+            "steals": steals[len(steals) - last_n:],
+            "assists": assists[len(assists) - last_n:],
+            "turnovers": turnovers[len(turnovers) - last_n:],
+            "blocks": blocks[len(blocks) - last_n:]}
+
+        return player_stats
