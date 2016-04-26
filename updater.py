@@ -151,7 +151,7 @@ class DailyUpdate(object):
                 players["nba-" + p[0]] = data
         return players
 
-    def get_feature_scores(self, players, last_n):
+    def get_feature_scores(self, players):
         players = players.keys()
         player_stats = {}
         for player in players:
@@ -195,11 +195,11 @@ class DailyUpdate(object):
             d, blocks = zip(*blocks_tup_sort)
 
             player_stats[player] = {
-            "points": points[len(points) - last_n:],
-            "rebounds": rebounds[len(rebounds) - last_n:],
-            "steals": steals[len(steals) - last_n:],
-            "assists": assists[len(assists) - last_n:],
-            "turnovers": turnovers[len(turnovers) - last_n:],
-            "blocks": blocks[len(blocks) - last_n:]}
+            "points": list(points),
+            "rebounds": list(rebounds),
+            "steals": list(steals),
+            "assists": list(assists),
+            "turnovers": list(turnovers),
+            "blocks": list(blocks)}
 
         return player_stats
