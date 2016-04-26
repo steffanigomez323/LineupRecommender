@@ -67,7 +67,7 @@ class SimpleProjector(object):
         return classifier.predict(self.avg(scores[::-last_n]))
 
 class SimpleFeatureProjector(object):
-    BEST_N_MAX = 20
+    BEST_N_MAX = 14
 
     POINT_ID = 'points'
     STEAL_ID = 'steals'
@@ -80,6 +80,8 @@ class SimpleFeatureProjector(object):
         self.players = players
 
     def get_projection(self, player_id):
+	print "Getting projection for " + player_id
+
         pts = self.project_points(player_id)
         stl = self.project_steals(player_id)
         ast = self.project_assists(player_id)
