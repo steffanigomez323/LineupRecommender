@@ -1,0 +1,290 @@
+nba-jeff-teague Getting projection for nba-jeff-teague
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 23.4]), 'points': array([16]), 'assists': array([4]), 'rebounds': array([2]), 'steals': array([1]), 'turnovers': array([3])}
+nba-jae-crowder Getting projection for nba-jae-crowder
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 23.3]), 'points': array([17]), 'assists': array([1]), 'rebounds': array([4]), 'steals': array([0]), 'turnovers': array([0])}
+nba-tim-hardaway-jr Getting projection for nba-tim-hardaway-jr
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 3.]), 'points': array([3]), 'assists': array([0]), 'rebounds': array([0]), 'steals': array([0]), 'turnovers': array([0])}
+nba-jared-sullinger Getting projection for nba-jared-sullinger
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 29.2]), 'points': array([12]), 'assists': array([2]), 'rebounds': array([11]), 'steals': array([1]), 'turnovers': array([1])}
+nba-kris-humphries Getting projection for nba-kris-humphries
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 7.6]), 'points': array([4]), 'assists': array([0]), 'rebounds': array([3]), 'steals': array([0]), 'turnovers': array([0])}
+nba-ty-lawson Getting projection for nba-ty-lawson
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 4.]), 'points': array([0]), 'assists': array([2]), 'rebounds': array([0]), 'steals': array([1]), 'turnovers': array([1])}
+nba-terry-rozier Getting projection for nba-terry-rozier
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 1.5]), 'points': array([0]), 'assists': array([1]), 'rebounds': array([0]), 'steals': array([0]), 'turnovers': array([0])}
+nba-evan-turner Getting projection for nba-evan-turner
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 14.8]), 'points': array([6]), 'assists': array([4]), 'rebounds': array([4]), 'steals': array([0]), 'turnovers': array([2])}
+nba-ian-mahinmi Getting projection for nba-ian-mahinmi
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 18.9]), 'points': array([8]), 'assists': array([1]), 'rebounds': array([7]), 'steals': array([1]), 'turnovers': array([1])}
+nba-james-young Getting projection for nba-james-young
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 0.]), 'points': array([0]), 'assists': array([0]), 'rebounds': array([0]), 'steals': array([0]), 'turnovers': array([0])}
+nba-amir-johnson Getting projection for nba-amir-johnson
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([2]), 'score': array([ 19.2]), 'points': array([6]), 'assists': array([2]), 'rebounds': array([6]), 'steals': array([0]), 'turnovers': array([1])}
+nba-rodney-stuckey Getting projection for nba-rodney-stuckey
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 13.4]), 'points': array([6]), 'assists': array([2]), 'rebounds': array([2]), 'steals': array([1]), 'turnovers': array([0])}
+nba-jonas-jerebko Getting projection for nba-jonas-jerebko
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 3.9]), 'points': array([0]), 'assists': array([1]), 'rebounds': array([2]), 'steals': array([0]), 'turnovers': array([0])}
+nba-dennis-schroder Getting projection for nba-dennis-schroder
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 12.1]), 'points': array([6]), 'assists': array([3]), 'rebounds': array([3]), 'steals': array([0]), 'turnovers': array([2])}
+nba-terrence-ross Getting projection for nba-terrence-ross
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 15.4]), 'points': array([13]), 'assists': array([0]), 'rebounds': array([2]), 'steals': array([0]), 'turnovers': array([0])}
+nba-norman-powell Getting projection for nba-norman-powell
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 15.7]), 'points': array([13]), 'assists': array([1]), 'rebounds': array([1]), 'steals': array([0]), 'turnovers': array([0])}
+nba-marcus-smart Getting projection for nba-marcus-smart
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 17.8]), 'points': array([6]), 'assists': array([4]), 'rebounds': array([4]), 'steals': array([1]), 'turnovers': array([1])}
+nba-al-horford Getting projection for nba-al-horford
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([2]), 'score': array([ 28.3]), 'points': array([14]), 'assists': array([3]), 'rebounds': array([4]), 'steals': array([1]), 'turnovers': array([1])}
+nba-glenn-robinson-iii Getting projection for nba-glenn-robinson-iii
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 0.]), 'points': array([0]), 'assists': array([0]), 'rebounds': array([0]), 'steals': array([0]), 'turnovers': array([0])}
+nba-monta-ellis Getting projection for nba-monta-ellis
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 24.6]), 'points': array([13]), 'assists': array([6]), 'rebounds': array([3]), 'steals': array([1]), 'turnovers': array([3])}
+nba-cory-joseph Getting projection for nba-cory-joseph
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 11.6]), 'points': array([6]), 'assists': array([2]), 'rebounds': array([3]), 'steals': array([0]), 'turnovers': array([1])}
+nba-kirk-hinrich Getting projection for nba-kirk-hinrich
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 0.2]), 'points': array([0]), 'assists': array([0]), 'rebounds': array([1]), 'steals': array([0]), 'turnovers': array([1])}
+nba-c-j-miles Getting projection for nba-c-j-miles
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 8.7]), 'points': array([7]), 'assists': array([1]), 'rebounds': array([1]), 'steals': array([0]), 'turnovers': array([1])}
+nba-paul-george Getting projection for nba-paul-george
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 31.9]), 'points': array([20]), 'assists': array([3]), 'rebounds': array([7]), 'steals': array([1]), 'turnovers': array([3])}
+nba-thabo-sefolosha Getting projection for nba-thabo-sefolosha
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 17.]), 'points': array([10]), 'assists': array([0]), 'rebounds': array([5]), 'steals': array([1]), 'turnovers': array([1])}
+nba-kyle-lowry Getting projection for nba-kyle-lowry
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 32.8]), 'points': array([17]), 'assists': array([6]), 'rebounds': array([4]), 'steals': array([2]), 'turnovers': array([2])}
+nba-solomon-hill Getting projection for nba-solomon-hill
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 0.]), 'points': array([0]), 'assists': array([0]), 'rebounds': array([0]), 'steals': array([0]), 'turnovers': array([0])}
+nba-joseph-young Getting projection for nba-joseph-young
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 0.2]), 'points': array([0]), 'assists': array([0]), 'rebounds': array([1]), 'steals': array([0]), 'turnovers': array([1])}
+nba-jordan-hill Getting projection for nba-jordan-hill
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 10.1]), 'points': array([6]), 'assists': array([1]), 'rebounds': array([3]), 'steals': array([0]), 'turnovers': array([1])}
+nba-paul-millsap Getting projection for nba-paul-millsap
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 39.3]), 'points': array([22]), 'assists': array([3]), 'rebounds': array([9]), 'steals': array([2]), 'turnovers': array([2])}
+nba-jason-thompson Getting projection for nba-jason-thompson
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 0.]), 'points': array([0]), 'assists': array([0]), 'rebounds': array([0]), 'steals': array([0]), 'turnovers': array([0])}
+nba-lamar-patterson Getting projection for nba-lamar-patterson
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 9.]), 'points': array([9]), 'assists': array([0]), 'rebounds': array([0]), 'steals': array([0]), 'turnovers': array([0])}
+nba-bismack-biyombo Getting projection for nba-bismack-biyombo
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([1]), 'score': array([ 11.2]), 'points': array([2]), 'assists': array([0]), 'rebounds': array([6]), 'steals': array([0]), 'turnovers': array([0])}
+nba-luis-scola Getting projection for nba-luis-scola
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 4.4]), 'points': array([2]), 'assists': array([0]), 'rebounds': array([2]), 'steals': array([0]), 'turnovers': array([0])}
+nba-demarre-carroll Getting projection for nba-demarre-carroll
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 12.]), 'points': array([5]), 'assists': array([0]), 'rebounds': array([5]), 'steals': array([1]), 'turnovers': array([1])}
+nba-jonas-valanciunas Getting projection for nba-jonas-valanciunas
+Best N value for points:  13
+Best N value for steals:  13
+Best N value for assists:  13
+Best N value for rebounds:  13
+Best N value for turnovers:  13
+Best N value for blocks:  13
+{'blocks': array([0]), 'score': array([ 19.8]), 'points': array([10]), 'assists': array([0]), 'rebounds': array([9]), 'steals': array([0]), 'turnovers': array([1])}
+nba-jordan-mickey Getting projection for nba-jordan-mickey
+Best N value for points:  13

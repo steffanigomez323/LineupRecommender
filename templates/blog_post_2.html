@@ -35,6 +35,7 @@
             <p>For this blog post, we extended our simple projector to project player gamelogs, rather than player FanDuel scores. The overall algorithm remains the same (projecting on the best <i>n</i> value per player), but now each player's game features are independently projected. Instead of calculating a player's per-game FanDuel score and then projecting on their scores, we can now project a player's game performance (in terms of features: steals, assists, points, blocks, turnovers, and rebounds). Our new algorithm is more adaptive, since it now tailors its best <i>n</i> value to each player and each feature, rather than finding a best <i>n</i> value to use for every player for a single score.</p>
             <p>The new projection algorithm allows us to have more granular control of our projections, and enables us to analyze the projector's performance in regards to specific game features. Additionally, by projecting each feature, we can score a player using any fantasy basketball rules. Currently, we just use the projected features to calculate a projected FanDuel score:</p>
 
+            <p>An issue we ran into when running our projector was lack of data. For some players, the logistic regression failed because there wasn't enough training data to run on. For the future, we want to collect additional historic data, including past seasons, to improve our projections.</p>
             <hr>
 
             <h2>Part 3: Lineup Optimization Algorithm</h2>

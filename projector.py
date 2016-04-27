@@ -122,7 +122,7 @@ class SimpleFeatureProjector(object):
 
         print "Best N value for " + feature_id + ": ", best_last_n
 
-        return sp.get_projection(scores, averages, best_last_n)
+        return sp.get_projection(scores, averages, best_last_n)[0]
 
     def project_points(self, player_id):
         return self.project_feature(self.POINT_ID, player_id)
