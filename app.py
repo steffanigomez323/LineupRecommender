@@ -60,5 +60,9 @@ def blog_post_1():
 def blog_post_2():
     return render_template('blog_post_2.html')
 
+@app.route('/blog_post_3')
+def blog_post_3():
+	return render_template('blog_post_3.html')
+
 if __name__ == "__main__":
     app.run(debug=True)

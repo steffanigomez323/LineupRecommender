@@ -157,12 +157,16 @@ class DailyUpdate(object):
         for player in players:
 
             data = nba_stattleship.prepare_data_for_projections(player)
+            #print data
             points_tup = zip(data["game_time"], data["points"])
             rebounds_tup = zip(data["game_time"], data["rebounds_total"])
             steals_tup = zip(data["game_time"], data["steals"])
             assists_tup = zip(data["game_time"], data["assists"])
             turnovers_tup = zip(data["game_time"], data["turnovers"])
             blocks_tup = zip(data["game_time"], data["blocks"])
+
+            #print len(points_tup);
+            #print points_tup;
 
             points_tup_sort = []
             rebounds_tup_sort = []
@@ -187,6 +191,10 @@ class DailyUpdate(object):
             turnovers_tup_sort.sort(key=lambda tup: tup[0])
             blocks_tup_sort.sort(key=lambda tup: tup[0])
 
+
+            if len(points_tup_sort) == 0:
+                continue
+
             d, points = zip(*points_tup_sort)
             d, rebounds = zip(*rebounds_tup_sort)
             d, steals = zip(*steals_tup_sort)
@@ -194,12 +202,14 @@ class DailyUpdate(object):
             d, turnovers = zip(*turnovers_tup_sort)
             d, blocks = zip(*blocks_tup_sort)
 
+            #print d
+
             player_stats[player] = {
             "points": list(points),
             "rebounds": list(rebounds),
             "steals": list(steals),
             "assists": list(assists),
             "turnovers": list(turnovers),
-            "blocks": list(blocks)}
-
+            "blocks": list(blocks),
+            "dates": list(d)}
         return player_stats

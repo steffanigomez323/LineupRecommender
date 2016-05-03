@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+    <link href="static/css/blog_post_1_style.css" rel="stylesheet" media="screen">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="page-header center">
+                <h1>Lineup Recommender <small>&laquo;Blog Post 3&raquo;</small></h1>
+            </div>
+
+            <h2>Introduction</h2>
+            <p>This week we set out to accomplish 3 goals:</p>
+            <ol>
+                <li>Setup the data to perform projections</li>
+                <li>Make some projections</li>
+                <li>Complete the lineup optimization algorithm</li>
+            </ol>
+
+            <h2>Part 1: Setting up Data</h2>
+            <p>The data sources are NumberFire and Stattleship. From Stattleship, we got information about a player, such as the games they've played in, the dates the games were held, the player's points, etc. From that, we create a list of Stattleship games, whose features include points, information about each game, etc. 
+            </p>
+
+            <p>In order to make projections, we need data from NumberFire because it has fantasy salary for the players, as oppose to Stattleship which only has actual salary. Thus, we write a function to get daily update about the players. The information we're storing are player IDs, positions, salary and whether or not they're playing at home.</p>
+
+            <p>Player positions are different between NumberFire and Stattleship. However, since we are relying on NumberFire data to make projections, we are also using player positions from NumberFire.</p>
+
+            <p>In the process of cleaning our data, we found 16 mismatches in the player IDs between the two data sources, i.e. there are some NumberFire player IDs that don't match in the IDs in Stattleship. We move the NF player ids to match in Stattleship, and store them in Redis.</p>
+
+            <hr>
+
+            <h2>Part 2: Project Fantasy Scores</h2>
+            <p>Once we obtained and stored the Stattleship gamelog stats, we began to create a projection algorithm for FanDuel score projections. We based our algorithm on the ML algorithm we developed for our <a href="/midterm_report">midterm report</a>.</p>
+            <p>For our midterm report, we created a projection method based off of logistic regression. Our simple projector took the average FanDuel score of a player's last <i>n</i> games, and projected the next game score based on it. Rather than using an arbitrary <i>n</i> value, our projector first trained on data sets of varying <i>n</i> values, and picked the best (i.e. maximized the R<sup>2</sup> score) <i>n</i> value to use for projecting a player's score.</p>
+            <p>For our final project, we wanted to improve upon that simple projection scheme, by incorporating more player features. We first began by transforming our data into a form suitable for our ML algorithms. Since we are using Stattleship instead of NBA data, we had to re-write our projection code to consume Stattleship gamelog data and convert it into time-sorted arrays for each gamelog feature. Once we had these features aggregated into arrays, we could pass them into our logistic regression algorithm.</p>
+            <p>For this blog post, we extended our simple projector to project player gamelogs, rather than player FanDuel scores. The overall algorithm remains the same (projecting on the best <i>n</i> value per player), but now each player's game features are independently projected. Instead of calculating a player's per-game FanDuel score and then projecting on their scores, we can now project a player's game performance (in terms of features: steals, assists, points, blocks, turnovers, and rebounds). Our new algorithm is more adaptive, since it now tailors its best <i>n</i> value to each player and each feature, rather than finding a best <i>n</i> value to use for every player for a single score.</p>
+            <p>The new projection algorithm allows us to have more granular control of our projections, and enables us to analyze the projector's performance in regards to specific game features. Additionally, by projecting each feature, we can score a player using any fantasy basketball rules. Currently, we just use the projected features to calculate a projected FanDuel score.</p>
+
+            <p>An issue we ran into when running our projector was lack of data. For some players, the logistic regression failed because there wasn't enough training data to run on. For the future, we want to collect additional historic data, including past seasons, to improve our projections.</p>
+            
+            <hr>
+
+            <h2>Visualization</h2>
+            <p> This chart shows the projected FanDuel scores and the projected points, steals, blocks, turnovers, and rebounds of the player. When a table row is clicked upon, the table changes into a line chart that shows how the player's FanDuel score has changed over time. When the line chart is clicked upon, it turns back into the table of before.</p>
+
+            <script src="static/js/viz3.js"></script>
+
+            <div id="viz">
+            </div>
+
+            <hr>
+
+            <h2>Part 3: Lineup Optimization Algorithm</h2>
+            <p>Fanduel has daily contests for the games that are occurring on that day. In the below image, you can see the information about one such contest.</p>
+            <img class="img-responsive" src="static/images/fanduel_contest_information.png"></img>
+            <p>As seen above, the user needs to pick 9 players (collectively called a lineup) from the 3 games to enter the contest with.<br>Below is an image of the screen after I built my lineup.</p>
+            <img class="img-responsive" src="static/images/fanduel_contest_entry.png"></img>
+            <p>Two details are important to understanding how a lineup works:
+            <ol>
+                <li>A player can be playing in one of these positions - Point Guard (PG), Shooting Guard (SG), Small Forward (SF), Power Forward (PF) or Center (C). 
+                <li>Each player has a salary that is not their real salary but their fantasy salary assigned to them by Fanduel based on how well they have been performing.
+            </ol>
+            </p>
+            <p>Given the above information there are two constraints to keep in mind when creating the lineup:
+            <ol>
+                <li>The user needs to choose two players for each of the PG, SG, SF, and PF positions and one player for the C position. This adds up to a total of 9 players.
+                <li>The sum of the salaries of the 9 players cannot exceed the salary cap which in the above contest was $60,000 (it almost always is $60,000).
+            </ol>
+            <p>So, the lineup optimizer algorithm needs to take the projections from Part 2 and the constraints above and give the top n optimal lineups.</p>
+            <p>To do this, we did a lot of searching and we finally found that we need to implement a knapsack algorithm. A basic knapsack algorithm can take tuples containing values and weights and find the best n tuples based on values that do not exceed some maximum weight. This is very similar to what we need. The only difference is that we have multiple constraints. Fortunately, we found a python package (called openopt) that contains an implementation of a multi-constraint knapsack algorithm. We used this to get the optimal lineup.</p>
+
+        <div class="col-md-2"></div>
+    </div> 
+{% endblock %}
