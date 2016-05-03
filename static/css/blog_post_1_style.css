@@ -24,8 +24,8 @@ thead {
   shape-rendering: crispEdges;
 }
 
-.x.axis path {
-  display: none;
+.x.axis {
+  font-size: 11px;
 }
 
 .line {
