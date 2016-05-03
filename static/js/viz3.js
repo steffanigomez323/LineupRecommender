@@ -1,6 +1,4 @@
 $(document).ready(function() {
-	$("#viz").width(750);
-	$("#viz").height(600);
 	var formatDate = d3.time.format("%Y-%m-%d");
 	var q = d3_queue.queue(1);
 	q.defer(function(callback) {
@@ -43,6 +41,8 @@ function linegraph(data, row) {
 		return d.Player === row.id;
 	});
 	$("#viz").empty();
+	$("#viz").width(750);
+	$("#viz").height(600);
 	var margin = {top: 10, right: 20, bottom: 20, left: 40},
     	width = $("#viz").width() - margin.left - margin.right,
     	height = $("#viz").height() - margin.top - margin.bottom;
@@ -103,7 +103,9 @@ function linegraph(data, row) {
 	$("svg").on('click', function() {
 
 		$("#viz").empty();
-		addTable(data);
+		$("#viz").width(0);
+		$("#viz").height(0);
+		//addTable(data);
 		var tbody = document.getElementById("tbody");
 	    var rows = tbody.getElementsByTagName("tr");
 	    for(i = 0; i < rows.length; i++) {
@@ -117,7 +119,7 @@ function linegraph(data, row) {
 
 function addTable(data) {
 
-    var viz = document.getElementById("viz");
+    var viz = document.getElementById("lineup-table");
     var table = document.createElement('table');
     table.setAttribute("id", "table");
     table.className = "table table-hover table-striped";
