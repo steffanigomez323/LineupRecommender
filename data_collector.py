@@ -13,6 +13,7 @@ import re
 from requestor import CustomRequest
 from bs4 import BeautifulSoup
 from copy import deepcopy
+from collections import defaultdict
 
 
 class NBAStattleShip(object):
@@ -94,7 +95,12 @@ class NBAStattleShip(object):
                               'basketball_player_stat':
                               ['plus_minus', 'time_played_total'],
                               'basketball_rebounding_stat':
-                              ['rebounds_total']}):
+                              ['rebounds_total']},
+                              seasons=['nba-2015-2016',
+                                       'nba-2014-2015',
+                                       'nba-2013-2014',
+                                       'nba-2012-2013',
+                                       'nba-2011-2012']):
         # STATS #
         # defensive - basketball_defensive_stat #
         # - blocks
@@ -120,7 +126,7 @@ class NBAStattleShip(object):
         # - rebounds_defensive
         # - rebounds_offensive
         # - rebounds_total
-        data = dict()
+        data = defaultdict(list)
 
         for stat_type, stat_list in fields.iteritems():
             for stat_name in stat_list:
@@ -131,7 +137,6 @@ class NBAStattleShip(object):
 
                 response = self.nba_request.get_request(modifier)
 
-                data[stat_name] = list()
                 for game in response.json()['stats']:
                     data[stat_name].append(game['stat'])
 

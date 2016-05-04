@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+    <link href="static/css/blog_post_1_style.css" rel="stylesheet" media="screen">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="page-header center">
+                <h1>Lineup Recommender <small>&laquo;Blog Post 3&raquo;</small></h1>
+            </div>
+
+            <h2>Introduction</h2>
+            <p>This week we set out to accomplish 3 goals:</p>
+            <ol>
+                <li>Store game log data in Redis for quick access</li>
+                <li>Improve projections</li>
+                <li>Improve visualizations</li>
+            </ol>
+
+            <h2>Part 1: Redis</h2>
+            <p>The data sources are NumberFire and Stattleship. From Stattleship, we got information about a player, such as the games they've played in, the dates the games were held, the player's points, etc. From that, we create a list of Stattleship games, whose features include points, information about each game, etc. 
+            </p>
+
+            <p>In order to make projections, we need data from NumberFire because it has fantasy salary for the players, as oppose to Stattleship which only has actual salary. Thus, we write a function to get daily update about the players. The information we're storing are player IDs, positions, salary and whether or not they're playing at home.</p>
+
+            <p>Player positions are different between NumberFire and Stattleship. However, since we are relying on NumberFire data to make projections, we are also using player positions from NumberFire.</p>
+
+            <p>In the process of cleaning our data, we found 16 mismatches in the player IDs between the two data sources, i.e. there are some NumberFire player IDs that don't match in the IDs in Stattleship. We move the NF player ids to match in Stattleship, and store them in Redis.</p>
+
+            <hr>
+
+            <h2>Part 2: Projections</h2>
+            <p>Once we obtained and stored the Stattleship gamelog stats, we began to create a projection algorithm for FanDuel score projections. We based our algorithm on the ML algorithm we developed for our <a href="/midterm_report">midterm report</a>.</p>
+            <p>For our midterm report, we created a projection method based off of logistic regression. Our simple projector took the average FanDuel score of a player's last <i>n</i> games, and projected the next game score based on it. Rather than using an arbitrary <i>n</i> value, our projector first trained on data sets of varying <i>n</i> values, and picked the best (i.e. maximized the R<sup>2</sup> score) <i>n</i> value to use for projecting a player's score.</p>
+            <p>For our final project, we wanted to improve upon that simple projection scheme, by incorporating more player features. We first began by transforming our data into a form suitable for our ML algorithms. Since we are using Stattleship instead of NBA data, we had to re-write our projection code to consume Stattleship gamelog data and convert it into time-sorted arrays for each gamelog feature. Once we had these features aggregated into arrays, we could pass them into our logistic regression algorithm.</p>
+            <p>For this blog post, we extended our simple projector to project player gamelogs, rather than player FanDuel scores. The overall algorithm remains the same (projecting on the best <i>n</i> value per player), but now each player's game features are independently projected. Instead of calculating a player's per-game FanDuel score and then projecting on their scores, we can now project a player's game performance (in terms of features: steals, assists, points, blocks, turnovers, and rebounds). Our new algorithm is more adaptive, since it now tailors its best <i>n</i> value to each player and each feature, rather than finding a best <i>n</i> value to use for every player for a single score.</p>
+            <p>The new projection algorithm allows us to have more granular control of our projections, and enables us to analyze the projector's performance in regards to specific game features. Additionally, by projecting each feature, we can score a player using any fantasy basketball rules. Currently, we just use the projected features to calculate a projected FanDuel score.</p>
+
+            <p>An issue we ran into when running our projector was lack of data. For some players, the logistic regression failed because there wasn't enough training data to run on. For the future, we want to collect additional historic data, including past seasons, to improve our projections.</p>
+            
+            <hr>
+
+            <h2>Part 3: Visualizations</h2>
+            <p> We improved the visualization this week to include more than just the lineup. The table below shows the projected FanDuel scores along with the projected points, steals, blocks, turnovers, and rebounds of the player. Directly below the table is a grouped bar chart that shows the projected FanDuel score, the projected points, and the projected assits (this can be easily extended to include other stat groups as well). When a table row is hovered upon, the bar chart changes into a line chart that shows how that specific player's FanDuel score has changed over time. When the mouse leaves the row of the table, the line chart turns back into the bar chart of before.</p>
+
+            <script src="static/js/viz3.js"></script>
+
+            <div id="lineup-table">
+            </div>
+
+            <div id="viz">
+            </div>
+
+        <div class="col-md-2"></div>
+    </div> 
+{% endblock %}

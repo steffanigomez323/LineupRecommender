@@ -2,6 +2,11 @@ from updater import DailyUpdate
 # from projector import SimpleFeatureProjector
 from db_helper import RedisHelper
 
+from data_collector import NBAStattleShip
+
+
+nss = NBAStattleShip()
+
 
 # u = DailyUpdate()
 # redis = RedisHelper()
@@ -14,9 +19,6 @@ from db_helper import RedisHelper
 
 # 	print p, sfp.get_projection(p)
 
-from data_collector import NBAStattleShip
-
-ss = NBAStattleShip()
 # ss.get_player_stats_data()
 
 rh = RedisHelper()
