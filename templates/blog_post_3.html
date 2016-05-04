@@ -17,18 +17,21 @@
             </ol>
 
             <h2>Part 1: Redis</h2>
-            <p> We store our game logs in Redis. There are 1065 keys in the database, where each key is a stattleship player id. The informaton that each player id has include: whether or not they are active, years of experience, name, weight and height.
+            <p>There are 1065 keys in the database, where each key is a stattleship player id. The informaton that each player id has include: whether or not they are active, years of experience, name, weight and height.
             </p>
 
-            <p> Here is how the player id's are stored: <br>
-                <img class="img-responsive" src="static/images/redis_players.png"></img><br>
-                Here is the stored information about each player id: <br>
-                <img class="img-responsive" src="static/images/redis_player_fields.png"></img>
+            <p> Here is an example player: <br><br>
+            <img class="img-responsive" src="static/images/redis_player_fields.png"></img>
+            </p>
+            <p>We also store the game logs for each player in redis but it takes quite some time to get all the game log data for each of the 1065 players. We're going to run the program over night so that it finished populating the database with all the game log data by tomorrow morning. Below is how the game log data looks in a python dictionary for a single season of games for LeBron James:<br><br>
+            <img class="img-responsive" src="static/images/lebron_game_logs.png"></img><br>
+            The above image does not show all the fields. We also store game_time, points, home_or_away, assists, rebounds, steals and turnovers.
             </p>
             <hr>
 
             <h2>Part 2: Projections</h2>
-            <p>We were not sure if we should predict the fantasy score directly or if we should predict each stat that contributes to the fantasy score separately and then calculate the fantasy score from those projections. After thinking about it a little more we realized that predicting each stat could be better because it gives us more fine grained control over the features that are used to predict them. More specifically, the height of the player would effect his ability to rebound but not necessarily his ability to score points and therefore predicting rebounds and points separately and using only the relevant features for each can give us better results. After confirming this with our mentor, we started working with our data and tranforming it into a format </p>
+            <p>We were not sure if we should predict the fantasy score directly or if we should predict each stat that contributes to the fantasy score separately and then calculate the fantasy score from those projections. After thinking about it a little more we realized that predicting each stat could be better because it gives us more fine grained control over the features that are used to predict them. More specifically, the height of the player would effect his ability to rebound but not necessarily his ability to score points and therefore predicting rebounds and points separately and using only the relevant features for each can give us better results. After confirming this with our mentor, we started working with our data and tranforming it into features to create a model for projection. Below are the labels we want to predict and the corresponding features we are using to predict them.</p>
+            <img class="img-responsive" src="static/images/features_labels.png"></img><br>
             
             <hr>
 
