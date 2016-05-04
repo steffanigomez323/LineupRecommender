@@ -86,32 +86,31 @@ class DailyUpdate(object):
 
         games_dict = {}
         count = 1
-        print len(stattleship_id_list)
         for nba_player_id in stattleship_id_list:
             # start_time = time.clock()
-
             games_data = nba_stattleship.prepare_data_for_projections(nba_player_id)
-            list_size = len(games_data['blocks'])
 
-            for i in range(0, list_size):
+            if games_data != None:
+                list_size = len(games_data['blocks'])
 
-                features = {}
-                game_id = re.sub(r'\W', '', games_data['game_time'][i].encode('utf-8')).replace('T', '')
-                features['steals'] = games_data['steals'][i]
-                features['assists'] = games_data['assists'][i]
-                features['rebounds_total'] = games_data['rebounds_total'][i]
-                features['points'] = games_data['points'][i]
-                features['turnovers'] = games_data['turnovers'][i]
-                features['blocks'] = games_data['blocks'][i]
-                features['min_PG'] = games_data['time_played_total'][i] / 60
-                features['plus_minus_PG'] = games_data['plus_minus'][i]
-                features['hva'] = 'home' if games_data['played_at_home'][i] == 'True' else 'away'
-                features['opponent'] = games_data['played_against'][i].encode('utf-8')
-                games_dict[game_id] = features
+                for i in range(0, list_size):
 
+                    features = {}
+                    game_id = re.sub(r'\W', '', games_data['game_time'][i].encode('utf-8')).replace('T', '')
+                    features['steals'] = games_data['steals'][i]
+                    features['assists'] = games_data['assists'][i]
+                    features['rebounds_total'] = games_data['rebounds_total'][i]
+                    features['points'] = games_data['points'][i]
+                    features['turnovers'] = games_data['turnovers'][i]
+                    features['blocks'] = games_data['blocks'][i]
+                    features['min_PG'] = games_data['time_played_total'][i] / 60
+                    features['plus_minus_PG'] = games_data['plus_minus'][i]
+                    features['hva'] = 'home' if games_data['played_at_home'][i] == 'True' else 'away'
+                    features['opponent'] = games_data['played_against'][i].encode('utf-8')
+                    games_dict[game_id] = features
 
-            # end_time = time.clock()
-            print nba_player_id, count
+                # end_time = time.clock()
+                print nba_player_id, count
             count += 1
 
         return games_dict

@@ -136,16 +136,17 @@ class NBAStattleShip(object):
                            '&interval_type=regularseason'
 
                 response = self.nba_request.get_request(modifier)
+                if len(response.json()['stats']) != 0:
 
-                for game in response.json()['stats']:
-                    data[stat_name].append(game['stat'])
-
-                while 'next' in response.links:
-                    modifier = re.match(self.nba_request.base_url + '(.*)',
-                                        response.links['next']['url']).group(1)
-                    response = self.nba_request.get_request(modifier)
                     for game in response.json()['stats']:
                         data[stat_name].append(game['stat'])
+
+                    while 'next' in response.links:
+                        modifier = re.match(self.nba_request.base_url + '(.*)',
+                                            response.links['next']['url']).group(1)
+                        response = self.nba_request.get_request(modifier)
+                        for game in response.json()['stats']:
+                            data[stat_name].append(game['stat'])
 
         return data
 
@@ -155,17 +156,22 @@ class NBAStattleShip(object):
                    '&interval_type=regularseason'
 
         response = self.nba_request.get_request(modifier)
-        data = {"game_logs": response.json()['game_logs'],
-                "games": response.json()['games']}
 
-        while 'next' in response.links:
-            modifier = re.match(self.nba_request.base_url + '(.*)',
-                                response.links['next']['url']).group(1)
-            response = self.nba_request.get_request(modifier)
-            data['game_logs'].extend(response.json()['game_logs'])
-            data['games'].extend(response.json()['games'])
+        if len(response.json()['game_logs']) != 0:
 
-        return data
+            data = {"game_logs": response.json()['game_logs'],
+                    "games": response.json()['games']}
+
+            while 'next' in response.links:
+                modifier = re.match(self.nba_request.base_url + '(.*)',
+                                    response.links['next']['url']).group(1)
+                response = self.nba_request.get_request(modifier)
+                data['game_logs'].extend(response.json()['game_logs'])
+                data['games'].extend(response.json()['games'])
+
+            return data
+
+        return None
 
     def prepare_data_for_projections(self, player_id):
         id_to_slug = self.get_team_id_to_slug()
@@ -173,26 +179,30 @@ class NBAStattleShip(object):
         stats = self.get_player_stats_data(player_id)
         game_logs = self.get_game_log_data(player_id)
 
-        stats['game_time'] = list()
-        stats['played_at_home'] = list()
-        stats['played_against'] = list()
+        if game_logs != None:
 
-        for i in range(len(stats['plus_minus'])):
-            game_time = game_logs['games'][i]['started_at']
-            stats['game_time'].append(game_time)
+            stats['game_time'] = list()
+            stats['played_at_home'] = list()
+            stats['played_against'] = list()
 
-            opponent = id_to_slug[game_logs['game_logs'][i]['opponent_id']]
-            stats['played_against'].append(opponent)
+            for i in range(len(stats['plus_minus'])):
+                game_time = game_logs['games'][i]['started_at']
+                stats['game_time'].append(game_time)
 
-            if game_logs['game_logs'][i]['team_id'] == \
-                    game_logs['games'][i]['home_team_id']:
-                stats['played_at_home'].append(True)
-            else:
-                stats['played_at_home'].append(False)
+                opponent = id_to_slug[game_logs['game_logs'][i]['opponent_id']]
+                stats['played_against'].append(opponent)
 
-        data = self.clean_data_for_projections(stats)
+                if game_logs['game_logs'][i]['team_id'] == \
+                        game_logs['games'][i]['home_team_id']:
+                    stats['played_at_home'].append(True)
+                else:
+                    stats['played_at_home'].append(False)
 
-        return data
+            data = self.clean_data_for_projections(stats)
+
+            return data
+
+        return None
 
     def clean_data_for_projections(self, data):
         time_played = deepcopy(data['time_played_total'])
