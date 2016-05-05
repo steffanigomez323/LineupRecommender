@@ -49,16 +49,47 @@ class RedisHelper(object):
 
         # get stattleship players' names and slugs
         stattleship_players = nba_stattleship.get_player_data()
-        stattleship_name_to_slug = stattleship.get_player_name_slug_map(
+        stattleship_name_to_slug = nba_stattleship.get_player_name_slug_map(
             stattleship_players)
+
+        nba_player_set = set()
 
         # set all the nba id to stattleship slug maps in redis
         for nba_name, nba_id in nba_name_to_id.iteritems():
             stattleship_slug = stattleship_name_to_slug[nba_name]
             redis_db.set(nba_id, stattleship_slug)
 
-        # set all the mismatches manually
+            nba_player_set.add(nba_name)
 
+        # set all the mismatches manually
+        redis_db.set(203933, 'nba-t-j-warren')
+        redis_db.set(203922, 'nba-glenn-robinson-iii')
+        redis_db.set(203798, 'nba-p-j-hairston')
+        redis_db.set(2403, 'nba-nene')
+        redis_db.set(101236, 'nba-chuck-hayes')
+        redis_db.set(203912, 'nba-c-j-wilcox')
+        redis_db.set(203468, 'nba-c-j-mccollum')
+        redis_db.set(200782, 'nba-p-j-tucker')
+        redis_db.set(203909, 'nba-k-j-mcdaniels')
+        redis_db.set(101139, 'nba-c-j-miles')
+        redis_db.set(201581, 'nba-j-j-hickson')
+        redis_db.set(203948, 'nba-johnny-o-bryant-iii')
+        redis_db.set(201228, 'nba-c-j-watson')
+        redis_db.set(101150, 'nba-louis-williams')
+        redis_db.set(200755, 'nba-j-j-redick')
+        redis_db.set(1626154, 'nba-r-j-hunter')
+        redis_db.set(203960, 'nba-jakarr-sampson')
+        redis_db.set(1626202, 'nba-joseph-young')
+        redis_db.set(204456, 'nba-t-j-mcconnell')
+
+        nf_player_set = set()
+        nf = NumberFireScraper()
+        nf_players = nf.get_all_player_data() # will print the names
+        for nf_player in nf_players:
+            nf_player_set.add(nf_player)
+
+
+        print nf_player_set - nba_player_set # nf_players not in nba list
 
 
 
