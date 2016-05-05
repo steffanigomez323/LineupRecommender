@@ -48,7 +48,7 @@ class RedisHelper(object):
 
         # get stattleship players' names and slugs
         stattleship_players = nba_stattleship.get_player_data()
-        stattleship_name_to_slug = stattleship.get_player_name_slug_map(
+        stattleship_name_to_slug = nba_stattleship.get_player_name_slug_map(
             stattleship_players)
 
         # set all the nba id to stattleship slug maps in redis
