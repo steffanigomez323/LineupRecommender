@@ -103,13 +103,13 @@ class RedisHelper(object):
         # redis_db.set('nf-jj-hickson', 'nba-j-j-hickson')
         # redis_db.set('nf-roy-devyn-marble', 'nba-devyn-marble')
 
-        assert len(stattleship_id_list) == 1049
+        # assert len(stattleship_id_list) == 1049
 
-        # Store gamelogs in the database
-        du = DailyUpdate()
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[:200]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[200:400]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[400:600]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[600:800]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[800:1000]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1000:]))
+        Store gamelogs in the database
+        # du = DailyUpdate()
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[:200]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[200:400]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[400:600]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[600:800]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[800:1000]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1000:]))
