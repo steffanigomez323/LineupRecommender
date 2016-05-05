@@ -28,20 +28,18 @@ class RedisHelper(object):
         stattleship_ids = set([])
 
         for player in stattleship_players:
-
-            nba_names = player["slug"].split("nba-")
-            name = nba_names[len(nba_names) - 1].replace("-", " ")
+            name = player["name"]
             weight = player["weight"]
             height = player["height"]
             active = player["active"]
             years_of_experience = player["years_of_experience"]
 
-
             redis_db.hmset(player["slug"], {'name': name,
-                                       'height': height,
-                                       'weight': weight,
-                                       'active': active,
-                                       'years_of_experience': years_of_experience})
+                                            'height': height,
+                                            'weight': weight,
+                                            'active': active,
+                                            'years_of_experience':
+                                            years_of_experience})
 
             if player["active"]:
                 stattleship_id_list.append(player["slug"])
