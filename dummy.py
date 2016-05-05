@@ -78,6 +78,9 @@ print ""
 
 # nss = NBAStattleShip()
 
+nss = NBAStattleShip()
+du = DailyUpdate()
+
 
 # u = DailyUpdate()
 # redis = RedisHelper()
@@ -90,7 +93,6 @@ print ""
 
 # 	print p, sfp.get_projection(p)
 
-# ss.get_player_stats_data()
 
 # rh = RedisHelper()
 # rh.populate_db()
@@ -99,3 +101,4 @@ print ""
 # nss.get_game_log_data('nba-jeff-adrien')
 
 # nss.get_player_stats_data('nba-mitch-mcgary')
+
