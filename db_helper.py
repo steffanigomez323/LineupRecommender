@@ -16,7 +16,8 @@ from updater import DailyUpdate
 
 class RedisHelper(object):
 
-    # populate the database with all players using stattleship and numberfire
+    # populate the database with all players using
+    # stattleship, nba and numberfire
     def populate_db(self):
         # flush the db
         redis_db.flushall()
@@ -24,7 +25,8 @@ class RedisHelper(object):
         # get player data from stattleship
         stattleship_data = nba_stattleship.get_player_data()
         # get only the required fields
-        stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
+        stattleship_players = nba_stattleship.get_player_fields(
+            stattleship_data)
 
         # set the player basic information in redis
         for player in stattleship_players:
@@ -47,7 +49,8 @@ class RedisHelper(object):
 
         # get stattleship players' names and slugs
         stattleship_players = nba_stattleship.get_player_data()
-        stattleship_name_to_slug = stattleship.get_player_name_slug_map(stattleship_players)
+        stattleship_name_to_slug = stattleship.get_player_name_slug_map(
+            stattleship_players)
 
         # set all the nba id to stattleship slug maps in redis
         for nba_name, nba_id in nba_name_to_id.iteritems():
@@ -55,7 +58,7 @@ class RedisHelper(object):
             redis_db.set(nba_id, stattleship_slug)
 
         # set all the mismatches manually
-        
+
 
 
 
@@ -105,7 +108,7 @@ class RedisHelper(object):
 
         # assert len(stattleship_id_list) == 1049
 
-        Store gamelogs in the database
+        # # Store gamelogs in the database
         # du = DailyUpdate()
         # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[:200]))
         # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[200:400]))
