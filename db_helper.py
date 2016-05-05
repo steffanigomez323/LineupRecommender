@@ -10,92 +10,75 @@ Database
 from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
+from app import nba_scraper
 from updater import DailyUpdate
-from data_collector import NBAScraper
 
 
 class RedisHelper(object):
-
-    # populate the database with all players using stattleship and numberfire
+    # populate the database with all players using
+    # stattleship, nba and numberfire
     def populate_db(self):
         # flush the db
+        redis_db.flushall()
 
-        # redis_db.flushall()
-        nbascrape = NBAScraper()
-
+        # get player data from stattleship
         stattleship_data = nba_stattleship.get_player_data()
-        stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
+        # get only the required fields
+        stattleship_players = nba_stattleship.get_player_fields(
+            stattleship_data)
 
-        stattleship_id_list = []
-
-        # stattleship_ids = set([])
+        # set the player basic information in redis
         for player in stattleship_players:
+            name = player["name"]
+            weight = player["weight"]
+            height = player["height"]
+            active = player["active"]
+            years_of_experience = player["years_of_experience"]
 
-            # nba_names = player["slug"].split("nba-")
-            # name = nba_names[len(nba_names) - 1].replace("-", " ")
-            # weight = player["weight"]
-            # height = player["height"]
-            # active = player["active"]
-            # years_of_experience = player["years_of_experience"]
+            redis_db.hmset(player["slug"], {'name': name,
+                                            'height': height,
+                                            'weight': weight,
+                                            'active': active,
+                                            'years_of_experience':
+                                            years_of_experience})
+
+        # get nba players' names and ids
+        nba_players = nba_scraper.get_player_data()
+        nba_name_to_id = nba_scraper.get_player_name_id_map(nba_players)
+
+        # get stattleship players' names and slugs
+        stattleship_players = nba_stattleship.get_player_data()
+        stattleship_name_to_slug = nba_stattleship.get_player_name_slug_map(
+            stattleship_players)
+
+        # set all the nba id to stattleship slug maps in redis
+        for nba_name, nba_id in nba_name_to_id.iteritems():
+            stattleship_slug = stattleship_name_to_slug[nba_name]
+            redis_db.set(nba_id, stattleship_slug)
+
+        # set all the mismatches manually
 
 
-        #     redis_db.hmset(player["slug"], {'name': name,
-        #                                'height': height,
-        #                                'weight': weight,
-        #                                'active': active,
-        #                                'years_of_experience': years_of_experience})
-            if player["active"] == True:
-                stattleship_id_list.append(player["slug"])
 
-        player_stats = nbascrape.get_player_stats('2015-16')
-        clean_players_stats = nbascrape.clean_player_stats2(player_stats)
 
-        nba_names = {}
+        #     if player["active"]:
+        #         stattleship_id_list.append(player["slug"])
 
-        player_names = nbascrape.get_players()
-        player_names = nbascrape.clean_players(player_names)
+        # player_stats = nba_scraper.get_player_stats('2015-16')
+        # clean_players_stats = nba_scraper.clean_player_stats2(player_stats)
 
-        nba_id_list = clean_players_stats.keys()
-        nba_names_list = []
+        # nba_names = {}
 
-        for id in nba_id_list:
-            name = clean_players_stats[id]['player_name']
-            nba_names[id] = name
-            nba_names_list.append('nba-' + "-".join(name.split(" ")))
+        # player_names = nba_scraper.get_players()
+        # player_names = nba_scraper.clean_players(player_names)
 
-        #print stattleship_id_list
+        # nba_id_list = clean_players_stats.keys()
+        # nba_names_list = []
 
-        #print "##########"
-        #print ""
-
-        #print nba_names_list
-
-        #print "########"
-        #print ""
-
-        # print stattleship_id_list
-
-        # print "########"
-        # print ""
-
-        # print nba_names_list
-
-        # print "########"
-        # print ""
-
-        missed_ids = list(set(stattleship_id_list) - set(nba_names_list))
-
-        print "### MISSED IDS ###"
-
-        print len(missed_ids)
-        print missed_ids
-
-        print "### MATCHED IDS ###"
-
-        correct_ids = list(set(stattleship_id_list) - set(missed_ids))
-
-        print len(correct_ids)
-        print correct_ids
+        # for id in nba_id_list:
+        #     name = clean_players_stats[id]['player_name']
+        #     nba_names[id] = name
+        #     nba_names_list.append('nba-' + "-".join(name.split(" ")))
 
         #     nba_id = player["slug"].split("nba-")[-1]
         #     stattleship_ids.add(nba_id.encode('utf-8'))
@@ -104,7 +87,7 @@ class RedisHelper(object):
 
         # id_not_match = list(nf_ids - stattleship_ids)
         # assert len(id_not_match) == 16
-        # # Cristiano Felicio is shown as 'Chistiano Felicio' in Stattleship
+        # Cristiano Felicio is shown as 'Chistiano Felicio' in Stattleship
         # redis_db.set('nf-jj-redick', 'nba-j-j-redick')
         # redis_db.set('nf-jose-barea', 'nba-jose-juan-barea')
         # redis_db.set('nf-chris-johnson1', 'nba-chris-johnson')
@@ -124,11 +107,11 @@ class RedisHelper(object):
 
         # assert len(stattleship_id_list) == 1049
 
-        # Store gamelogs in the database
-        du = DailyUpdate()
+        # # Store gamelogs in the database
+        # du = DailyUpdate()
         # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[:200]))
         # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[200:400]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[400:600]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[600:800]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[800:1000]))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1000:]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[400:600]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[600:800]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[800:1000]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1000:]))

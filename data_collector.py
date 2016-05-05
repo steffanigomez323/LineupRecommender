@@ -55,6 +55,15 @@ class NBAStattleShip(object):
 
         return data
 
+    def get_player_name_slug_map(self, data):
+        name_id = {}
+        for entry in data:
+            name = entry['name']
+            slug = entry['slug']
+            name_id[name] = slug
+
+        return name_id
+
     def get_team_data(self):
         modifier = 'teams'
 
@@ -230,21 +239,23 @@ class NBAStattleShip(object):
 
 class NumberFireScraper(object):
 
-    def get_all_player_data(self):
+    def get_player_name_slug_map(self):
         url = 'https://www.numberfire.com/nba/players/'
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
 
         data = soup.find_all('p', attrs={'class': 'sb'})
 
-        id_set = set()
+        name_to_slug = {}
 
         for d in data:
+            name_position_team = d.text
+            # name = use regex to get just name
             link_text = d.a['href']
             link_match = re.search('/nba/players/(.*)', link_text)
-            id_set.add(link_match.group(1))
+            name_to_slug[name] = link_match.group(1)
 
-        return id_set
+        return name_to_slug
 
     def get_todays_player_data(self):
         url = 'https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections'
@@ -296,55 +307,6 @@ class NumberFireScraper(object):
         return players
 
 
-# class SwishScraper(object):
-
-#     def get_players(self):
-#         url = 'https://www.swishanalytics.com/nba/players/'
-#         page = urllib.urlopen(url)
-#         soup = BeautifulSoup(page, 'lxml')
-#         data = soup.find_all('script')[4].string
-#         players_data = re.search('this.all_players = (.*?);', data).group(1)
-#         players_json = json.loads(players_data)
-#         return players_json
-
-#     def clean_players(self, data, fields=['player_id',
-#                                           'player_name',
-#                                           'team_abbr',
-#                                           'primary_pos_abbr']):
-#         for entry in data:
-#             for key in deepcopy(entry):
-#                 if key not in fields:
-#                     del(entry[key])
-
-#         swish_dict = {}
-#         for entry in data:
-#             swish_dict[entry['player_name']] = (entry['player_id'],
-#                                                 entry['team_abbr'],
-#                                                 entry['primary_pos_abbr'])
-
-#         return swish_dict
-
-#     def get_projections(self):
-#         url = 'https://www.swishanalytics.com/optimus/nba/optimus-x/'
-#         page = urllib.urlopen(url)
-#         soup = BeautifulSoup(page, 'lxml')
-#         data = soup.find_all('script')[9].string
-#         projections_data = re.search(
-#             'self.model.masterPlayerArray = (....*?);', data).group(1)
-#         projections_json = json.loads(projections_data)
-#         return projections_json
-
-#     def clean_projections(self, data, fields=['player_id',
-#                                               'proj_fantasy_pts_fd',
-#                                               'fd_salary',
-#                                               'injury_status']):
-#         for entry in data:
-#             for key in deepcopy(entry):
-#                 if key not in fields:
-#                     del(entry[key])
-#         return data
-
-
 class NBAScraper(object):
     headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 \
                 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
@@ -353,37 +315,30 @@ class NBAScraper(object):
         self.nba_request = CustomRequest("http://stats.nba.com/stats/",
                                          self.headers)
 
-    def get_players(self):
+    def get_player_data(self):
         modifier = 'commonallplayers'
         params = {'IsOnlyCurrentSeason': '1',
                   'LeagueID': '00',
                   'Season': '2015-16'}
         result = self.nba_request.get_request(modifier, params)
+
         return result.json()
 
-    def clean_players(self, data):
+    def get_player_name_id_map(self, data):
         headers = data['resultSets'][0]['headers']
         values = data['resultSets'][0]['rowSet']
 
         player_id_index = headers.index('PERSON_ID')
         name_index = headers.index('DISPLAY_FIRST_LAST')
-        team_id_index = headers.index('TEAM_ID')
-        team_abbr_index = headers.index('TEAM_ABBREVIATION')
 
-        nba_dict = {}
+        name_to_id = {}
 
         for value in values:
+            player_id = value[player_id_index]
             name = value[name_index]
-            match = re.search('.\..\.', name)
-            if match:
-                name = name.replace(".", "")
-            name = name.lower()
-            nba_dict[name] = (str(value[player_id_index]),
-                              value[team_id_index],
-                              value[team_abbr_index],
-                              value[name_index])
+            name_to_id[name] = str(player_id)
 
-        return nba_dict
+        return name_to_id
 
     def get_player_stats(self, season=['2012-13', '2013-14', '2014-15', '2015-16']):
         j = []
@@ -497,3 +452,53 @@ class NBAScraper(object):
             players[p]['allgames'] = ordered
 
         return players
+
+
+# class SwishScraper(object):
+
+#     def get_players(self):
+#         url = 'https://www.swishanalytics.com/nba/players/'
+#         page = urllib.urlopen(url)
+#         soup = BeautifulSoup(page, 'lxml')
+#         data = soup.find_all('script')[4].string
+#         players_data = re.search('this.all_players = (.*?);', data).group(1)
+#         players_json = json.loads(players_data)
+#         return players_json
+
+#     def clean_players(self, data, fields=['player_id',
+#                                           'player_name',
+#                                           'team_abbr',
+#                                           'primary_pos_abbr']):
+#         for entry in data:
+#             for key in deepcopy(entry):
+#                 if key not in fields:
+#                     del(entry[key])
+
+#         swish_dict = {}
+#         for entry in data:
+#             swish_dict[entry['player_name']] = (entry['player_id'],
+#                                                 entry['team_abbr'],
+#                                                 entry['primary_pos_abbr'])
+
+#         return swish_dict
+
+#     def get_projections(self):
+#         url = 'https://www.swishanalytics.com/optimus/nba/optimus-x/'
+#         page = urllib.urlopen(url)
+#         soup = BeautifulSoup(page, 'lxml')
+#         data = soup.find_all('script')[9].string
+#         projections_data = re.search(
+#             'self.model.masterPlayerArray = (....*?);', data).group(1)
+#         projections_json = json.loads(projections_data)
+#         return projections_json
+
+#     def clean_projections(self, data, fields=['player_id',
+#                                               'proj_fantasy_pts_fd',
+#                                               'fd_salary',
+#                                               'injury_status']):
+#         for entry in data:
+#             for key in deepcopy(entry):
+#                 if key not in fields:
+#                     del(entry[key])
+#         return data
+>>>>>>> e8aea61a7cae3d5b87a4d8dd88734ce35dd2258e

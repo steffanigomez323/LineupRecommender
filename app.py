@@ -12,6 +12,7 @@ from flask import Flask, render_template
 from redis import Redis
 from data_collector import NBAStattleShip
 from data_collector import NumberFireScraper
+from data_collector import NBAScraper
 from id_manager import IDManager
 from scorer import FanDuelScorer
 from namespace import Namespace
@@ -35,6 +36,9 @@ id_manager = IDManager()
 
 # stattleship
 nba_stattleship = NBAStattleShip()
+
+# nba
+nba_scraper = NBAScraper()
 
 # numberfire
 nf_scraper = NumberFireScraper()
