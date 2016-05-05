@@ -8,14 +8,14 @@ Vann, Steffani, JJ, Chaitu
 Update Module
 """
 
-from app import redis_db
+from collections import defaultdict
 from models import Player
-#from app import swish_scraper
-#from app import nba_scraper
 from app import id_manager
 from app import fanduel_scorer
 from app import nba_stattleship
 from app import nf_scraper
+from app import redis_db
+from app import namespace
 import re
 import datetime
 import time
@@ -87,7 +87,6 @@ class DailyUpdate(object):
         games_dict = {}
         count = 1
         for nba_player_id in stattleship_id_list:
-            # start_time = time.clock()
             games_data = nba_stattleship.prepare_data_for_projections(nba_player_id)
 
             if games_data != None:
@@ -96,7 +95,9 @@ class DailyUpdate(object):
                 for i in range(0, list_size):
 
                     features = {}
-                    game_id = re.sub(r'\W', '', games_data['game_time'][i].encode('utf-8')).replace('T', '')
+                    game_time_id = re.sub(r'\W', '', games_data['game_time'][i].encode('utf-8')).replace('T', '')
+                    game_id = nba_player_id + '|' + game_time_id
+
                     features['steals'] = games_data['steals'][i]
                     features['assists'] = games_data['assists'][i]
                     features['rebounds_total'] = games_data['rebounds_total'][i]
@@ -109,7 +110,6 @@ class DailyUpdate(object):
                     features['opponent'] = games_data['played_against'][i].encode('utf-8')
                     games_dict[game_id] = features
 
-                # end_time = time.clock()
                 print nba_player_id, count
             count += 1
 
@@ -118,7 +118,7 @@ class DailyUpdate(object):
     def store_stattleship_gamelogs(self, stattleship_gamelogs):
         TIME_ID_LEN = 19 # length of time component of id, ex: -201602011900000500
         
-        player_games = {}
+        player_games = defaultdict(list)
         for player_game_id, player_gamelogs in stattleship_gamelogs.items():
             '''
             player_gamelogs['steals_pg']
@@ -133,15 +133,13 @@ class DailyUpdate(object):
             player_gamelogs['time_stamp']
             '''
             redis_db.hmset(player_game_id, player_gamelogs)
-
+            player_id = player_game_id.split("|")[0]
             # generate player_id to games_id mapping
-            player_id = player_game_id[:-TIME_ID_LEN]
-            games_list = player_games.get(player_id, default=[])
-            games_list.append(player_game_id)
-            player_games[player_id] = games_list
+            player_games[player_id].append(player_game_id)
 
         for player_id, games_list in player_games.items():
-            redis_db.lpush(player_id, *games_list) #pass in list as arguments using *args syntax
+            gamelog_id = player_id + "|" + namespace.GAMELOGS
+            redis_db.lpush(gamelog_id, *games_list)
             
 
     def nf_playerlookup(self):
@@ -206,8 +204,6 @@ class DailyUpdate(object):
             d, assists = zip(*assists_tup_sort)
             d, turnovers = zip(*turnovers_tup_sort)
             d, blocks = zip(*blocks_tup_sort)
-
-            #print d
 
             player_stats[player] = {
             "points": list(points),

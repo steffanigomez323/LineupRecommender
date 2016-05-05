@@ -14,6 +14,7 @@ from data_collector import NBAStattleShip
 from data_collector import NumberFireScraper
 from id_manager import IDManager
 from scorer import FanDuelScorer
+from namespace import Namespace
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -40,6 +41,9 @@ nf_scraper = NumberFireScraper()
 
 # scorers
 fanduel_scorer = FanDuelScorer()
+
+# namespace
+namespace = Namespace
 
 
 @app.route("/")

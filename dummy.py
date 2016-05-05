@@ -6,6 +6,7 @@ from data_collector import NBAStattleShip
 
 
 nss = NBAStattleShip()
+du = DailyUpdate()
 
 
 # u = DailyUpdate()
@@ -19,7 +20,6 @@ nss = NBAStattleShip()
 
 # 	print p, sfp.get_projection(p)
 
-# ss.get_player_stats_data()
 
 rh = RedisHelper()
 rh.populate_db()
@@ -27,6 +27,5 @@ rh.populate_db()
 # nss.get_game_log_data('nba-steven-adams')
 # nss.get_game_log_data('nba-jeff-adrien')
 
-# nss.get_player_stats_data('nba-mitch-mcgary')
 
 

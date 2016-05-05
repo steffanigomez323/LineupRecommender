@@ -19,7 +19,6 @@ class RedisHelper(object):
     def populate_db(self):
         # flush the db
 
-        
         # redis_db.flushall()
 
         stattleship_data = nba_stattleship.get_player_data()
@@ -30,19 +29,19 @@ class RedisHelper(object):
         # stattleship_ids = set([])
         for player in stattleship_players:
 
-        #     nba_names = player["slug"].split("nba-")
-        #     name = nba_names[len(nba_names) - 1].replace("-", " ")
-        #     weight = player["weight"]
-        #     height = player["height"]
-        #     active = player["active"]
-        #     years_of_experience = player["years_of_experience"]
+            # nba_names = player["slug"].split("nba-")
+            # name = nba_names[len(nba_names) - 1].replace("-", " ")
+            # weight = player["weight"]
+            # height = player["height"]
+            # active = player["active"]
+            # years_of_experience = player["years_of_experience"]
 
 
-        #     redis_db.hmset(player["slug"], {'name': name,
-        #                                'height': height,
-        #                                'weight': weight,
-        #                                'active': active,
-        #                                'years_of_experience': years_of_experience})
+            # redis_db.hmset(player["slug"], {'name': name,
+            #                            'height': height,
+            #                            'weight': weight,
+            #                            'active': active,
+            #                            'years_of_experience': years_of_experience})
 
             stattleship_id_list.append(player["slug"])
 
@@ -75,5 +74,9 @@ class RedisHelper(object):
 
         # Store gamelogs in the database
         du = DailyUpdate()
-        # du.store_stattleship_gamelogs(du.create_stattleship_games(['nba-jeff-adrien']))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1048]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[:200]))
+        # du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[200:400]))
+        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[400:600]))
+        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[600:800]))
+        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[800:1000]))
+        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1000:]))
