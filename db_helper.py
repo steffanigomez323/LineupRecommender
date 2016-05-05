@@ -15,7 +15,6 @@ from updater import DailyUpdate
 
 
 class RedisHelper(object):
-
     # populate the database with all players using
     # stattleship, nba and numberfire
     def populate_db(self):
