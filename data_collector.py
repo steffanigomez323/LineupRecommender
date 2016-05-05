@@ -54,6 +54,15 @@ class NBAStattleShip(object):
 
         return data
 
+    def get_player_name_slug_map(self, data):
+        name_id = {}
+        for entry in data:
+            name = entry['name']
+            slug = entry['slug']
+            name_id[name] = slug
+
+        return name_id
+
     def get_team_data(self):
         modifier = 'teams'
 
@@ -229,7 +238,7 @@ class NBAStattleShip(object):
 
 class NumberFireScraper(object):
 
-    def get_all_player_data(self):
+    def get_player_data(self):
         url = 'https://www.numberfire.com/nba/players/'
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
@@ -303,7 +312,7 @@ class NBAScraper(object):
         self.nba_request = CustomRequest("http://stats.nba.com/stats/",
                                          self.headers)
 
-    def get_players(self):
+    def get_player_data(self):
         modifier = 'commonallplayers'
         params = {'IsOnlyCurrentSeason': '1',
                   'LeagueID': '00',
@@ -312,24 +321,21 @@ class NBAScraper(object):
 
         return result.json()
 
-    def clean_players(self, data):
+    def get_player_name_id_map(self, data):
         headers = data['resultSets'][0]['headers']
         values = data['resultSets'][0]['rowSet']
 
         player_id_index = headers.index('PERSON_ID')
         name_index = headers.index('DISPLAY_FIRST_LAST')
 
-        nba_dict = {}
+        name_to_id = {}
 
         for value in values:
+            player_id = value[player_id_index]
             name = value[name_index]
-            match = re.search('.\..\.', name)
-            if match:
-                name = name.replace(".", "")
-            name = name.lower()
-            nba_dict[name] = (str(value[player_id_index]))
+            name_to_id[name] = str(player_id)
 
-        return nba_dict
+        return name_to_id
 
     def get_player_stats(self, season):
         modifier = 'leaguegamelog'
@@ -341,6 +347,7 @@ class NBAScraper(object):
                   'Sorter': 'PTS'}
 
         result = self.nba_request.get_request(modifier, params)
+
         return result.json()
 
     def clean_player_stats(self, data):
