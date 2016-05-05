@@ -9,10 +9,10 @@ from data_collector import NumberFireScraper
 #import csv
 
 
-u = DailyUpdate()
-redis_db = RedisHelper()
-redis_db.populate_db()
-player_attr = u.nf_playerlookup()
+#u = DailyUpdate()
+#redis_db = RedisHelper()
+#redis_db.populate_db()
+#player_attr = u.nf_playerlookup()
 #players_stats = u.get_feature_scores(players)
 #sfp = SimpleFeatureProjector(players_stats)
 #nf_scraper = 
@@ -25,8 +25,8 @@ player_attr = u.nf_playerlookup()
 #print len(player_attr)
 
 nbascrape = NBAScraper()
-#player_stats = nbascrape.get_player_stats('2015-16')
-player_stats = nbascrape.get_player_stats('2014-15')
+player_stats = nbascrape.get_player_stats('2015-16')
+#player_stats = nbascrape.get_player_stats('2014-15')
 clean_player_stats = nbascrape.clean_player_stats2(player_stats)
 
 nbastattle = NBAStattleShip()
@@ -37,14 +37,14 @@ print "###PLAYER STATS###"
 print nbastattle.prepare_data_for_projections("nba-lebron-james")
 print "###PLAYER STATS###\n"
 
-print len(clean_player_stats)
-print ""
+# print len(clean_player_stats)
+# print ""
 
-for p in clean_player_stats:
-	print p
-	print clean_player_stats[p]
-	print ""
-	break
+#for p in clean_player_stats:
+#	print p
+print clean_player_stats[2544]
+print ""
+#	break
 
 # with open("static/data/projection_visuals.csv", "wb") as viz:
 # 	writer = csv.writer(viz)
