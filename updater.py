@@ -18,7 +18,7 @@ from app import nba_stattleship
 from app import nf_scraper
 import re
 import datetime
-
+import time
 
 class DailyUpdate(object):
     def get_projections(self):
@@ -43,7 +43,6 @@ class DailyUpdate(object):
                 players.append(Player(player_id, name, team, position,
                                projected_points, salary, injury_status))
 
-        print players
         return players
 
 
@@ -86,27 +85,33 @@ class DailyUpdate(object):
     def create_stattleship_games(self, stattleship_id_list):
 
         games_dict = {}
+        count = 1
         for nba_player_id in stattleship_id_list:
-            
-            #games_data = nba_stattleship.prepare_data_for_projections('nba-lebron-james')
-            
-            list_size = len(games_data['blocks'])
+            # start_time = time.clock()
+            games_data = nba_stattleship.prepare_data_for_projections(nba_player_id)
 
-            for i in range(0, list_size):
+            if games_data != None:
+                list_size = len(games_data['blocks'])
 
-                features = {}
-                game_id = re.sub(r'\W', '', games_data['game_time'][i].encode('utf-8')).replace('T', '')
-                features['steals'] = games_data['steals'][i]
-                features['assists'] = games_data['assists'][i]
-                features['rebounds_total'] = games_data['rebounds_total'][i]
-                features['points'] = games_data['points'][i]
-                features['turnovers'] = games_data['turnovers'][i]
-                features['blocks'] = games_data['blocks'][i]
-                features['min_PG'] = games_data['time_played_total'][i] / 60
-                features['plus_minus_PG'] = games_data['plus_minus'][i]
-                features['hva'] = 'home' if games_data['played_at_home'][i] == 'True' else 'away'
-                features['opponent'] = games_data['played_against'][i].encode('utf-8')
-                games_dict[game_id] = features
+                for i in range(0, list_size):
+
+                    features = {}
+                    game_id = re.sub(r'\W', '', games_data['game_time'][i].encode('utf-8')).replace('T', '')
+                    features['steals'] = games_data['steals'][i]
+                    features['assists'] = games_data['assists'][i]
+                    features['rebounds_total'] = games_data['rebounds_total'][i]
+                    features['points'] = games_data['points'][i]
+                    features['turnovers'] = games_data['turnovers'][i]
+                    features['blocks'] = games_data['blocks'][i]
+                    features['min_PG'] = games_data['time_played_total'][i] / 60
+                    features['plus_minus_PG'] = games_data['plus_minus'][i]
+                    features['hva'] = 'home' if games_data['played_at_home'][i] == 'True' else 'away'
+                    features['opponent'] = games_data['played_against'][i].encode('utf-8')
+                    games_dict[game_id] = features
+
+                # end_time = time.clock()
+                print nba_player_id, count
+            count += 1
 
         return games_dict
 
@@ -127,7 +132,7 @@ class DailyUpdate(object):
             player_gamelogs['opponent']
             player_gamelogs['time_stamp']
             '''
-            redis_db.hmset(player_game_id, gamelog)
+            redis_db.hmset(player_game_id, player_gamelogs)
 
             # generate player_id to games_id mapping
             player_id = player_game_id[:-TIME_ID_LEN]
@@ -137,7 +142,6 @@ class DailyUpdate(object):
 
         for player_id, games_list in player_games.items():
             redis_db.lpush(player_id, *games_list) #pass in list as arguments using *args syntax
-
 
     def nf_playerlookup(self):
         player_data = nf_scraper.get_todays_player_data()
@@ -157,6 +161,7 @@ class DailyUpdate(object):
         for player in players:
 
             data = nba_stattleship.prepare_data_for_projections(player)
+
             points_tup = zip(data["game_time"], data["points"])
             rebounds_tup = zip(data["game_time"], data["rebounds_total"])
             steals_tup = zip(data["game_time"], data["steals"])
@@ -197,6 +202,7 @@ class DailyUpdate(object):
             d, assists = zip(*assists_tup_sort)
             d, turnovers = zip(*turnovers_tup_sort)
             d, blocks = zip(*blocks_tup_sort)
+
 
             player_stats[player] = {
             "points": list(points),
