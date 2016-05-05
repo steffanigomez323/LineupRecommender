@@ -11,6 +11,7 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from updater import DailyUpdate
+from data_collector import NBAScraper
 
 
 class RedisHelper(object):
@@ -21,6 +22,7 @@ class RedisHelper(object):
 
         
         # redis_db.flushall()
+        nbascrape = NBAScraper()
 
         stattleship_data = nba_stattleship.get_player_data()
         stattleship_players = nba_stattleship.get_player_fields(stattleship_data)
@@ -43,8 +45,58 @@ class RedisHelper(object):
         #                                'weight': weight,
         #                                'active': active,
         #                                'years_of_experience': years_of_experience})
+            if player["active"] == True:
+                stattleship_id_list.append(player["slug"])
 
-            stattleship_id_list.append(player["slug"])
+        player_stats = nbascrape.get_player_stats('2015-16')
+        clean_players_stats = nbascrape.clean_player_stats2(player_stats)
+
+        nba_names = {}
+
+        player_names = nbascrape.get_players()
+        player_names = nbascrape.clean_players(player_names)
+
+        nba_id_list = clean_players_stats.keys()
+        nba_names_list = []
+
+        for id in nba_id_list:
+            name = clean_players_stats[id]['player_name']
+            nba_names[id] = name
+            nba_names_list.append('nba-' + "-".join(name.split(" ")))
+
+        #print stattleship_id_list
+
+        #print "##########"
+        #print ""
+
+        #print nba_names_list
+
+        #print "########"
+        #print ""
+
+        # print stattleship_id_list
+
+        # print "########"
+        # print ""
+
+        # print nba_names_list
+
+        # print "########"
+        # print ""
+
+        missed_ids = list(set(stattleship_id_list) - set(nba_names_list))
+
+        print "### MISSED IDS ###"
+
+        print len(missed_ids)
+        print missed_ids
+
+        print "### MATCHED IDS ###"
+
+        correct_ids = list(set(stattleship_id_list) - set(missed_ids))
+
+        print len(correct_ids)
+        print correct_ids
 
         #     nba_id = player["slug"].split("nba-")[-1]
         #     stattleship_ids.add(nba_id.encode('utf-8'))
@@ -74,6 +126,6 @@ class RedisHelper(object):
         # assert len(stattleship_id_list) == 1049
 
         # Store gamelogs in the database
-        du = DailyUpdate()
+        #du = DailyUpdate()
         # du.store_stattleship_gamelogs(du.create_stattleship_games(['nba-jeff-adrien']))
-        du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1048]))
+        #du.store_stattleship_gamelogs(du.create_stattleship_games(stattleship_id_list[1048]))

@@ -14,6 +14,7 @@ from requestor import CustomRequest
 from bs4 import BeautifulSoup
 from copy import deepcopy
 from collections import defaultdict
+from datetime import datetime
 
 
 class NBAStattleShip(object):
@@ -198,6 +199,9 @@ class NBAStattleShip(object):
                 else:
                     stats['played_at_home'].append(False)
 
+            print stats
+            print ""
+
             data = self.clean_data_for_projections(stats)
 
             return data
@@ -340,96 +344,202 @@ class NumberFireScraper(object):
 #         return data
 
 
-# class NBAScraper(object):
-#     headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 \
-#                (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
+class NBAScraper(object):
+    headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 \
+                (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
 
-#     def __init__(self):
-#         self.nba_request = CustomRequest("http://stats.nba.com/stats/",
-#                                          self.headers)
+    def __init__(self):
+        self.nba_request = CustomRequest("http://stats.nba.com/stats/",
+                                         self.headers)
 
-#     def get_players(self):
-#         modifier = 'commonallplayers'
-#         params = {'IsOnlyCurrentSeason': '1',
-#                   'LeagueID': '00',
-#                   'Season': '2015-16'}
-#         result = self.nba_request.get_request(modifier, params)
-#         return result.json()
+    def get_players(self):
+        modifier = 'commonallplayers'
+        params = {'IsOnlyCurrentSeason': '1',
+                  'LeagueID': '00',
+                  'Season': '2015-16'}
+        result = self.nba_request.get_request(modifier, params)
+        return result.json()
 
-#     def clean_players(self, data):
-#         headers = data['resultSets'][0]['headers']
-#         values = data['resultSets'][0]['rowSet']
+    def clean_players(self, data):
+        headers = data['resultSets'][0]['headers']
+        values = data['resultSets'][0]['rowSet']
 
-#         player_id_index = headers.index('PERSON_ID')
-#         name_index = headers.index('DISPLAY_FIRST_LAST')
-#         team_id_index = headers.index('TEAM_ID')
-#         team_abbr_index = headers.index('TEAM_ABBREVIATION')
+        player_id_index = headers.index('PERSON_ID')
+        name_index = headers.index('DISPLAY_FIRST_LAST')
+        team_id_index = headers.index('TEAM_ID')
+        team_abbr_index = headers.index('TEAM_ABBREVIATION')
 
-#         nba_dict = {}
+        nba_dict = {}
 
-#         for value in values:
-#             name = value[name_index]
-#             match = re.search('.\..\.', name)
-#             if match:
-#                 name = name.replace(".", "")
-#             name = name.lower()
-#             nba_dict[name] = (str(value[player_id_index]),
-#                               value[team_id_index],
-#                               value[team_abbr_index],
-#                               value[name_index])
+        for value in values:
+            name = value[name_index]
+            match = re.search('.\..\.', name)
+            if match:
+                name = name.replace(".", "")
+            name = name.lower()
+            nba_dict[name] = (str(value[player_id_index]),
+                              value[team_id_index],
+                              value[team_abbr_index],
+                              value[name_index])
 
-#         return nba_dict
+        return nba_dict
 
-#     def get_player_stats(self, season='2015-16'):
-#         modifier = 'leaguegamelog'
-#         params = {'Direction': 'DESC',
-#                   'LeagueID': '00',
-#                   'PlayerOrTeam': 'P',
-#                   'Season': season,
-#                   'SeasonType': 'Regular Season',
-#                   'Sorter': 'PTS'}
+    def get_player_stats(self, season):
+        modifier = 'leaguegamelog'
+        params = {'Direction': 'DESC',
+                  'LeagueID': '00',
+                  'PlayerOrTeam': 'P',
+                  'Season': season,
+                  'SeasonType': 'Regular Season',
+                  'Sorter': 'PTS'}
 
-#         result = self.nba_request.get_request(modifier, params)
-#         return result.json()
+        result = self.nba_request.get_request(modifier, params)
+        return result.json()
 
-#     def clean_player_stats(self, data):
-#         headers_array = data['resultSets'][0]['headers']
-#         id_index = headers_array.index('PLAYER_ID')
-#         name_index = headers_array.index('PLAYER_NAME')
-#         team_index = headers_array.index('TEAM_NAME')
-#         game_date_index = headers_array.index('GAME_DATE')
-#         field_goal_index = headers_array.index('FGM')
-#         field_goal_3pt_index = headers_array.index('FG3M')
-#         free_throw_index = headers_array.index('FTM')
-#         rebound_index = headers_array.index('REB')
-#         assist_index = headers_array.index('AST')
-#         steal_index = headers_array.index('STL')
-#         block_index = headers_array.index('BLK')
-#         turnover_index = headers_array.index('TOV')
-#         points_index = headers_array.index('PTS')
+    def clean_player_stats(self, data):
+        headers_array = data['resultSets'][0]['headers']
+        id_index = headers_array.index('PLAYER_ID')
+        name_index = headers_array.index('PLAYER_NAME')
+        team_index = headers_array.index('TEAM_NAME')
+        game_date_index = headers_array.index('GAME_DATE')
+        field_goal_index = headers_array.index('FGM')
+        field_goal_3pt_index = headers_array.index('FG3M')
+        free_throw_index = headers_array.index('FTM')
+        rebound_index = headers_array.index('REB')
+        assist_index = headers_array.index('AST')
+        steal_index = headers_array.index('STL')
+        block_index = headers_array.index('BLK')
+        turnover_index = headers_array.index('TOV')
+        points_index = headers_array.index('PTS')
 
-#         row_array = data['resultSets'][0]['rowSet']
-#         players = {}
-#         for row in row_array:
-#             player_id = row[id_index]
-#             if player_id not in players:
-#                 players[player_id] = {'PLAYER_NAME': row[name_index],
-#                                       'TEAM_NAME': row[team_index],
-#                                       'GAMES': []}
+        row_array = data['resultSets'][0]['rowSet']
+        players = {}
+        for row in row_array:
+            player_id = row[id_index]
+            if player_id not in players:
+                players[player_id] = {'PLAYER_NAME': row[name_index],
+                                      'TEAM_NAME': row[team_index],
+                                      'GAMES': []}
 
-#             game = {
-#                 'DATE': row[game_date_index],
-#                 '3PT_FG': row[field_goal_3pt_index],
-#                 '2PT_FG': row[field_goal_index]-row[field_goal_3pt_index],
-#                 'FT': row[free_throw_index],
-#                 'REB': row[rebound_index],
-#                 'AST': row[assist_index],
-#                 'STL': row[steal_index],
-#                 'BLK': row[block_index],
-#                 'TOV': row[turnover_index],
-#                 'PTS': row[points_index]
-#             }
+            game = {
+                'DATE': row[game_date_index],
+                #'3PT_FG': row[field_goal_3pt_index],
+                #'2PT_FG': row[field_goal_index]-row[field_goal_3pt_index],
+                #pst'FT': row[free_throw_index],
+                'REB': row[rebound_index],
+                'AST': row[assist_index],
+                'STL': row[steal_index],
+                'BLK': row[block_index],
+                'TOV': row[turnover_index],
+                'PTS': row[points_index]
+            }
 
-#             players[player_id]['GAMES'].append(game)
+            players[player_id]['GAMES'].append(game)
 
-#         return players
+        return players
+
+    def clean_player_stats2(self, data):
+        headers_array = data['resultSets'][0]['headers']
+        id_index = headers_array.index('PLAYER_ID')
+        name_index = headers_array.index('PLAYER_NAME')
+        team_index = headers_array.index('TEAM_NAME')
+        game_date_index = headers_array.index('GAME_DATE')
+        game_id_index = headers_array.index('GAME_ID')
+        #field_goal_index = headers_array.index('FGM')
+        #field_goal_3pt_index = headers_array.index('FG3M')
+        #free_throw_index = headers_array.index('FTM')
+        plus_minus_index = headers_array.index('PLUS_MINUS')
+        matchup_index = headers_array.index('MATCHUP')
+        time_played_index = headers_array.index('MIN')
+        rebound_index = headers_array.index('REB')
+        assist_index = headers_array.index('AST')
+        steal_index = headers_array.index('STL')
+        block_index = headers_array.index('BLK')
+        turnover_index = headers_array.index('TOV')
+        points_index = headers_array.index('PTS')
+
+        row_array = data['resultSets'][0]['rowSet']
+        players = {}
+        for row in row_array:
+            player_id = row[id_index]
+            if player_id not in players:
+                players[player_id] = {'player_name': row[name_index].lower(),
+                                      'team_name': row[team_index],
+                                      'games': []}
+            d = row[game_date_index].split("-")
+            gtime = datetime(int(d[0]), int(d[1]), int(d[2]))
+            matchup = row[matchup_index].lower().split(" ")
+            at_home = True
+            if matchup[1] == "@":
+                at_home = False
+            game = {
+                'game_id': row[game_id_index],
+                'game_time': gtime.isoformat(),
+                'played_at_home': at_home,
+                'played_against': 'nba-' + matchup[len(matchup) - 1],
+                'plus_minus': row[plus_minus_index],
+                'time_played_total': int(row[time_played_index]) * 60,
+                'rebounds_total': row[rebound_index],
+                'assists': row[assist_index],
+                'steals': row[steal_index],
+                'blocks': row[block_index],
+                'turnovers': row[turnover_index],
+                'points': row[points_index]
+            }
+
+            players[player_id]['games'].append(game)
+
+
+        game_time = []
+        played_at_home = []
+        played_against = []
+        plus_minus = []
+        time_played_total = []
+        rebounds_total = []
+        assists = []
+        steals = []
+        blocks = []
+        turnovers = []
+        points = []
+
+        for p in players:
+            for i in range (0, len(players[p]['games'])):
+                game_time.append(players[p]['games'][i]['game_time'])
+                played_against.append(players[p]['games'][i]['played_against'])
+                played_at_home.append(players[p]['games'][i]['played_at_home'])
+                plus_minus.append(players[p]['games'][i]['plus_minus'])
+                time_played_total.append(players[p]['games'][i]['time_played_total'])
+                rebounds_total.append(players[p]['games'][i]['rebounds_total'])
+                assists.append(players[p]['games'][i]['assists'])
+                steals.append(players[p]['games'][i]['steals'])
+                blocks.append(players[p]['games'][i]['blocks'])
+                turnovers.append(players[p]['games'][i]['turnovers'])
+                points.append(players[p]['games'][i]['points'])
+
+            players[p]['games'] = {
+                'game_time': game_time,
+                'played_at_home': played_at_home,
+                'played_against': played_against,
+                'plus_minus': plus_minus,
+                'time_played_total': time_played_total,
+                'rebounds_total': rebounds_total,
+                'assists': assists,
+                'steals': steals,
+                'blocks': blocks,
+                'turnovers': turnovers,
+                'points': points
+            }
+            game_time = []
+            played_at_home = []
+            played_against = []
+            plus_minus = []
+            time_played_total = []
+            rebounds_total = []
+            assists = []
+            steals = []
+            blocks = []
+            turnovers = []
+            points = []
+
+        return players
+        
