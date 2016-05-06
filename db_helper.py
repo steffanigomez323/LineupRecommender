@@ -97,6 +97,7 @@ class RedisHelper(object):
                 nba_id = nba_name_to_id[nf_name]
                 redis_db.set(nf_slug, nba_id)
 
+        # set all the mismatches manually
         redis_db.set('patrick-mills', '201988')
         redis_db.set('glenn-robinson-iii', '203922')
         redis_db.set('k-j-mcdaniels', '203909')
