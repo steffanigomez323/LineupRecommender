@@ -1,4 +1,4 @@
-"""
+""" 
 CS1951A Final Project
 Brown University
 Spring 2016
@@ -15,6 +15,8 @@ from app import namespace
 class DailyUpdater(object):
     def update_database(self):
         last_updated = redis_db.get(namespace.REDIS_LAST_UPDATED_KEY)
+        
+
     # def get_projections(self):
     #     data = swish_scraper.get_projections()
     #     projections = swish_scraper.clean_projections(data)
