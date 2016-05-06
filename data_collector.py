@@ -18,7 +18,7 @@ from datetime import datetime
 import numpy as np
 
 
-class NBAStattleShip(object):
+class Stattleship(object):
     headers = {'content-type': 'application/json',
                'authorization': 'Token token=067adb3fdbd52c6a8c12331152bf262f',
                'accept': 'application/vnd.stattleship.com; version=1'}
@@ -250,11 +250,12 @@ class NumberFireScraper(object):
 
         for d in data:
             name_position_team = d.text
-            name_match = re.search('(^[^,]+)(PG|GF|PF|FC|SG|SF)', name_position_team) # match 2 first
-            
-            if name_match == None:
+            name_match = re.search('(^[^,]+)(PG|GF|PF|FC|SG|SF)',
+                                   name_position_team)
+
+            if not name_match:
                 name_match = re.search('(^[^,]+)(G|F|C)', name_position_team)
-                
+
             name = name_match.group(1)
             link_text = d.a['href']
             link_match = re.search('/nba/players/(.*)', link_text)
@@ -345,7 +346,10 @@ class NBAScraper(object):
 
         return name_to_id
 
-    def get_player_stats(self, season=['2012-13', '2013-14', '2014-15', '2015-16']):
+    def get_player_stats(self, season=['2012-13',
+                                       '2013-14',
+                                       '2014-15',
+                                       '2015-16']):
         j = []
         for s in season:
             modifier = 'leaguegamelog'
