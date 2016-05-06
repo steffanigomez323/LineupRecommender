@@ -18,7 +18,7 @@ from datetime import datetime
 import numpy as np
 
 
-class NBAStattleShip(object):
+class Stattleship(object):
     headers = {'content-type': 'application/json',
                'authorization': 'Token token=067adb3fdbd52c6a8c12331152bf262f',
                'accept': 'application/vnd.stattleship.com; version=1'}
@@ -250,11 +250,12 @@ class NumberFireScraper(object):
 
         for d in data:
             name_position_team = d.text
-            name_match = re.search('(^[^,]+)(PG|GF|PF|FC|SG|SF)', name_position_team) # match 2 first
-            
-            if name_match == None:
+            name_match = re.search('(^[^,]+)(PG|GF|PF|FC|SG|SF)',
+                                   name_position_team)
+
+            if not name_match:
                 name_match = re.search('(^[^,]+)(G|F|C)', name_position_team)
-                
+
             name = name_match.group(1)
             link_text = d.a['href']
             link_match = re.search('/nba/players/(.*)', link_text)
@@ -320,32 +321,42 @@ class NBAScraper(object):
         self.nba_request = CustomRequest("http://stats.nba.com/stats/",
                                          self.headers)
 
-    def get_player_data(self):
-        modifier = 'commonallplayers'
-        params = {'IsOnlyCurrentSeason': '1',
-                  'LeagueID': '00',
-                  'Season': '2015-16'}
-        result = self.nba_request.get_request(modifier, params)
+    def get_player_data(self, season=['2012-13',
+                                       '2013-14',
+                                       '2014-15',
+                                       '2015-16']):
+        players = []
+        for s in season:
+            modifier = 'commonallplayers'
+            params = {'IsOnlyCurrentSeason': '1',
+                      'LeagueID': '00',
+                      'Season': '2015-16'}
+            result = self.nba_request.get_request(modifier, params)
 
-        return result.json()
+            players.append(result.json())
+        return players
 
     def get_player_name_id_map(self, data):
-        headers = data['resultSets'][0]['headers']
-        values = data['resultSets'][0]['rowSet']
-
-        player_id_index = headers.index('PERSON_ID')
-        name_index = headers.index('DISPLAY_FIRST_LAST')
-
         name_to_id = {}
+        for d in data:
+            headers = d['resultSets'][0]['headers']
+            values = d['resultSets'][0]['rowSet']
 
-        for value in values:
-            player_id = value[player_id_index]
-            name = value[name_index]
-            name_to_id[name] = str(player_id)
+            player_id_index = headers.index('PERSON_ID')
+            name_index = headers.index('DISPLAY_FIRST_LAST')
+
+            for value in values:
+                player_id = value[player_id_index]
+                name = value[name_index]
+                if name not in name_to_id:
+                    name_to_id[name] = str(player_id)
 
         return name_to_id
 
-    def get_player_stats(self, season=['2012-13', '2013-14', '2014-15', '2015-16']):
+    def get_player_stats(self, season=['2012-13',
+                                       '2013-14',
+                                       '2014-15',
+                                       '2015-16']):
         j = []
         for s in season:
             modifier = 'leaguegamelog'
