@@ -15,7 +15,6 @@ from updater import DailyUpdate
 
 
 class RedisHelper(object):
-
     # populate the database with all players using
     # stattleship, nba and numberfire
     def populate_db(self):
@@ -49,16 +48,16 @@ class RedisHelper(object):
 
         # get stattleship players' names and slugs
         stattleship_players = nba_stattleship.get_player_data()
-        stattleship_name_to_slug = nba_stattleship.get_player_name_slug_map(
-            stattleship_players)
+        stattleship_name_to_slug = nba_stattleship.get_player_name_slug_map(stattleship_players)
 
-        nba_player_set = set()
+        # get numberfire players' names and slugs
+        nf_name_to_slug = nf_scraper.get_player_name_slug_map()
 
         # set all the nba id to stattleship slug maps in redis
+        nba_player_set = set([])
         for nba_name, nba_id in nba_name_to_id.iteritems():
             stattleship_slug = stattleship_name_to_slug[nba_name]
             redis_db.set(nba_id, stattleship_slug)
-
             nba_player_set.add(nba_name)
 
         # set all the mismatches manually
@@ -82,16 +81,16 @@ class RedisHelper(object):
         redis_db.set(1626202, 'nba-joseph-young')
         redis_db.set(204456, 'nba-t-j-mcconnell')
 
-        nf_player_set = set()
+        nf_name_set = set([])
         nf = NumberFireScraper()
-        nf_players = nf.get_all_player_data() # will print the names
-        for nf_player in nf_players:
-            nf_player_set.add(nf_player)
+        name_to_slug = nf.get_player_name_slug_map()
+        for nf_name, nf_slug in name_to_slug.iteritems():
+            nf_name_set.add(nf_name)
 
-
-        print nf_player_set - nba_player_set # nf_players not in nba list
-
-
+        for name in nba_player_set:
+            nba_id = nba_name_to_id[name]
+            nf_slug = nf_name_to_slug[name]
+            redis.set(nf_slug, nba_id)
 
         #     if player["active"]:
         #         stattleship_id_list.append(player["slug"])

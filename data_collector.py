@@ -238,21 +238,28 @@ class NBAStattleShip(object):
 
 class NumberFireScraper(object):
 
-    def get_player_data(self):
+    def get_player_name_slug_map(self):
         url = 'https://www.numberfire.com/nba/players/'
         page = urllib.urlopen(url)
         soup = BeautifulSoup(page, 'lxml')
 
         data = soup.find_all('p', attrs={'class': 'sb'})
 
-        id_set = set()
+        name_to_slug = {}
 
         for d in data:
+            name_position_team = d.text
+            name_match = re.search('(^[^,]+)(PG|GF|PF|FC|SG|SF)', name_position_team) # match 2 first
+            
+            if name_match == None:
+                name_match = re.search('(^[^,]+)(G|F|C)', name_position_team)
+                
+            name = name_match.group(1)
             link_text = d.a['href']
             link_match = re.search('/nba/players/(.*)', link_text)
-            id_set.add(link_match.group(1))
+            name_to_slug[name] = link_match.group(1)
 
-        return id_set
+        return name_to_slug
 
     def get_todays_player_data(self):
         url = 'https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections'
