@@ -66,6 +66,9 @@ class RedisHelper(object):
                 stattleship_slug = stattleship_name_to_slug[nba_name]
                 redis_db.set(nba_id, stattleship_slug)
 
+        nba_name_set = set(nba_name_to_id.keys())
+        stattleship_name_set = set(stattleship_name_to_slug.keys())
+
         # set all the mismatches manually
         redis_db.set('203933', 'nba-t-j-warren')
         redis_db.set('203922', 'nba-glenn-robinson-iii')
