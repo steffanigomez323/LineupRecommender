@@ -506,4 +506,4 @@ class NBAScraper(object):
 #                 if key not in fields:
 #                     del(entry[key])
 #         return data
->>>>>>> e8aea61a7cae3d5b87a4d8dd88734ce35dd2258e
+

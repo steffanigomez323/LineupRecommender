@@ -50,47 +50,64 @@ class RedisHelper(object):
         stattleship_players = nba_stattleship.get_player_data()
         stattleship_name_to_slug = nba_stattleship.get_player_name_slug_map(stattleship_players)
 
+        # set all the nba id to stattleship slug maps in redis
+        for nba_name, nba_id in nba_name_to_id.iteritems():
+            if nba_name in stattleship_name_to_slug:
+                stattleship_slug = stattleship_name_to_slug[nba_name]
+                redis_db.set(nba_id, stattleship_slug)
+
+        # set all the mismatches manually
+        redis_db.set('203933', 'nba-t-j-warren')
+        redis_db.set('203922', 'nba-glenn-robinson-iii')
+        redis_db.set('203798', 'nba-p-j-hairston')
+        redis_db.set('2403', 'nba-nene')
+        redis_db.set('101236', 'nba-chuck-hayes')
+        redis_db.set('203912', 'nba-c-j-wilcox')
+        redis_db.set('203468', 'nba-c-j-mccollum')
+        redis_db.set('200782', 'nba-p-j-tucker')
+        redis_db.set('203909', 'nba-k-j-mcdaniels')
+        redis_db.set('101139', 'nba-c-j-miles')
+        redis_db.set('201581', 'nba-j-j-hickson')
+        redis_db.set('203948', 'nba-johnny-o-bryant-iii')
+        redis_db.set('201228', 'nba-c-j-watson')
+        redis_db.set('101150', 'nba-louis-williams')
+        redis_db.set('200755', 'nba-j-j-redick')
+        redis_db.set('1626154', 'nba-r-j-hunter')
+        redis_db.set('203960', 'nba-jakarr-sampson')
+        redis_db.set('1626202', 'nba-joseph-young')
+        redis_db.set('204456', 'nba-t-j-mcconnell')
+
         # get numberfire players' names and slugs
         nf_name_to_slug = nf_scraper.get_player_name_slug_map()
 
-        # set all the nba id to stattleship slug maps in redis
-        nba_player_set = set([])
-        for nba_name, nba_id in nba_name_to_id.iteritems():
-            stattleship_slug = stattleship_name_to_slug[nba_name]
-            redis_db.set(nba_id, stattleship_slug)
-            nba_player_set.add(nba_name)
+        # set all the nf slug to nba id maps in redis
+        for nf_name, nf_slug in nf_name_to_slug.iteritems():
+            if nf_name in nba_name_to_id:
+                nba_id = nba_name_to_id[nf_name]
+                redis.set(nf_slug, nba_id)
 
-        # set all the mismatches manually
-        redis_db.set(203933, 'nba-t-j-warren')
-        redis_db.set(203922, 'nba-glenn-robinson-iii')
-        redis_db.set(203798, 'nba-p-j-hairston')
-        redis_db.set(2403, 'nba-nene')
-        redis_db.set(101236, 'nba-chuck-hayes')
-        redis_db.set(203912, 'nba-c-j-wilcox')
-        redis_db.set(203468, 'nba-c-j-mccollum')
-        redis_db.set(200782, 'nba-p-j-tucker')
-        redis_db.set(203909, 'nba-k-j-mcdaniels')
-        redis_db.set(101139, 'nba-c-j-miles')
-        redis_db.set(201581, 'nba-j-j-hickson')
-        redis_db.set(203948, 'nba-johnny-o-bryant-iii')
-        redis_db.set(201228, 'nba-c-j-watson')
-        redis_db.set(101150, 'nba-louis-williams')
-        redis_db.set(200755, 'nba-j-j-redick')
-        redis_db.set(1626154, 'nba-r-j-hunter')
-        redis_db.set(203960, 'nba-jakarr-sampson')
-        redis_db.set(1626202, 'nba-joseph-young')
-        redis_db.set(204456, 'nba-t-j-mcconnell')
+        redis_db.set('patrick-mills', '201988')
+        redis_db.set('glenn-robinson-iii', '203922')
+        redis_db.set('k-j-mcdaniels', '203909')
+        redis_db.set('c-j-wilcox', '203912')
+        redis_db.set('louis-amundson', '200811')
+        redis_db.set('p-j-hairston', '203798')
+        redis_db.set('louis-williams', '101150')
+        redis_db.set('c-j-mccollum', '203468')
+        redis_db.set('joseph-young', '1626202')
+        redis_db.set('r-j-hunter', '1626154')
+        redis_db.set('t-j-warren', '203933')
+        redis_db.set('cj-watson', '201228')
+        redis_db.set('p-j-tucker', '200782')
+        redis_db.set('ishmael-smith', '202397')
+        redis_db.set('johnny-o-bryant-iii', '203948')
+        redis_db.set('jj-hickson', '201581')
+        redis_db.set('nene-hilario', '2403')
+        redis_db.set('jj-redick', '200755')
+        redis_db.set('roy-devyn-marble', '203906')
+        redis_db.set('cj-miles', '101139')
+        redis_db.set('t-j-mcconnell', '204456')
 
-        nf_name_set = set([])
-        nf = NumberFireScraper()
-        name_to_slug = nf.get_player_name_slug_map()
-        for nf_name, nf_slug in name_to_slug.iteritems():
-            nf_name_set.add(nf_name)
-
-        for name in nba_player_set:
-            nba_id = nba_name_to_id[name]
-            nf_slug = nf_name_to_slug[name]
-            redis.set(nf_slug, nba_id)
 
         #     if player["active"]:
         #         stattleship_id_list.append(player["slug"])
