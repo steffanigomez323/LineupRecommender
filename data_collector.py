@@ -321,16 +321,17 @@ class NBAScraper(object):
         self.nba_request = CustomRequest("http://stats.nba.com/stats/",
                                          self.headers)
 
-    def get_player_data(self, season=['2012-13',
+    def get_player_data(self, seasons=['2012-13',
                                        '2013-14',
                                        '2014-15',
                                        '2015-16']):
         players = []
-        for s in season:
+        for season in seasons:
             modifier = 'commonallplayers'
             params = {'IsOnlyCurrentSeason': '1',
                       'LeagueID': '00',
                       'Season': s}
+
             result = self.nba_request.get_request(modifier, params)
 
             players.append(result.json())

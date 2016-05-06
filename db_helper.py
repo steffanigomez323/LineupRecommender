@@ -71,10 +71,6 @@ class RedisHelper(object):
             if nba_name in stattleship_name_to_slug.iterkeys():
                 stattleship_slug = stattleship_name_to_slug[nba_name]
                 redis_db.set(nba_id, stattleship_slug)
-                print "### ID ###"
-                print nba_id
-                print redis_db.get(nba_id)
-                print ""
 
         # set all the mismatches manually
         redis_db.set('203933', 'nba-t-j-warren')
@@ -96,6 +92,26 @@ class RedisHelper(object):
         redis_db.set('203960', 'nba-jakarr-sampson')
         redis_db.set('1626202', 'nba-joseph-young')
         redis_db.set('204456', 'nba-t-j-mcconnell')
+        redis_db.set('201591', 'nba-d-j-white')
+        redis_db.set('203315', 'nba-toure-murry')
+        redis_db.set('203548', 'nba-elias-harris')
+        redis_db.set('200839', 'nba-mike-harris')
+        redis_db.set('2562', 'nba-aleksandar-pavlovic')
+        redis_db.set('204021', 'nba-sim-bhullar')
+        redis_db.set('204033', 'nba-david-wear')
+        redis_db.set('203474', 'nba-d-j-stephens')
+        redis_db.set('203816', 'nba-scotty-hopson')
+        redis_db.set('203540', 'nba-luigi-datome')
+        redis_db.set('204037', 'nba-travis-wear')
+        redis_db.set('203580', 'nba-larry-drew-ii')
+        redis_db.set('203945', 'nba-alex-kirk')
+        redis_db.set('204079', 'nba-drew-gordon')
+        redis_db.set('202197', 'nba-shane-edwards')
+        redis_db.set('201595', 'nba-joey-dorsey')
+        redis_db.set('203106', 'nba-jeffery-taylor')
+        redis_db.set('201986', 'nba-nando-de-colo')
+        redis_db.set('203139', 'nba-vyacheslav-kravtsov')
+        redis_db.set('2052', 'nba-deshawn-stevenson')
 
     def set_nf_to_nba_maps(self, nba_name_to_id):
         # get numberfire players' names and slugs
@@ -132,38 +148,30 @@ class RedisHelper(object):
 
     def set_player_stats(self):
         player_stats = nba_scraper.get_player_stats()
-        projection_data = nba_scraper.prepare_data_for_projections(player_stats)
+        projection_data = nba_scraper.prepare_data_for_projections(
+            player_stats)
 
-        for player in projection_data:
+        for nba_id in projection_data:
             start_time = time.clock()
             gameids = []
-            print player
-            print projection_data[player]['player_name']
-            nba_id = redis_db.get(player)
-            print nba_id
-            stattleship_name = redis_db.get(nba_id)
-            print stattleship_name
-            for game in projection_data[player]['allgames']:
-                
+            nba_id = redis_db.get(nba_id)
+            stattleship_slug = redis_db.get(nba_id)
+            for game in projection_data[nba_id]['allgames']:
+
                 gameids.append(game[0])
                 redis_db.hmset(game[0], {'game_time': game[1],
-                                        'played_at_home': game[2],
-                                        'played_against': game[3],
-                                        'plus_minus': game[4],
-                                        'time_played_total': game[5],
-                                        'rebounds_total': game[6],
-                                        'assists': game[7],
-                                        'steals': game[8],
-                                        'blocks': game[9],
-                                        'turnovers': game[10],
-                                        'points': game[11]})
-                #print "### HASHMAP ###"
-                #print redis_db.hgetall(game[0])
-                #print ""
+                                         'played_at_home': game[2],
+                                         'played_against': game[3],
+                                         'plus_minus': game[4],
+                                         'time_played_total': game[5],
+                                         'rebounds_total': game[6],
+                                         'assists': game[7],
+                                         'steals': game[8],
+                                         'blocks': game[9],
+                                         'turnovers': game[10],
+                                         'points': game[11]})
 
-
-            # player is the NBA id
-            redis_db.lpush(stattleship_name + namespace.GAMELOGS, *gameids)
+            redis_db.lpush(stattleship_slug + namespace.GAMELOGS, *gameids)
 
             end_time = time.clock()
 

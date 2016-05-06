@@ -13,7 +13,7 @@ from redis import Redis
 from data_collector import Stattleship
 from data_collector import NumberFireScraper
 from data_collector import NBAScraper
-#from updater import DailyUpdater
+from updater import DailyUpdater
 from scorer import FanDuelScorer
 from namespace import Namespace
 # from simple_recommender import SimpleRecommender
@@ -41,7 +41,7 @@ nba_scraper = NBAScraper()
 nf_scraper = NumberFireScraper()
 
 # daily updater
-#daily_updater = DailyUpdater()
+daily_updater = DailyUpdater()
 
 # scorers
 fanduel_scorer = FanDuelScorer()
