@@ -8,14 +8,13 @@ Vann, Steffani, JJ, Chaitu
 Update Module
 """
 
-from app import redis_db
-from app import namespace
+# from app import redis_db
+# from app import namespace
 
 
 class DailyUpdater(object):
     def update_database(self):
         last_updated = redis_db.get(namespace.REDIS_LAST_UPDATED_KEY)
-        
 
     # def get_projections(self):
     #     data = swish_scraper.get_projections()
