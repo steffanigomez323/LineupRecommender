@@ -321,28 +321,35 @@ class NBAScraper(object):
         self.nba_request = CustomRequest("http://stats.nba.com/stats/",
                                          self.headers)
 
-    def get_player_data(self):
-        modifier = 'commonallplayers'
-        params = {'IsOnlyCurrentSeason': '1',
-                  'LeagueID': '00',
-                  'Season': '2015-16'}
-        result = self.nba_request.get_request(modifier, params)
+    def get_player_data(self, season=['2012-13',
+                                       '2013-14',
+                                       '2014-15',
+                                       '2015-16']):
+        players = []
+        for s in season:
+            modifier = 'commonallplayers'
+            params = {'IsOnlyCurrentSeason': '1',
+                      'LeagueID': '00',
+                      'Season': '2015-16'}
+            result = self.nba_request.get_request(modifier, params)
 
-        return result.json()
+            players.append(result.json())
+        return players
 
     def get_player_name_id_map(self, data):
-        headers = data['resultSets'][0]['headers']
-        values = data['resultSets'][0]['rowSet']
-
-        player_id_index = headers.index('PERSON_ID')
-        name_index = headers.index('DISPLAY_FIRST_LAST')
-
         name_to_id = {}
+        for d in data:
+            headers = d['resultSets'][0]['headers']
+            values = d['resultSets'][0]['rowSet']
 
-        for value in values:
-            player_id = value[player_id_index]
-            name = value[name_index]
-            name_to_id[name] = str(player_id)
+            player_id_index = headers.index('PERSON_ID')
+            name_index = headers.index('DISPLAY_FIRST_LAST')
+
+            for value in values:
+                player_id = value[player_id_index]
+                name = value[name_index]
+                if name not in name_to_id:
+                    name_to_id[name] = str(player_id)
 
         return name_to_id
 
@@ -365,20 +372,21 @@ class NBAScraper(object):
         return j
 
 
-    # returns a dictionary of players and their game logs for the past 4 seasons.
+    # returns a dictionary of players and their game logs for the past 4 seasons. 
     # sorted from oldest to most recent game
 
-    # 0 - game_time
-    # 1 - played_at_home
-    # 2 - played_against
-    # 3 - plus_minus
-    # 4 - time_played_total
-    # 5 - rebounds_total
-    # 6 - assists
-    # 7 - steals
-    # 8 - blocks
-    # 9 - turnovers
-    # 10 - points
+    # 0 = game_id
+    # 1 - game_time
+    # 2 - played_at_home
+    # 3 - played_against
+    # 4 - plus_minus
+    # 5 - time_played_total
+    # 6 - rebounds_total
+    # 7 - assists
+    # 8 - steals
+    # 9 - blocks
+    # 10 - turnovers
+    # 11 - points
 
 
     #def clean_player_stats(self, data):
@@ -421,7 +429,8 @@ class NBAScraper(object):
                     at_home = False
 
                 game = {
-                    'game_time': gtime.isoformat(),
+                    'game_id': int(row[game_id_index]),
+                    'game_time': int(gtime.strftime("%s")) * 1000, #gtime.isoformat(),
                     'played_at_home': at_home,
                     'played_against': 'nba-' + matchup[len(matchup) - 1],
                     'plus_minus': int(row[plus_minus_index]),
@@ -440,6 +449,7 @@ class NBAScraper(object):
 
                 for i in range (0, len(players[p]['games'])):
                     game_list = [
+                        players[p]['games'][i]['game_id'],
                         players[p]['games'][i]['game_time'],
                         players[p]['games'][i]['played_against'],
                         players[p]['games'][i]['played_at_home'],

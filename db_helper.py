@@ -11,6 +11,8 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
+from app import namespace
+import time
 
 
 class RedisHelper(object):
@@ -29,8 +31,12 @@ class RedisHelper(object):
 
         # set nba to stattleship mapping
         self.set_nba_to_stattleship_maps(nba_name_to_id)
-        # set numberfire to nbs mapping
+
+        # set numberfire to nba mapping
         self.set_nf_to_nba_maps(nba_name_to_id)
+
+        # set player stats
+        self.set_player_stats()
 
     def set_basic_player_information(self):
         # get player data from stattleship
@@ -65,6 +71,10 @@ class RedisHelper(object):
             if nba_name in stattleship_name_to_slug.iterkeys():
                 stattleship_slug = stattleship_name_to_slug[nba_name]
                 redis_db.set(nba_id, stattleship_slug)
+                print "### ID ###"
+                print nba_id
+                print redis_db.get(nba_id)
+                print ""
 
         nba_name_set = set(nba_name_to_id.keys())
         stattleship_name_set = set(stattleship_name_to_slug.keys())
@@ -122,3 +132,42 @@ class RedisHelper(object):
         redis_db.set('roy-devyn-marble', '203906')
         redis_db.set('cj-miles', '101139')
         redis_db.set('t-j-mcconnell', '204456')
+
+    def set_player_stats(self):
+        player_stats = nba_scraper.get_player_stats()
+        projection_data = nba_scraper.prepare_data_for_projections(player_stats)
+
+        for player in projection_data:
+            start_time = time.clock()
+            gameids = []
+            print player
+            print projection_data[player]['player_name']
+            nba_id = redis_db.get(player)
+            print nba_id
+            stattleship_name = redis_db.get(nba_id)
+            print stattleship_name
+            for game in projection_data[player]['allgames']:
+                
+                gameids.append(game[0])
+                redis_db.hmset(game[0], {'game_time': game[1],
+                                        'played_at_home': game[2],
+                                        'played_against': game[3],
+                                        'plus_minus': game[4],
+                                        'time_played_total': game[5],
+                                        'rebounds_total': game[6],
+                                        'assists': game[7],
+                                        'steals': game[8],
+                                        'blocks': game[9],
+                                        'turnovers': game[10],
+                                        'points': game[11]})
+                #print "### HASHMAP ###"
+                #print redis_db.hgetall(game[0])
+                #print ""
+
+
+            # player is the NBA id
+            redis_db.lpush(stattleship_name + namespace.GAMELOGS, *gameids)
+
+            end_time = time.clock()
+
+            print("Time taken: {} seconds.\n".format(end_time - start_time))
