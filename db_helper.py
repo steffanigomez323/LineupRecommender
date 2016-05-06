@@ -11,6 +11,7 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
+from app import namespace
 from updater import DailyUpdate
 
 
@@ -91,6 +92,53 @@ class RedisHelper(object):
             nba_id = nba_name_to_id[name]
             nf_slug = nf_name_to_slug[name]
             redis.set(nf_slug, nba_id)
+
+        player_stats = nba_scraper.get_player_stats()
+        projection_data = nba_scraper.prepare_data_for_projections(player_stats)
+
+        for player in projection_data:
+            gameids = []
+            nba_id = redis_db.get(player)
+            print nba_id
+            stattleship_name = redis_db.get(nba_id)
+            print stattleship_name
+            for game in projection_data[player]['allgames']:
+                
+                gameids.append(game[0])
+                redis_db.hmset(game[0], {'game_time': game[1],
+                                        'played_at_home': game[2],
+                                        'played_against': game[3],
+                                        'plus_minus': game[4],
+                                        'time_played_total': game[5],
+                                        'rebounds_total': game[6],
+                                        'assists': game[7],
+                                        'steals': game[8],
+                                        'blocks': game[9],
+                                        'turnovers': game[10],
+                                        'points': game[11]})
+                #print "### HASHMAP ###"
+                #print redis_db.hgetall(game[0])
+                #print ""
+
+
+            # player is the NBA id
+            redis_db.lpush(str(player) + "|gamelogs", *gameids)
+            #print "### LIST ###"
+            #print redis_db.lrange(str(player) + namespace.GAMELOGS, 0, -1) 
+            #print ""           
+
+
+            # first going to have a list of gameids whose name is the "nba-lebron-james|gamelogs", so
+            # "nba-id|gamelogs", and each gameid in the list corresponds to a key in a hashmap and the 
+            # different values like below
+
+
+            # redis_db.hmset(player["slug"], {'name': name,
+            #                                 'height': height,
+            #                                 'weight': weight,
+            #                                 'active': active,
+            #                                 'years_of_experience':
+            #                                 years_of_experience})
 
         #     if player["active"]:
         #         stattleship_id_list.append(player["slug"])

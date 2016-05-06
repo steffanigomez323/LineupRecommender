@@ -361,20 +361,21 @@ class NBAScraper(object):
         return j
 
 
-    # returns a dictionary of players and their game logs for the past 4 seasons.
+    # returns a dictionary of players and their game logs for the past 4 seasons. 
     # sorted from oldest to most recent game
 
-    # 0 - game_time
-    # 1 - played_at_home
-    # 2 - played_against
-    # 3 - plus_minus
-    # 4 - time_played_total
-    # 5 - rebounds_total
-    # 6 - assists
-    # 7 - steals
-    # 8 - blocks
-    # 9 - turnovers
-    # 10 - points
+    # 0 = game_id
+    # 1 - game_time
+    # 2 - played_at_home
+    # 3 - played_against
+    # 4 - plus_minus
+    # 5 - time_played_total
+    # 6 - rebounds_total
+    # 7 - assists
+    # 8 - steals
+    # 9 - blocks
+    # 10 - turnovers
+    # 11 - points
 
 
     #def clean_player_stats(self, data):
@@ -417,7 +418,8 @@ class NBAScraper(object):
                     at_home = False
 
                 game = {
-                    'game_time': gtime.isoformat(),
+                    'game_id': int(row[game_id_index]),
+                    'game_time': int(gtime.strftime("%s")) * 1000, #gtime.isoformat(),
                     'played_at_home': at_home,
                     'played_against': 'nba-' + matchup[len(matchup) - 1],
                     'plus_minus': int(row[plus_minus_index]),
@@ -436,6 +438,7 @@ class NBAScraper(object):
 
                 for i in range (0, len(players[p]['games'])):
                     game_list = [
+                        players[p]['games'][i]['game_id'],
                         players[p]['games'][i]['game_time'],
                         players[p]['games'][i]['played_against'],
                         players[p]['games'][i]['played_at_home'],
@@ -506,4 +509,3 @@ class NBAScraper(object):
 #                 if key not in fields:
 #                     del(entry[key])
 #         return data
->>>>>>> e8aea61a7cae3d5b87a4d8dd88734ce35dd2258e
