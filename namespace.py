@@ -10,7 +10,7 @@ class Namespace(object):
     # team name maps
     TEAM_MAP_NF_NBA = {"CHI": 'CHI',
                        "CHA": 'CHA',
-                       "UTAH" 'UTA',
+                       "UTAH": 'UTA',
                        "IND": 'IND',
                        "NO": 'NOP',
                        "ORL": 'ORL',
@@ -38,3 +38,9 @@ class Namespace(object):
                        "OKC": 'OKC',
                        "MIL": 'MIL',
                        "HOU": 'HOU'}
+
+    # csv file names
+    PLAYER_INFO_CSV = "player_info.csv"
+    NBA_TO_STATTLESHIP_CSV = "nba_to_stattleship_map.csv"
+    NUMBERFIRE_TO_NBA_CSV = "numberfire_to_nba_map.csv"
+    PLAYER_STATS_CSV = "player_stats.csv"

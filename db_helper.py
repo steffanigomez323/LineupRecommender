@@ -12,6 +12,7 @@ from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
 from app import namespace
+import csv
 import time
 
 
