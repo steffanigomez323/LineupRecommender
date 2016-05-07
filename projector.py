@@ -12,9 +12,11 @@ Player Performance Projector
 import operator
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import r2_score
+from sklearn.svm import SVR
+from sklearn.cross_validation import train_test_split
 from collections import Counter
 from scorer import FanDuelScorer
-import numpy
+import numpy as np
 
 
 class SimpleProjector(object):
@@ -142,163 +144,276 @@ class SimpleFeatureProjector(object):
     def project_blocks(self, player_id):
         return self.project_feature(self.BLOCK_ID, player_id)
 
-class SGRProjector(object):
-    def __init__(self, players):
-        self.players = players
+class FeatureProjector(object):
+    POINTS_IDX = 0;
+    REBOUNDS_IDX = 0;
+    ASSISTS_IDX = 0;
+    STEALS_IDX = 0;
+    BLOCKS_IDX = 0;
+    TURNOVERS_IDX = 0;
+    TIME_IDX = 0;
+    OPPONENT_IDX = 0;
+    HVA_IDX = 0;
+    PLUS_MINUS_IDX = 0;
+
+    # take in pos, height, gamelogs
+    # {id: {position: ssfd, height:fasdf}}
+    def __init__(self, players_gamelogs, players_stats):
         self.avg = lambda x: sum(x) / float(len(x))
 
-    def get_player_features(self, player_id):
-        player = players[player_id]
+        self.players_gamelogs = players_gamelogs
+        self.players_stats = players_stats
 
-        num_logs = len(player['opponent'])
+    def get_projection(self, player_id):
+        pass
+
+    def get_player_training_features(self, player_id):
+        player = players_stats[player_id]
+
         position = player['position']
         height = player['height']
 
-        points = player['points']
-        rebounds = player['rebounds']
-        assists = player['assists']
-        steals = player['steals']
-        blocks = player['blocks']
-        time = player['time']
-        opponent = player['opponent']
-        hva = player['hva']
-        plus_minus = player['plus_minus']
+        gamelog = players_gamelogs[player_id]
+
+        points = gamelog[:,self.POINTS_IDX]
+        rebounds = gamelog[:,self.REBOUNDS_IDX]
+        assists = gamelog[:,self.ASSISTS_IDX]
+        steals = gamelog[:,self.STEALS_IDX]
+        blocks = gamelog[:,self.BLOCKS_IDX]
+        turnovers = gamelog[:,self.TURNOVERS_IDX]
+        time = gamelog[:,self.TIME_IDX]
+        opponent = gamelog[:,self.OPPONENT_IDX]
+        hva = gamelog[:,self.HVA_IDX]
+        plus_minus = gamelog[:,self.PLUS_MINUS_IDX]
+
+        num_logs = len(points)
 
         # points
-        points_x_train = []
-        points_y_train = list(points[8:num_logs])
-        for i in range(7, num_logs-1):
-            row = [self.avg(points[i-1:i]), # last 1
+        points_train = np.array([])
+        for i in range(7, num_logs):
+            row = [points[i], # label
+                   self.avg(points[i-1:i]), # last 1
                    self.avg(points[i-3:i]), # last 3
                    self.avg(points[i-5:i]), # last 5
                    self.avg(points[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
                    position] # pos
-            points_x_train.append(row)
+            row = np.array(row)
+            points_train.append(row)
 
         # assists
-        assists_x_train = []
-        assists_y_train = list(assists[8:num_logs])
-        for i in range(7, num_logs-1):
-            row = [self.avg(assists[i-1:i]), # last 1
+        assists_train = np.array([])
+        for i in range(7, num_logs):
+            row = [assists[i], # label
+                   self.avg(assists[i-1:i]), # last 1
                    self.avg(assists[i-3:i]), # last 3
                    self.avg(assists[i-5:i]), # last 5
                    self.avg(assists[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
                    position] # pos
-            points_x_train.append(row)
+            row = np.array(row)
+            assists_train.append(row)
 
         # steals
-        steals_x_train = []
-        steals_y_train = list(steals[8:num_logs])
-        for i in range(7, num_logs-1):
-            row = [self.avg(steals[i-1:i]), # last 1
+        steals_train = np.array([])
+        for i in range(7, num_logs):
+            row = [steals[i], # label
+                   self.avg(steals[i-1:i]), # last 1
                    self.avg(steals[i-3:i]), # last 3
                    self.avg(steals[i-5:i]), # last 5
                    self.avg(steals[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
                    position] # pos
-            steals_x_train.append(row)
+            row = np.array(row)
+            steals_train.append(row)
 
         # turnovers
-        turnovers_x_train = []
-        turnovers_y_train = list(turnovers[8:num_logs])
-        for i in range(7, num_logs-1):
-            row = [self.avg(turnovers[i-1:i]), # last 1
+        turnovers_train = np.array([])
+        for i in range(7, num_logs):
+            row = [turnovers[i], # labels
+                   self.avg(turnovers[i-1:i]), # last 1
                    self.avg(turnovers[i-3:i]), # last 3
                    self.avg(turnovers[i-5:i]), # last 5
                    self.avg(turnovers[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
                    position] # pos
-            turnovers_x_train.append(row)
+            row = np.array(row)
+            turnovers_train.append(row)
 
         # rebounds
-        rebounds_x_train = []
-        rebounds_y_train = list(rebounds[8:num_logs])
-        for i in range(7, num_logs-1):
-            row = [self.avg(rebounds[i-1:i]), # last 1
+        rebounds_train = np.array([])
+        for i in range(7, num_logs):
+            row = [rebounds[i], # label
+                   self.avg(rebounds[i-1:i]), # last 1
                    self.avg(rebounds[i-3:i]), # last 3
                    self.avg(rebounds[i-5:i]), # last 5
                    self.avg(rebounds[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
                    position, # pos
                    height] # height
-            rebounds_x_train.append(row)
+            row = np.array(row)
+            rebounds_train.append(row)
 
-        # rebounds
-        blocks_x_train = []
-        blocks_y_train = list(blocks[8:num_logs])
-        for i in range(7, num_logs-1):
-            row = [self.avg(blocks[i-1:i]), # last 1
+        # blocks
+        blocks_train = np.array([])
+        for i in range(7, num_logs):
+            row = [blocks[i], # label
+                   self.avg(blocks[i-1:i]), # last 1
                    self.avg(blocks[i-3:i]), # last 3
                    self.avg(blocks[i-5:i]), # last 5
                    self.avg(blocks[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
                    position, # pos
                    height] # height
-            blocks_x_train.append(row)
+            row = np.array(row)
+            blocks_train.append(row)
 
-        return
+        return {"assists": assists_train,
+                "points": points_train,
+                "blocks": blocks_train,
+                "rebounds": rebounds_train,
+                "turnovers": turnovers_train,
+                "steals": steals_train}
 
+    def get_player_projection_features(self, player_id):
+        player = players_stats[player_id]
 
-'''
-class PlayerProjector(object):
-    def __init__(self, player_gamelogs):
-        self.p_logs = player_gamelogs
+        position = player['position']
+        height = player['height']
 
-        self.avg_logs = self.calc_average_gamelogs()
+        gamelog = players_gamelogs[player_id]
 
+        opponent = safdsa
+        hva = afdsa
+
+        points = gamelog[:,self.POINTS_IDX]
+        rebounds = gamelog[:,self.REBOUNDS_IDX]
+        assists = gamelog[:,self.ASSISTS_IDX]
+        steals = gamelog[:,self.STEALS_IDX]
+        blocks = gamelog[:,self.BLOCKS_IDX]
+        turnovers = gamelog[:,self.TURNOVERS_IDX]
+        time = gamelog[:,self.TIME_IDX]
+        plus_minus = gamelog[:,self.PLUS_MINUS_IDX]
+
+        num_logs = len(points)
+        i = num_logs
+
+        # points
+        points_proj = [self.avg(points[i-1:i]), # last 1
+                       self.avg(points[i-3:i]), # last 3
+                       self.avg(points[i-5:i]), # last 5
+                       self.avg(points[i-7:i]), # last 7
+                       self.avg(plus_minus[0:i-1]), # plus minus avg
+                       self.avg(time[0:i-1]), # time avg
+                       opponent, # opponent
+                       hva, # home v away
+                       position] # pos
+
+        # assists
+        assists_proj = [self.avg(assists[i-1:i]), # last 1
+                        self.avg(assists[i-3:i]), # last 3
+                        self.avg(assists[i-5:i]), # last 5
+                        self.avg(assists[i-7:i]), # last 7
+                        self.avg(plus_minus[0:i-1]), # plus minus avg
+                        self.avg(time[0:i-1]), # time avg
+                        opponent, # opponent
+                        hva, # home v away
+                        position] # pos
+
+        # steals
+        steals_proj = [self.avg(steals[i-1:i]), # last 1
+                       self.avg(steals[i-3:i]), # last 3
+                       self.avg(steals[i-5:i]), # last 5
+                       self.avg(steals[i-7:i]), # last 7
+                       self.avg(plus_minus[0:i-1]), # plus minus avg
+                       self.avg(time[0:i-1]), # time avg
+                       opponent, # opponent
+                       hva, # home v away
+                       position] # pos
+
+        # turnovers
+        turnovers_proj = [self.avg(turnovers[i-1:i]), # last 1
+                          self.avg(turnovers[i-3:i]), # last 3
+                          self.avg(turnovers[i-5:i]), # last 5
+                          self.avg(turnovers[i-7:i]), # last 7
+                          self.avg(plus_minus[0:i-1]), # plus minus avg
+                          self.avg(time[0:i-1]), # time avg
+                          opponent, # opponent
+                          hva, # home v away
+                          position] # pos
+
+        # rebounds
+        rebounds_proj = [self.avg(rebounds[i-1:i]), # last 1
+                   self.avg(rebounds[i-3:i]), # last 3
+                   self.avg(rebounds[i-5:i]), # last 5
+                   self.avg(rebounds[i-7:i]), # last 7
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
+                   opponent, # opponent
+                   hva, # home v away
+                   position, # pos
+                   height] # height
+
+        # blocks
+        blocks_proj = [self.avg(blocks[i-1:i]), # last 1
+                       self.avg(blocks[i-3:i]), # last 3
+                       self.avg(blocks[i-5:i]), # last 5
+                       self.avg(blocks[i-7:i]), # last 7
+                       self.avg(plus_minus[0:i-1]), # plus minus avg
+                       self.avg(time[0:i-1]), # time avg
+                       opponent, # opponent
+                       hva, # home v away
+                       position, # pos
+                       height] # height
+
+        return {"assists": assists_proj,
+                "points": points_proj,
+                "blocks": blocks_proj,
+                "rebounds": rebounds_proj,
+                "turnovers": turnovers_proj,
+                "steals": steals_proj}
+
+    def split_train_xy(self, training_feature):
+        y, X = np.hsplit( # split off first column (labels)
+            training_feature,
+            [0])
+
+        return X, y
+
+    def split_train_test(self, training_feature):
+        X, y = self.split_train_xy(training_feature)
+
+        return train_test_split(
+            X, y,
+            test_size=0.33, random_state=42)
+
+class SvrFeatureProjector(FeatureProjector):
     def get_projection(self, player_id):
-        pts = self.project_points(player_id)
-        stl = self.project_steals(player_id)
-        ast = self.project_assists(player_id)
-        reb = self.project_rebounds(player_id)
-        tov = self.project_turnovers(player_id)
-        blk = self.project_blocks(lplayer_id)
+        features = self.get_player_training_features(player_id)
+        projections = self.get_player_projection_features(player_id)
 
-        game = dict()
-        game['3PT_FG'] = 0
-        game['2PT_FG'] = 0
-        game['FT'] = 0
-        game['REB'] = reb
-        game['AST'] = ast
-        game['BLK'] = blk
-        game['STL'] = stl
-        game['TOV'] = tov
-
-        total_score = FanDuelScorer.find_fanduel_score(game)
-        total_score += pts
-
-    def project_steals(self, last_n):
-        return 0
-    
-    def project_assists(self, last_n):
-        return 0
-
-    def project_rebounds(self, last_n):
-        return 0
-
-    def project_turnovers(self, last_n):
-        return 0
-
-    def project_blocks(self, last_n):
-        return 0
-'''
+        x_train, x_test, \
+        y_train, y_test = split_train_test(
+            features['assists'])
+        svr = SVR(kernel='rbf', C=.5).fit(
+            x_train, y_train)
+        ast_proj = svr.predict(projections['assists'])
+        ast_score = svr.score(x_test, y_test)

@@ -161,12 +161,14 @@ class DailyUpdate(object):
 
             data = nba_stattleship.prepare_data_for_projections(player)
 
-            points_tup = zip(data["game_time"], data["points"])
-            rebounds_tup = zip(data["game_time"], data["rebounds_total"])
-            steals_tup = zip(data["game_time"], data["steals"])
-            assists_tup = zip(data["game_time"], data["assists"])
-            turnovers_tup = zip(data["game_time"], data["turnovers"])
-            blocks_tup = zip(data["game_time"], data["blocks"])
+            points_tup = data["points"]
+            rebounds_tup = data["rebounds_total"]
+            steals_tup = data["steals"]
+            assists_tup = data["assists"]
+            turnovers_tup = data["turnovers"]
+            blocks_tup = data["blocks"]
+
+            game_time = data["game_time"]
 
             points_tup_sort = []
             rebounds_tup_sort = []
@@ -175,14 +177,14 @@ class DailyUpdate(object):
             turnovers_tup_sort = []
             blocks_tup_sort = []
             for i in range(0, len(points_tup)):
-                time = points_tup[i][0][0:10].split("-")
+                time = game_time[i][0:10].split("-")
                 day = datetime.date(int(time[0]), int(time[1]), int(time[2]))
-                points_tup_sort.append((day, points_tup[i][1]))
-                rebounds_tup_sort.append((day, rebounds_tup[i][1]))
-                steals_tup_sort.append((day, steals_tup[i][1]))
-                assists_tup_sort.append((day, assists_tup[i][1]))
-                turnovers_tup_sort.append((day, turnovers_tup[i][1]))
-                blocks_tup_sort.append((day, blocks_tup[i][1]))
+                points_tup_sort.append((day, points_tup[i]))
+                rebounds_tup_sort.append((day, rebounds_tup[i]))
+                steals_tup_sort.append((day, steals_tup[i]))
+                assists_tup_sort.append((day, assists_tup[i]))
+                turnovers_tup_sort.append((day, turnovers_tup[i]))
+                blocks_tup_sort.append((day, blocks_tup[i]))
 
             points_tup_sort.sort(key=lambda tup: tup[0])
             rebounds_tup_sort.sort(key=lambda tup: tup[0])
