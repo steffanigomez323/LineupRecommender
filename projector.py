@@ -17,6 +17,8 @@ from sklearn.cross_validation import train_test_split
 from collections import Counter
 from scorer import FanDuelScorer
 import numpy as np
+from app import redis_db
+from app import namespace
 
 
 class SimpleProjector(object):
@@ -145,16 +147,17 @@ class SimpleFeatureProjector(object):
         return self.project_feature(self.BLOCK_ID, player_id)
 
 class FeatureProjector(object):
-    POINTS_IDX = 0;
-    REBOUNDS_IDX = 0;
-    ASSISTS_IDX = 0;
-    STEALS_IDX = 0;
-    BLOCKS_IDX = 0;
-    TURNOVERS_IDX = 0;
-    TIME_IDX = 0;
-    OPPONENT_IDX = 0;
-    HVA_IDX = 0;
-    PLUS_MINUS_IDX = 0;
+
+    POINTS_IDX = 11;
+    REBOUNDS_IDX = 6;
+    ASSISTS_IDX = 7;
+    STEALS_IDX = 8;
+    BLOCKS_IDX = 9;
+    TURNOVERS_IDX = 10;
+    TIME_IDX = 1;
+    OPPONENT_IDX = 3;
+    HVA_IDX = 2;
+    PLUS_MINUS_IDX = 4;
 
     # take in pos, height, gamelogs
     # {id: {position: ssfd, height:fasdf}}
@@ -398,18 +401,18 @@ class FeatureProjector(object):
 
         return X, y
 
-    def split_train_test(self, training_feature):
+    def split_train_test(self, training_feature, test_percent):
         X, y = self.split_train_xy(training_feature)
 
         return train_test_split(
             X, y,
-            test_size=0.33, random_state=42)
+            test_size=test_percent, random_state=42)
 
 class SvrFeatureProjector(FeatureProjector):
     def __project_feature(self, feature_id, features, projections):
         x_train, x_test, \
         y_train, y_test = split_train_test(
-            features[feature_id])
+            features[feature_id], 0.25)
 
         svr = SVR(kernel='rbf', C=.5).fit(
             x_train, y_train)
@@ -435,4 +438,55 @@ class SvrFeatureProjector(FeatureProjector):
 
         tov_proj, tov_score = self.__project_feature('turnovers', features, projections)
 
-        
+        return {"assists": (ast_proj, ast_score),
+                "points": (pts_proj, pts_score),
+                "blocks": (blk_proj, blk_score),
+                "rebounds": (reb_proj, reb_score),
+                "turnovers": (tov_proj, tov_score),
+                "steals": (stl_proj, stl_score)}
+
+class DailyProjector(object):
+    
+  # list of number fire id's, inside projector.py
+# create class daily projector
+# for every player in that list, find stattleship id
+# from stattleship id get height and position
+# then np array of their game logs
+# double dictionary for height and position
+# dictionary for gamelogs
+# return both dictionaries
+
+    def get_player_stats(self, nf_ids):
+      player_stats = {}
+      for nf in nf_ids:
+        nba_id = redis_db.get(nf)
+        stattleship_slug = redis_db.get(nba_id)
+        height = redis_db.hget(stattleship_slug, 'height')
+        position = redis_db.hget(stattleship_slug, 'position')
+        stats = { 'height': height, 'position': position }
+        player_stats[nf] = stats
+      return player_stats
+
+    def get_player_gamelogs(self, nf_ids):
+      gamelogs = {}
+      for nf in nf_ids:
+        nba_id = redis_db.get(nf)
+        stattleship_slug = redis_db.get(nba_id)
+        gameids = redis_db.lrange(stattleship_slug + namespace.GAMELOGS, 0, -1)
+        games = []
+        for game in gameids:
+          g = [game]
+          g.append(redis_db.hget(game, 'game_time'))
+          g.append(redis_db.hget(game, 'played_at_home'))
+          g.append(redis_db.hget(game, 'played_against'))
+          g.append(redis_db.hget(game, 'plus_minus'))
+          g.append(redis_db.hget(game, 'time_played_total'))
+          g.append(redis_db.hget(game, 'rebounds_total'))
+          g.append(redis_db.hget(game, 'assists'))
+          g.append(redis_db.hget(game, 'steals'))
+          g.append(redis_db.hget(game, 'blocks'))
+          g.append(redis_db.hget(game, 'turnovers'))
+          g.append(redis_db.hget(game, 'points'))
+          game.append(np.array(g))
+        gamelogs[nf] = np.array(games)
+      return gamelogs
