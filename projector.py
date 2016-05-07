@@ -164,7 +164,7 @@ class FeatureProjector(object):
     def __init__(self, players_gamelogs, players_stats):
         self.avg = lambda x: sum(x) / float(len(x))
 
-        self.players_gamelogs = players_gamelogs
+        self.players_gamelogs = players_gamelogs['allgames']
         self.players_stats = players_stats
 
     def get_projection(self, player_id):
@@ -411,7 +411,7 @@ class FeatureProjector(object):
 class SvrFeatureProjector(FeatureProjector):
     def __project_feature(self, feature_id, features, projections):
         x_train, x_test, \
-        y_train, y_test = split_train_test(
+        y_train, y_test = self.split_train_test(
             features[feature_id], 0.25)
 
         svr = SVR(kernel='rbf', C=.5).fit(
@@ -446,16 +446,6 @@ class SvrFeatureProjector(FeatureProjector):
                 "steals": (stl_proj, stl_score)}
 
 class DailyProjector(object):
-    
-  # list of number fire id's, inside projector.py
-# create class daily projector
-# for every player in that list, find stattleship id
-# from stattleship id get height and position
-# then np array of their game logs
-# double dictionary for height and position
-# dictionary for gamelogs
-# return both dictionaries
-
     def get_player_stats(self, nf_ids):
       player_stats = {}
       for nf in nf_ids:
