@@ -322,8 +322,8 @@ class FeatureProjector(object):
         gamelog = self.players_gamelogs[player_id]
 
         # FILL THIS IN
-        opponent = 0
-        hva = 0
+        #opponent = player['playing_at_home']
+        hva = player['playing_at_home']
 
         points = gamelog[:,self.POINTS_IDX]
         rebounds = gamelog[:,self.REBOUNDS_IDX]
