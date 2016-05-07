@@ -46,20 +46,16 @@ class RedisHelper(object):
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
 
-        # set the player basic information in redis
-        for player in stattleship_players:
-            name = player["name"]
-            weight = player["weight"]
-            height = player["height"]
-            active = player["active"]
-            years_of_experience = player["years_of_experience"]
-
-            redis_db.hmset(player["slug"], {'name': name,
-                                            'height': height,
-                                            'weight': weight,
-                                            'active': active,
-                                            'years_of_experience':
-                                            years_of_experience})
+        with open(namespace.PLAYER_INFO_CSV) as f:
+            writer = csv.writer(f)
+            writer.writerow(['player_slug', 'name', 'height', 'weight', 'active', 'years_of_experience'])
+            for player in stattleship_players:
+                name = player["name"]
+                weight = player["weight"]
+                height = player["height"]
+                active = player["active"]
+                years_of_experience = player["years_of_experience"]
+                writer.writerow([player["slug"], name, height, weight, active, years_of_experience])
 
     def set_nba_to_stattleship_maps(self, nba_name_to_id):
         # get stattleship players' names and slugs
