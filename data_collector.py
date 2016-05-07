@@ -270,7 +270,7 @@ class NumberFireScraper(object):
 
         data = soup.find_all('tr')
 
-        players = list()
+        players = dict()
 
         for i in range(len(data)):
             if i < 2:
@@ -308,7 +308,9 @@ class NumberFireScraper(object):
 
             # get who they are playing against as well
             if salary_match and position_match and not out:
-                players.append((player_id, position, playing_at_home, salary))
+                players[player_id] = {"position": position,
+                                      "playing_at_home": playing_at_home,
+                                      "salary": salary}
 
         return players
 

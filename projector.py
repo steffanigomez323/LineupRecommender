@@ -9,16 +9,18 @@ Player Performance Projector
 """
 
 
-import operator
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import r2_score
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
+from sklearn.metrics import r2_score
 from sklearn.cross_validation import train_test_split
+import operator
 from collections import Counter
 from scorer import FanDuelScorer
 import numpy as np
 from app import redis_db
 from app import namespace
+from app import nf_scraper
 
 
 class SimpleProjector(object):
@@ -133,7 +135,7 @@ class SimpleFeatureProjector(object):
 
     def project_steals(self, player_id):
         return self.project_feature(self.STEAL_ID, player_id)
-    
+
     def project_assists(self, player_id):
         return self.project_feature(self.ASSIST_ID, player_id)
 
@@ -338,6 +340,73 @@ class FeatureProjector(object):
         i = num_logs
 
         # points
+        points_proj = [self.avg(points[i - 1:i]),  # last 1
+                       self.avg(points[i - 3:i]),  # last 3
+                       self.avg(points[i - 5:i]),  # last 5
+                       self.avg(points[i - 7:i]),  # last 7
+                       self.avg(plus_minus[0:i - 1]),  # plus minus avg
+                       self.avg(time[0:i - 1]),  # time avg
+                       opponent,  # opponent
+                       hva,  # home v away
+                       position]  # pos
+
+        # assists
+        assists_proj = [self.avg(assists[i - 1:i]),  # last 1
+                        self.avg(assists[i - 3:i]),  # last 3
+                        self.avg(assists[i - 5:i]),  # last 5
+                        self.avg(assists[i - 7:i]),  # last 7
+                        self.avg(plus_minus[0:i - 1]),  # plus minus avg
+                        self.avg(time[0:i - 1]),  # time avg
+                        opponent,  # opponent
+                        hva,  # home v away
+                        position]  # pos
+
+        # steals
+        steals_proj = [self.avg(steals[i - 1:i]),  # last 1
+                       self.avg(steals[i - 3:i]),  # last 3
+                       self.avg(steals[i - 5:i]),  # last 5
+                       self.avg(steals[i - 7:i]),  # last 7
+                       self.avg(plus_minus[0:i - 1]),  # plus minus avg
+                       self.avg(time[0:i - 1]),  # time avg
+                       opponent,  # opponent
+                       hva,  # home v away
+                       position]  # pos
+
+        # turnovers
+        turnovers_proj = [self.avg(turnovers[i - 1:i]),  # last 1
+                          self.avg(turnovers[i - 3:i]),  # last 3
+                          self.avg(turnovers[i - 5:i]),  # last 5
+                          self.avg(turnovers[i - 7:i]),  # last 7
+                          self.avg(plus_minus[0:i - 1]),  # plus minus avg
+                          self.avg(time[0:i - 1]),  # time avg
+                          opponent,  # opponent
+                          hva,  # home v away
+                          position]  # pos
+
+        # rebounds
+        rebounds_proj = [self.avg(rebounds[i - 1:i]),  # last 1
+                         self.avg(rebounds[i - 3:i]),  # last 3
+                         self.avg(rebounds[i - 5:i]),  # last 5
+                         self.avg(rebounds[i - 7:i]),  # last 7
+                         self.avg(plus_minus[0:i - 1]),  # plus minus avg
+                         self.avg(time[0:i - 1]),  # time avg
+                         opponent,  # opponent
+                         hva,  # home v away
+                         position,  # pos
+                         height]  # height
+
+        # blocks
+        blocks_proj = [self.avg(blocks[i - 1:i]),  # last 1
+                       self.avg(blocks[i - 3:i]),  # last 3
+                       self.avg(blocks[i - 5:i]),  # last 5
+                       self.avg(blocks[i - 7:i]),  # last 7
+                       self.avg(plus_minus[0:i - 1]),  # plus minus avg
+                       self.avg(time[0:i - 1]),  # time avg
+                       opponent,  # opponent
+                       hva,  # home v away
+                       position,  # pos
+                       height]  # height
+
         points_proj = [self.avg(points[i-1:i]), # last 1
                        self.avg(points[i-3:i]), # last 3
                        self.avg(points[i-5:i]), # last 5
@@ -413,7 +482,7 @@ class FeatureProjector(object):
                 "steals": steals_proj}
 
     def split_train_xy(self, training_feature):
-        y, X = np.hsplit( # split off first column (labels)
+        y, X = np.hsplit(  # split off first column (labels)
             training_feature,
             [0])
 
@@ -426,35 +495,148 @@ class FeatureProjector(object):
             X, y,
             test_size=test_percent, random_state=42)
 
-class SvrFeatureProjector(FeatureProjector):
+
+class LRFeatureProjector(FeatureProjector):
     def __project_feature(self, feature_id, features, projections):
-        x_train, x_test, \
-        y_train, y_test = self.split_train_test(
-            features[feature_id], 0.25)
+        x_train, x_test, y_train, y_test = \
+            self.split_train_test(features[feature_id], 0.25)
 
-        svr = SVR(kernel='rbf', C=.5).fit(
-            x_train, y_train)
+        lr = LinearRegression().fit(x_train, y_train)
 
-        score = svr.score(x_test, y_test)
-        proj = 0#svr.predict(projections[feature_id])
+        score = lr.score(x_test, y_test)
+        proj = lr.predict(projections[feature_id])
 
         return proj, score
 
     def get_projection(self, player_id):
         features = self.get_player_training_features(player_id)
-        #projections = self.get_player_projection_features(player_id)
+        projections = self.get_player_projection_features(player_id)
 
-        ast_proj, ast_score = self.__project_feature('assists', features, projections)
+        ast_proj, ast_score = self.__project_feature('assists', features,
+                                                     projections)
 
-        blk_proj, blk_score = self.__project_feature('blocks', features, projections)
+        blk_proj, blk_score = self.__project_feature('blocks', features,
+                                                     projections)
 
-        stl_proj, stl_score = self.__project_feature('steals', features, projections)
+        stl_proj, stl_score = self.__project_feature('steals', features,
+                                                     projections)
 
-        pts_proj, pts_score = self.__project_feature('points', features, projections)
+        pts_proj, pts_score = self.__project_feature('points', features,
+                                                     projections)
 
-        reb_proj, reb_score = self.__project_feature('rebounds', features, projections)
+        reb_proj, reb_score = self.__project_feature('rebounds', features,
+                                                     projections)
 
-        tov_proj, tov_score = self.__project_feature('turnovers', features, projections)
+        tov_proj, tov_score = self.__project_feature('turnovers', features,
+                                                     projections)
+
+
+class RFRFeatureProjector(FeatureProjector):
+    def __project_feature(self, feature_id, features, projections):
+        x_train, x_test, y_train, y_test = \
+            self.split_train_test(features[feature_id], 0.25)
+
+        rf = RandomForestRegressor(n_estimators=1000, n_jobs=-1,
+                                   max_features='sqrt').fit(x_train, y_train)
+
+        score = rf.score(x_test, y_test)
+        proj = rf.predict(projections[feature_id])
+
+        return proj, score
+
+    def get_projection(self, player_id):
+        features = self.get_player_training_features(player_id)
+        projections = self.get_player_projection_features(player_id)
+
+        ast_proj, ast_score = self.__project_feature('assists', features,
+                                                     projections)
+
+        blk_proj, blk_score = self.__project_feature('blocks', features,
+                                                     projections)
+
+        stl_proj, stl_score = self.__project_feature('steals', features,
+                                                     projections)
+
+        pts_proj, pts_score = self.__project_feature('points', features,
+                                                     projections)
+
+        reb_proj, reb_score = self.__project_feature('rebounds', features,
+                                                     projections)
+
+        tov_proj, tov_score = self.__project_feature('turnovers', features,
+                                                     projections)
+
+
+class SVRLinearFeatureProjector(FeatureProjector):
+    def __project_feature(self, feature_id, features, projections):
+        x_train, x_test, y_train, y_test = \
+            self.split_train_test(features[feature_id], 0.25)
+
+        svr = SVR(kernel='linear', C=.5).fit(
+            x_train, y_train)
+
+        score = svr.score(x_test, y_test)
+        proj = svr.predict(projections[feature_id])
+
+        return proj, score
+
+    def get_projection(self, player_id):
+        features = self.get_player_training_features(player_id)
+        projections = self.get_player_projection_features(player_id)
+
+        ast_proj, ast_score = self.__project_feature('assists', features,
+                                                     projections)
+
+        blk_proj, blk_score = self.__project_feature('blocks', features,
+                                                     projections)
+
+        stl_proj, stl_score = self.__project_feature('steals', features,
+                                                     projections)
+
+        pts_proj, pts_score = self.__project_feature('points', features,
+                                                     projections)
+
+        reb_proj, reb_score = self.__project_feature('rebounds', features,
+                                                     projections)
+
+        tov_proj, tov_score = self.__project_feature('turnovers', features,
+                                                     projections)
+
+
+class SVRRBFFeatureProjector(FeatureProjector):
+    def __project_feature(self, feature_id, features, projections):
+        x_train, x_test, y_train, y_test = \
+            self.split_train_test(features[feature_id], 0.25)
+
+        svr = SVR(kernel='rbf', C=.5).fit(
+            x_train, y_train)
+
+        score = svr.score(x_test, y_test)
+        proj = 0  # svr.predict(projections[feature_id])
+
+        return proj, score
+
+    def get_projection(self, player_id):
+        features = self.get_player_training_features(player_id)
+        # projections = self.get_player_projection_features(player_id)
+
+        ast_proj, ast_score = self.__project_feature('assists', features,
+                                                     projections)
+
+        blk_proj, blk_score = self.__project_feature('blocks', features,
+                                                     projections)
+
+        stl_proj, stl_score = self.__project_feature('steals', features,
+                                                     projections)
+
+        pts_proj, pts_score = self.__project_feature('points', features,
+                                                     projections)
+
+        reb_proj, reb_score = self.__project_feature('rebounds', features,
+                                                     projections)
+
+        tov_proj, tov_score = self.__project_feature('turnovers', features,
+                                                     projections)
 
         return {"assists": (ast_proj, ast_score),
                 "points": (pts_proj, pts_score),
@@ -463,7 +645,24 @@ class SvrFeatureProjector(FeatureProjector):
                 "turnovers": (tov_proj, tov_score),
                 "steals": (stl_proj, stl_score)}
 
+
 class DailyProjector(object):
+# list of number fire id's, inside projector.py
+# create class daily projector
+# for every player in that list, find stattleship id
+# from stattleship id get height and position
+# then np array of their game logs
+# double dictionary for height and position
+# dictionary for gamelogs
+# return both dictionaries
+    def prepare_data_for_projections(self):
+        data = nf_scraper.get_todays_player_data()
+        stats = get_player_stats(data.keys())
+        gamelogs = get_player_gamelogs(data.keys())
+
+        # combined = combine the data into the format you need for projecting
+        # project
+
     def get_player_stats(self, nf_ids):
       player_stats = {}
       for nf in nf_ids:
