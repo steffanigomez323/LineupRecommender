@@ -36,7 +36,7 @@ class RedisHelper(object):
         self.set_nf_to_nba_maps(nba_name_to_id)
 
         # set player stats
-        self.set_player_stats()
+        self.set_player_stats(nba_name_to_id)
 
     def set_basic_player_information(self):
         # get player data from stattleship
@@ -146,14 +146,18 @@ class RedisHelper(object):
         redis_db.set('cj-miles', '101139')
         redis_db.set('t-j-mcconnell', '204456')
 
-    def set_player_stats(self):
+    def set_player_stats(self, nba_name_to_id):
         player_stats = nba_scraper.get_player_stats()
         projection_data = nba_scraper.prepare_data_for_projections(
             player_stats)
-
+        count = 0
         for nba_id in projection_data:
             start_time = time.clock()
             gameids = []
+            if str(nba_id) not in nba_name_to_id.values():
+                print nba_id
+                count = count + 1
+                continue
             stattleship_slug = redis_db.get(nba_id)
             for game in projection_data[nba_id]['allgames']:
 
@@ -175,3 +179,4 @@ class RedisHelper(object):
             end_time = time.clock()
 
             print("Time taken: {} seconds.\n".format(end_time - start_time))
+        print count

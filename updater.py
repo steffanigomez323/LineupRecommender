@@ -136,6 +136,77 @@ class DailyUpdater(object):
     #         gamelog_id = player_id + "|" + namespace.GAMELOGS
     #         redis_db.lpush(gamelog_id, *games_list)
             
+    def nf_playerlookup(self):
+        player_data = nf_scraper.get_todays_player_data()
+        players = {}
+        for p in player_data:
+            data = redis_db.hgetall("nba-" + p[0])
+            if (len(data) == 0):
+                data.update(redis_db.hgetall("nba-" + redis_db.get(p[0])))
+                players["nba-" + redis_db.get(p[0])] = data
+            else:
+                players["nba-" + p[0]] = data
+        return players
+
+    def get_feature_scores(self, players):
+        players = players.keys()
+        player_stats = {}
+        for player in players:
+
+            data = nba_stattleship.prepare_data_for_projections(player)
+
+            points_tup = data["points"]
+            rebounds_tup = data["rebounds_total"]
+            steals_tup = data["steals"]
+            assists_tup = data["assists"]
+            turnovers_tup = data["turnovers"]
+            blocks_tup = data["blocks"]
+
+            game_time = data["game_time"]
+
+            points_tup_sort = []
+            rebounds_tup_sort = []
+            steals_tup_sort = []
+            assists_tup_sort = []
+            turnovers_tup_sort = []
+            blocks_tup_sort = []
+            for i in range(0, len(points_tup)):
+                time = game_time[i][0:10].split("-")
+                day = datetime.date(int(time[0]), int(time[1]), int(time[2]))
+                points_tup_sort.append((day, points_tup[i]))
+                rebounds_tup_sort.append((day, rebounds_tup[i]))
+                steals_tup_sort.append((day, steals_tup[i]))
+                assists_tup_sort.append((day, assists_tup[i]))
+                turnovers_tup_sort.append((day, turnovers_tup[i]))
+                blocks_tup_sort.append((day, blocks_tup[i]))
+
+            points_tup_sort.sort(key=lambda tup: tup[0])
+            rebounds_tup_sort.sort(key=lambda tup: tup[0])
+            steals_tup_sort.sort(key=lambda tup: tup[0])
+            assists_tup_sort.sort(key=lambda tup: tup[0])
+            turnovers_tup_sort.sort(key=lambda tup: tup[0])
+            blocks_tup_sort.sort(key=lambda tup: tup[0])
+
+
+            if len(points_tup_sort) == 0:
+                continue
+
+            d, points = zip(*points_tup_sort)
+            d, rebounds = zip(*rebounds_tup_sort)
+            d, steals = zip(*steals_tup_sort)
+            d, assists = zip(*assists_tup_sort)
+            d, turnovers = zip(*turnovers_tup_sort)
+            d, blocks = zip(*blocks_tup_sort)
+
+            player_stats[player] = {
+            "points": list(points),
+            "rebounds": list(rebounds),
+            "steals": list(steals),
+            "assists": list(assists),
+            "turnovers": list(turnovers),
+            "blocks": list(blocks),
+            "dates": list(d)}
+        return player_stats
 
     # def nf_playerlookup(self):
     #     player_data = nf_scraper.get_todays_player_data()
