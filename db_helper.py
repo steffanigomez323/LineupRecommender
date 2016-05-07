@@ -154,7 +154,6 @@ class RedisHelper(object):
         for nba_id in projection_data:
             start_time = time.clock()
             gameids = []
-            nba_id = redis_db.get(nba_id)
             stattleship_slug = redis_db.get(nba_id)
             for game in projection_data[nba_id]['allgames']:
 
