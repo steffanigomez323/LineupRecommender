@@ -15,6 +15,7 @@ from data_collector import NumberFireScraper
 from data_collector import NBAScraper
 from updater import DailyUpdater
 from scorer import FanDuelScorer
+# from projector import DailyProjector
 from namespace import Namespace
 # from simple_recommender import SimpleRecommender
 # import os
@@ -45,6 +46,9 @@ daily_updater = DailyUpdater()
 
 # scorers
 fanduel_scorer = FanDuelScorer()
+
+# projector
+# daily_projector = DailyProjector()
 
 # namespace
 namespace = Namespace

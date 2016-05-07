@@ -20,6 +20,7 @@ from scorer import FanDuelScorer
 import numpy as np
 from app import redis_db
 from app import namespace
+from app import nf_scraper
 
 
 class SimpleProjector(object):
@@ -339,7 +340,6 @@ class FeatureProjector(object):
         i = num_logs
 
         # points
-<<<<<<< HEAD
         points_proj = [self.avg(points[i - 1:i]),  # last 1
                        self.avg(points[i - 3:i]),  # last 3
                        self.avg(points[i - 5:i]),  # last 5
@@ -406,7 +406,7 @@ class FeatureProjector(object):
                        hva,  # home v away
                        position,  # pos
                        height]  # height
-=======
+
         points_proj = [self.avg(points[i-1:i]), # last 1
                        self.avg(points[i-3:i]), # last 3
                        self.avg(points[i-5:i]), # last 5
@@ -473,7 +473,6 @@ class FeatureProjector(object):
                        hva, # home v away
                        #position, # pos
                        height] # height
->>>>>>> 2dc411fdadbae6ffc3f6b1a997766f7062ada366
 
         return {"assists": assists_proj,
                 "points": points_proj,
@@ -606,26 +605,20 @@ class SVRLinearFeatureProjector(FeatureProjector):
 
 class SVRRBFFeatureProjector(FeatureProjector):
     def __project_feature(self, feature_id, features, projections):
-<<<<<<< HEAD
         x_train, x_test, y_train, y_test = \
             self.split_train_test(features[feature_id], 0.25)
-=======
-        x_train, x_test, \
-        y_train, y_test = self.split_train_test(
-            features[feature_id], 0.25)
->>>>>>> 2dc411fdadbae6ffc3f6b1a997766f7062ada366
 
         svr = SVR(kernel='rbf', C=.5).fit(
             x_train, y_train)
 
         score = svr.score(x_test, y_test)
-        proj = 0#svr.predict(projections[feature_id])
+        proj = 0  # svr.predict(projections[feature_id])
 
         return proj, score
 
     def get_projection(self, player_id):
         features = self.get_player_training_features(player_id)
-        #projections = self.get_player_projection_features(player_id)
+        # projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
                                                      projections)
@@ -662,6 +655,14 @@ class DailyProjector(object):
 # double dictionary for height and position
 # dictionary for gamelogs
 # return both dictionaries
+    def prepare_data_for_projections(self):
+        data = nf_scraper.get_todays_player_data()
+        stats = get_player_stats(data.keys())
+        gamelogs = get_player_gamelogs(data.keys())
+
+        # combined = combine the data into the format you need for projecting
+        # project
+
     def get_player_stats(self, nf_ids):
       player_stats = {}
       for nf in nf_ids:
