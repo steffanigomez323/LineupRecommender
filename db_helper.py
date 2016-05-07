@@ -11,7 +11,7 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
-import Namespace
+import namespace
 import time
 import csv
 
@@ -45,21 +45,17 @@ class RedisHelper(object):
         # get only the required fields
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
-
-        # set the player basic information in redis
-        for player in stattleship_players:
-            name = player["name"]
-            weight = player["weight"]
-            height = player["height"]
-            active = player["active"]
-            years_of_experience = player["years_of_experience"]
-
-            redis_db.hmset(player["slug"], {'name': name,
-                                            'height': height,
-                                            'weight': weight,
-                                            'active': active,
-                                            'years_of_experience':
-                                            years_of_experience})
+        n = namespace.Namespace()
+        with open(n.PLAYER_INFO_CSV, 'wb') as f:
+            writer = csv.writer(f)
+            writer.writerow(['player_slug', 'name', 'height', 'weight', 'active', 'years_of_experience'])
+            for player in stattleship_players:
+                name = player["name"]
+                weight = player["weight"]
+                height = player["height"]
+                active = player["active"]
+                years_of_experience = player["years_of_experience"]
+                writer.writerow([player["slug"], name, height, weight, active, years_of_experience])
 
     def set_nba_to_stattleship_maps(self, nba_name_to_id):
         # get stattleship players' names and slugs
@@ -311,36 +307,36 @@ class CSVHelper(object):
         redis_db.set('t-j-mcconnell', '204456')
 
     def create_player_stats_csv(self, nba_name_to_id):
-        player_stats = nba_scraper.get_player_stats()
-        gamelog_data = nba_scraper.get(
-            player_stats)
-        count = 0
-        for nba_id in gamelog_data:
-            start_time = time.clock()
-            gameids = []
-            if str(nba_id) not in nba_name_to_id.values():
-                print nba_id
-                count = count + 1
-                continue
-            stattleship_slug = redis_db.get(nba_id)
-            for game in gamelog_data[nba_id]['allgames']:
+        # player_stats = nba_scraper.get_player_stats()
+        # gamelog_data = nba_scraper.get(
+        #     player_stats)
+        # count = 0
+        # for nba_id in gamelog_data:
+        #     start_time = time.clock()
+        #     gameids = []
+        #     if str(nba_id) not in nba_name_to_id.values():
+        #         print nba_id
+        #         count = count + 1
+        #         continue
+        #     stattleship_slug = redis_db.get(nba_id)
+        #     for game in gamelog_data[nba_id]['allgames']:
 
-                gameids.append(game[0])
-                redis_db.hmset(game[0], {'game_time': game[1],
-                                         'played_at_home': game[2],
-                                         'played_against': game[3],
-                                         'plus_minus': game[4],
-                                         'time_played_total': game[5],
-                                         'rebounds_total': game[6],
-                                         'assists': game[7],
-                                         'steals': game[8],
-                                         'blocks': game[9],
-                                         'turnovers': game[10],
-                                         'points': game[11]})
+        #         gameids.append(game[0])
+        #         redis_db.hmset(game[0], {'game_time': game[1],
+        #                                  'played_at_home': game[2],
+        #                                  'played_against': game[3],
+        #                                  'plus_minus': game[4],
+        #                                  'time_played_total': game[5],
+        #                                  'rebounds_total': game[6],
+        #                                  'assists': game[7],
+        #                                  'steals': game[8],
+        #                                  'blocks': game[9],
+        #                                  'turnovers': game[10],
+        #                                  'points': game[11]})
 
-            redis_db.lpush(stattleship_slug + Namespace.GAMELOGS, *gameids)
+        #     redis_db.lpush(stattleship_slug + Namespace.GAMELOGS, *gameids)
 
-            end_time = time.clock()
+        #     end_time = time.clock()
 
             print("Time taken: {} seconds.\n".format(end_time - start_time))
         print count
