@@ -46,7 +46,6 @@ class RedisHelper(object):
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
 
-        # set the player basic information in redis
         with open(namespace.PLAYER_INFO_CSV) as f:
             writer = csv.writer(f)
             writer.writerow(['player_slug', 'name', 'height', 'weight', 'active', 'years_of_experience'])
