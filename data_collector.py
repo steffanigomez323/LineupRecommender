@@ -330,7 +330,7 @@ class NBAScraper(object):
             modifier = 'commonallplayers'
             params = {'IsOnlyCurrentSeason': '1',
                       'LeagueID': '00',
-                      'Season': s}
+                      'Season': season}
 
             result = self.nba_request.get_request(modifier, params)
 
