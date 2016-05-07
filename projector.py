@@ -657,8 +657,13 @@ class DailyProjector(object):
 # return both dictionaries
     def prepare_data_for_projections(self):
         data = nf_scraper.get_todays_player_data()
-        stats = get_player_stats(data.keys())
-        gamelogs = get_player_gamelogs(data.keys())
+        print "data done"
+        stats = self.get_player_stats(data.keys())
+        print "stats done"
+        gamelogs = self.get_player_gamelogs(data.keys())
+        print "gamelogs done"
+
+        print stats
 
         # combined = combine the data into the format you need for projecting
         # project
@@ -694,6 +699,6 @@ class DailyProjector(object):
           g.append(redis_db.hget(game, 'blocks'))
           g.append(redis_db.hget(game, 'turnovers'))
           g.append(redis_db.hget(game, 'points'))
-          game.append(np.array(g))
+          games.append(np.array(g))
         gamelogs[nf] = np.array(games)
       return gamelogs
