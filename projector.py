@@ -647,6 +647,7 @@ class SVRRBFFeatureProjector(FeatureProjector):
 
 
 class DailyProjector(object):
+
 # list of number fire id's, inside projector.py
 # create class daily projector
 # for every player in that list, find stattleship id
@@ -669,8 +670,8 @@ class DailyProjector(object):
         nba_id = redis_db.get(nf)
         stattleship_slug = redis_db.get(nba_id)
         height = redis_db.hget(stattleship_slug, 'height')
-        position = redis_db.hget(stattleship_slug, 'position')
-        stats = { 'height': height, 'position': position }
+        #position = redis_db.hget(stattleship_slug, 'position')
+        #stats = { 'height': height, 'position': position }
         player_stats[nf] = stats
       return player_stats
 
@@ -694,6 +695,6 @@ class DailyProjector(object):
           g.append(redis_db.hget(game, 'blocks'))
           g.append(redis_db.hget(game, 'turnovers'))
           g.append(redis_db.hget(game, 'points'))
-          game.append(np.array(g))
+          games.append(np.array(g))
         gamelogs[nf] = np.array(games)
       return gamelogs
