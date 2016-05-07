@@ -164,19 +164,36 @@ class FeatureProjector(object):
     def __init__(self, players_gamelogs, players_stats):
         self.avg = lambda x: sum(x) / float(len(x))
 
-        self.players_gamelogs = players_gamelogs['allgames']
-        self.players_stats = players_stats
+        self.players_gamelogs = players_gamelogs
+
+        self.players_stats = {}
+
+        for player in players_stats:
+            name = player["name"]
+            weight = player["weight"]
+            height = player["height"]
+            active = player["active"]
+            years_of_experience = player["years_of_experience"]
+
+            self.players_stats[player["slug"]] = {'name': name,
+                                            'height': height,
+                                            'weight': weight,
+                                            'active': active,
+                                            'years_of_experience':
+                                            years_of_experience}
+
+        #self.players_stats = players_stats
 
     def get_projection(self, player_id):
         pass
 
     def get_player_training_features(self, player_id):
-        player = players_stats[player_id]
+        player = self.players_stats[player_id]
 
         position = player['position']
         height = player['height']
 
-        gamelog = players_gamelogs[player_id]['allgames']
+        gamelog = self.players_gamelogs[player_id]['allgames']
 
         points = gamelog[:,self.POINTS_IDX]
         rebounds = gamelog[:,self.REBOUNDS_IDX]
@@ -297,12 +314,12 @@ class FeatureProjector(object):
                 "steals": steals_train}
 
     def get_player_projection_features(self, player_id):
-        player = players_stats[player_id]
+        player = self.players_stats[player_id]
 
         position = player['position']
         height = player['height']
 
-        gamelog = players_gamelogs[player_id]
+        gamelog = self.players_gamelogs[player_id]
 
         opponent = safdsa
         hva = afdsa
