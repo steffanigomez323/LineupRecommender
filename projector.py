@@ -176,7 +176,7 @@ class FeatureProjector(object):
         position = player['position']
         height = player['height']
 
-        gamelog = players_gamelogs[player_id]
+        gamelog = players_gamelogs[player_id]['allgames']
 
         points = gamelog[:,self.POINTS_IDX]
         rebounds = gamelog[:,self.REBOUNDS_IDX]
