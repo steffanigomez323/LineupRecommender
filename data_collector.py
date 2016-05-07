@@ -10,7 +10,7 @@ Data Collector
 
 import urllib
 import re
-import Namespace
+import namespace
 from requestor import CustomRequest
 from bs4 import BeautifulSoup
 from copy import deepcopy
