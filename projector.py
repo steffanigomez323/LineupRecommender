@@ -166,18 +166,35 @@ class FeatureProjector(object):
         self.avg = lambda x: sum(x) / float(len(x))
 
         self.players_gamelogs = players_gamelogs
-        self.players_stats = players_stats
+
+        self.players_stats = {}
+
+        for player in players_stats:
+            name = player["name"]
+            weight = player["weight"]
+            height = player["height"]
+            active = player["active"]
+            years_of_experience = player["years_of_experience"]
+
+            self.players_stats[player["slug"]] = {'name': name,
+                                            'height': height,
+                                            'weight': weight,
+                                            'active': active,
+                                            'years_of_experience':
+                                            years_of_experience}
+
+        #self.players_stats = players_stats
 
     def get_projection(self, player_id):
         pass
 
     def get_player_training_features(self, player_id):
-        player = players_stats[player_id]
+        player = self.players_stats[player_id]
 
-        position = player['position']
+        #position = player['position']
         height = player['height']
 
-        gamelog = players_gamelogs[player_id]
+        gamelog = self.players_gamelogs[player_id]['allgames']
 
         points = gamelog[:,self.POINTS_IDX]
         rebounds = gamelog[:,self.REBOUNDS_IDX]
@@ -203,8 +220,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i], # home v away
-                   position] # pos
+                   hva[i]] # home v away
+                   #position] # pos
             row = np.array(row)
             points_train.append(row)
 
@@ -219,8 +236,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i], # home v away
-                   position] # pos
+                   hva[i]] # home v away
+                   #position] # pos
             row = np.array(row)
             assists_train.append(row)
 
@@ -235,8 +252,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i], # home v away
-                   position] # pos
+                   hva[i]] # home v away
+                   #position] # pos
             row = np.array(row)
             steals_train.append(row)
 
@@ -251,8 +268,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i], # home v away
-                   position] # pos
+                   hva[i]] # home v away
+                   #position] # pos
             row = np.array(row)
             turnovers_train.append(row)
 
@@ -268,7 +285,7 @@ class FeatureProjector(object):
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
-                   position, # pos
+                   #position, # pos
                    height] # height
             row = np.array(row)
             rebounds_train.append(row)
@@ -285,7 +302,7 @@ class FeatureProjector(object):
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
-                   position, # pos
+                   #position, # pos
                    height] # height
             row = np.array(row)
             blocks_train.append(row)
@@ -298,15 +315,16 @@ class FeatureProjector(object):
                 "steals": steals_train}
 
     def get_player_projection_features(self, player_id):
-        player = players_stats[player_id]
+        player = self.players_stats[player_id]
 
         position = player['position']
         height = player['height']
 
-        gamelog = players_gamelogs[player_id]
+        gamelog = self.players_gamelogs[player_id]
 
-        opponent = safdsa
-        hva = afdsa
+        # FILL THIS IN
+        opponent = 0
+        hva = 0
 
         points = gamelog[:,self.POINTS_IDX]
         rebounds = gamelog[:,self.REBOUNDS_IDX]
@@ -321,6 +339,7 @@ class FeatureProjector(object):
         i = num_logs
 
         # points
+<<<<<<< HEAD
         points_proj = [self.avg(points[i - 1:i]),  # last 1
                        self.avg(points[i - 3:i]),  # last 3
                        self.avg(points[i - 5:i]),  # last 5
@@ -387,6 +406,74 @@ class FeatureProjector(object):
                        hva,  # home v away
                        position,  # pos
                        height]  # height
+=======
+        points_proj = [self.avg(points[i-1:i]), # last 1
+                       self.avg(points[i-3:i]), # last 3
+                       self.avg(points[i-5:i]), # last 5
+                       self.avg(points[i-7:i]), # last 7
+                       self.avg(plus_minus[0:i-1]), # plus minus avg
+                       self.avg(time[0:i-1]), # time avg
+                       opponent, # opponent
+                       hva] # home v away
+                       #position] # pos
+
+        # assists
+        assists_proj = [self.avg(assists[i-1:i]), # last 1
+                        self.avg(assists[i-3:i]), # last 3
+                        self.avg(assists[i-5:i]), # last 5
+                        self.avg(assists[i-7:i]), # last 7
+                        self.avg(plus_minus[0:i-1]), # plus minus avg
+                        self.avg(time[0:i-1]), # time avg
+                        opponent, # opponent
+                        hva] # home v away
+                        #position] # pos
+
+        # steals
+        steals_proj = [self.avg(steals[i-1:i]), # last 1
+                       self.avg(steals[i-3:i]), # last 3
+                       self.avg(steals[i-5:i]), # last 5
+                       self.avg(steals[i-7:i]), # last 7
+                       self.avg(plus_minus[0:i-1]), # plus minus avg
+                       self.avg(time[0:i-1]), # time avg
+                       opponent, # opponent
+                       hva] # home v away
+                       #position] # pos
+
+        # turnovers
+        turnovers_proj = [self.avg(turnovers[i-1:i]), # last 1
+                          self.avg(turnovers[i-3:i]), # last 3
+                          self.avg(turnovers[i-5:i]), # last 5
+                          self.avg(turnovers[i-7:i]), # last 7
+                          self.avg(plus_minus[0:i-1]), # plus minus avg
+                          self.avg(time[0:i-1]), # time avg
+                          opponent, # opponent
+                          hva] # home v away
+                          #position] # pos
+
+        # rebounds
+        rebounds_proj = [self.avg(rebounds[i-1:i]), # last 1
+                   self.avg(rebounds[i-3:i]), # last 3
+                   self.avg(rebounds[i-5:i]), # last 5
+                   self.avg(rebounds[i-7:i]), # last 7
+                   self.avg(plus_minus[0:i-1]), # plus minus avg
+                   self.avg(time[0:i-1]), # time avg
+                   opponent, # opponent
+                   hva, # home v away
+                   #position, # pos
+                   height] # height
+
+        # blocks
+        blocks_proj = [self.avg(blocks[i-1:i]), # last 1
+                       self.avg(blocks[i-3:i]), # last 3
+                       self.avg(blocks[i-5:i]), # last 5
+                       self.avg(blocks[i-7:i]), # last 7
+                       self.avg(plus_minus[0:i-1]), # plus minus avg
+                       self.avg(time[0:i-1]), # time avg
+                       opponent, # opponent
+                       hva, # home v away
+                       #position, # pos
+                       height] # height
+>>>>>>> 2dc411fdadbae6ffc3f6b1a997766f7062ada366
 
         return {"assists": assists_proj,
                 "points": points_proj,
@@ -519,20 +606,26 @@ class SVRLinearFeatureProjector(FeatureProjector):
 
 class SVRRBFFeatureProjector(FeatureProjector):
     def __project_feature(self, feature_id, features, projections):
+<<<<<<< HEAD
         x_train, x_test, y_train, y_test = \
             self.split_train_test(features[feature_id], 0.25)
+=======
+        x_train, x_test, \
+        y_train, y_test = self.split_train_test(
+            features[feature_id], 0.25)
+>>>>>>> 2dc411fdadbae6ffc3f6b1a997766f7062ada366
 
         svr = SVR(kernel='rbf', C=.5).fit(
             x_train, y_train)
 
         score = svr.score(x_test, y_test)
-        proj = svr.predict(projections[feature_id])
+        proj = 0#svr.predict(projections[feature_id])
 
         return proj, score
 
     def get_projection(self, player_id):
         features = self.get_player_training_features(player_id)
-        projections = self.get_player_projection_features(player_id)
+        #projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
                                                      projections)
@@ -569,7 +662,6 @@ class DailyProjector(object):
 # double dictionary for height and position
 # dictionary for gamelogs
 # return both dictionaries
-
     def get_player_stats(self, nf_ids):
       player_stats = {}
       for nf in nf_ids:

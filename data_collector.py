@@ -468,6 +468,7 @@ class NBAScraper(object):
                 players[p]['games'] = []
 
         for p in players:
+            players[p]['allgames'] = np.array(players[p]['allgames'])
             ordered = sorted(players[p]['allgames'], key=lambda x: x[0])
             players[p]['allgames'] = ordered
 
