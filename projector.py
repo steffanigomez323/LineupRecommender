@@ -406,14 +406,33 @@ class FeatureProjector(object):
             test_size=0.33, random_state=42)
 
 class SvrFeatureProjector(FeatureProjector):
+    def __project_feature(self, feature_id, features, projections):
+        x_train, x_test, \
+        y_train, y_test = split_train_test(
+            features[feature_id])
+
+        svr = SVR(kernel='rbf', C=.5).fit(
+            x_train, y_train)
+
+        score = svr.score(x_test, y_test)
+        proj = svr.predict(projections[feature_id])
+
+        return proj, score
+
     def get_projection(self, player_id):
         features = self.get_player_training_features(player_id)
         projections = self.get_player_projection_features(player_id)
 
-        x_train, x_test, \
-        y_train, y_test = split_train_test(
-            features['assists'])
-        svr = SVR(kernel='rbf', C=.5).fit(
-            x_train, y_train)
-        ast_proj = svr.predict(projections['assists'])
-        ast_score = svr.score(x_test, y_test)
+        ast_proj, ast_score = self.__project_feature('assists', features, projections)
+
+        blk_proj, blk_score = self.__project_feature('blocks', features, projections)
+
+        stl_proj, stl_score = self.__project_feature('steals', features, projections)
+
+        pts_proj, pts_score = self.__project_feature('points', features, projections)
+
+        reb_proj, reb_score = self.__project_feature('rebounds', features, projections)
+
+        tov_proj, tov_score = self.__project_feature('turnovers', features, projections)
+
+        
