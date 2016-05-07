@@ -11,9 +11,9 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
-from app import namespace
-import csv
+import Namespace
 import time
+import csv
 
 
 class RedisHelper(object):
@@ -47,16 +47,19 @@ class RedisHelper(object):
             stattleship_data)
 
         # set the player basic information in redis
-        with open(namespace.PLAYER_INFO_CSV) as f:
-            writer = csv.writer(f)
-            writer.writerow(['player_slug', 'name', 'height', 'weight', 'active', 'years_of_experience'])
-            for player in stattleship_players:
-                name = player["name"]
-                weight = player["weight"]
-                height = player["height"]
-                active = player["active"]
-                years_of_experience = player["years_of_experience"]
-                writer.writerow([player["slug"], name, height, weight, active, years_of_experience])
+        for player in stattleship_players:
+            name = player["name"]
+            weight = player["weight"]
+            height = player["height"]
+            active = player["active"]
+            years_of_experience = player["years_of_experience"]
+
+            redis_db.hmset(player["slug"], {'name': name,
+                                            'height': height,
+                                            'weight': weight,
+                                            'active': active,
+                                            'years_of_experience':
+                                            years_of_experience})
 
     def set_nba_to_stattleship_maps(self, nba_name_to_id):
         # get stattleship players' names and slugs
@@ -172,7 +175,7 @@ class RedisHelper(object):
                                          'turnovers': game[10],
                                          'points': game[11]})
 
-            redis_db.lpush(stattleship_slug + namespace.GAMELOGS, *gameids)
+            redis_db.lpush(stattleship_slug + Namespace.GAMELOGS, *gameids)
 
             end_time = time.clock()
 
@@ -230,9 +233,6 @@ class CSVHelper(object):
         # set all the nba id to stattleship slug maps in redis
         for nba_name, nba_id in nba_name_to_id.iteritems():
             if nba_name in stattleship_name_to_slug.iterkeys():
-                with open(namespace.NBA_TO_STATTLESHIP_CSV, 'wb') as f:
-                    writer = csv.writer(f)
-                    writer.writerows(someiterable)
                 stattleship_slug = stattleship_name_to_slug[nba_name]
                 redis_db.set(nba_id, stattleship_slug)
 
@@ -338,7 +338,7 @@ class CSVHelper(object):
                                          'turnovers': game[10],
                                          'points': game[11]})
 
-            redis_db.lpush(stattleship_slug + namespace.GAMELOGS, *gameids)
+            redis_db.lpush(stattleship_slug + Namespace.GAMELOGS, *gameids)
 
             end_time = time.clock()
 
