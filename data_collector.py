@@ -277,11 +277,14 @@ class NumberFireScraper(object):
                 continue
 
             player_raw = data[i].find('td', attrs={'class': 'player'})
-            playing_at_home_raw = data[i].find('td', attrs={'class': 'sep'})
+            team_details_raw = data[i].find('td', attrs={'class': 'sep'})
             salary_raw = data[i].find('td', attrs={'class': 'col-salary'})
 
-            # working with playing_at_home
-            if '@' in playing_at_home_raw.text:
+            # working with team details
+            opponent_match = re.search('([A-Z])\w+', team_details_raw.text)
+            if opponent_match:
+                opponent = opponent_match.group(0)
+            if '@' in team_details_raw.text:
                 playing_at_home = False
             else:
                 playing_at_home = True
@@ -310,7 +313,8 @@ class NumberFireScraper(object):
             if salary_match and position_match and not out:
                 players[player_id] = {"position": position,
                                       "playing_at_home": playing_at_home,
-                                      "salary": salary}
+                                      "salary": salary,
+                                      "playing_against": opponent}
 
         return players
 
