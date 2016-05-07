@@ -230,6 +230,9 @@ class CSVHelper(object):
         # set all the nba id to stattleship slug maps in redis
         for nba_name, nba_id in nba_name_to_id.iteritems():
             if nba_name in stattleship_name_to_slug.iterkeys():
+                with open(namespace.NBA_TO_STATTLESHIP_CSV, 'wb') as f:
+                    writer = csv.writer(f)
+                    writer.writerows(someiterable)
                 stattleship_slug = stattleship_name_to_slug[nba_name]
                 redis_db.set(nba_id, stattleship_slug)
 
