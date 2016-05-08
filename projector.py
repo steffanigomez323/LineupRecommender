@@ -667,4 +667,4 @@ class DailyProjector(object):
                 self.upcoming_games[player_id]['position']
 
     def project_fd_score(self):
-        
+        pass
