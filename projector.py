@@ -268,8 +268,8 @@ class FeatureProjector(object):
                              for x in self.OPPONENT_LIST]
             # position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
             #                 for x in self.POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
             # row.extend(position_nums) # position
 
             assists_train.append(row)
@@ -290,8 +290,8 @@ class FeatureProjector(object):
                              for x in self.OPPONENT_LIST]
             # position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
             #                 for x in self.POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
             # row.extend(position_nums) # position
 
             steals_train.append(row)
@@ -312,8 +312,8 @@ class FeatureProjector(object):
                              for x in self.OPPONENT_LIST]
             # position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
             #                 for x in self.POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
             # row.extend(position_nums) # position
 
             turnovers_train.append(row)
@@ -335,8 +335,8 @@ class FeatureProjector(object):
                              for x in self.OPPONENT_LIST]
             # position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
             #                 for x in self.POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
             # row.extend(position_nums) # position
 
             rebounds_train.append(row)
@@ -358,8 +358,8 @@ class FeatureProjector(object):
                              for x in self.OPPONENT_LIST]
             # position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
             #                 for x in self.POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
             # row.extend(position_nums) # position
 
             blocks_train.append(row)
@@ -532,6 +532,7 @@ class LRFeatureProjector(FeatureProjector):
                 "turnovers": (tov_proj, tov_score),
                 "steals": (stl_proj, stl_score)}
 
+
 class LassoFeatureProjector(FeatureProjector):
 
     def __project_feature(self, feature_id, features, projections):
@@ -572,6 +573,7 @@ class LassoFeatureProjector(FeatureProjector):
                 "rebounds": (reb_proj, reb_score),
                 "turnovers": (tov_proj, tov_score),
                 "steals": (stl_proj, stl_score)}
+
 
 class RFRFeatureProjector(FeatureProjector):
 
@@ -615,6 +617,7 @@ class RFRFeatureProjector(FeatureProjector):
                 "turnovers": (tov_proj, tov_score),
                 "steals": (stl_proj, stl_score)}
 
+
 class SVRLinearFeatureProjector(FeatureProjector):
 
     def __project_feature(self, feature_id, features, projections):
@@ -656,6 +659,7 @@ class SVRLinearFeatureProjector(FeatureProjector):
                 "rebounds": (reb_proj, reb_score),
                 "turnovers": (tov_proj, tov_score),
                 "steals": (stl_proj, stl_score)}
+
 
 class SVRRBFFeatureProjector(FeatureProjector):
 
