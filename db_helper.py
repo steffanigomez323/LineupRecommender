@@ -409,4 +409,4 @@ class CSVHelper(object):
                 if slug in players:
                     players[slug]['gamelogs'].append(row[1:])
 
-        return players
+        return players, nf_to_stattleship_map
