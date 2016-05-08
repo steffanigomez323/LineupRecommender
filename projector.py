@@ -170,9 +170,9 @@ class FeatureProjector(object):
     PLUS_MINUS_IDX = 3
 
     OPPONENT_LIST = [x for x in Namespace.TEAM_MAP_NF_NBA.itervalues()]
-    print OPPONENT_LIST.pop()
+    OPPONENT_LIST.pop()
     POSITION_LIST = [x for x in Namespace.POSITIONS]
-    print POSITION_LIST.pop()
+    POSITION_LIST.pop()
 
     TRUE_NUM = 1
     FALSE_NUM = 0
@@ -188,8 +188,30 @@ class FeatureProjector(object):
     def get_projection(self, player_id):
         pass
 
+    def __append_features(self, target, append_array):
+        if target == None:
+            return append_array
+        else:
+            return np.vstack((target, append_array))
+
+    def get_all_training_features(self):
+        all_features = {"assists": None,
+                        "points": None,
+                        "blocks": None,
+                        "rebounds": None,
+                        "turnovers": None,
+                        "steals": None}
+
+        for pid in self.players_gamelogs.iterkeys():
+            features = self.get_player_training_features(pid)
+
+            for k, v in features.iteritems():
+                all_features[k] = self.__append_features(all_features[k], v)
+
+        return all_features
+
     def get_player_training_features(self, player_id):
-        position = self.players_gamelogs[player_id]['position']
+        #position = self.players_gamelogs[player_id]['position']
         height = float(self.players_gamelogs[player_id]['height'])
 
         gamelog = self.players_gamelogs[player_id]['gamelogs']
@@ -209,7 +231,7 @@ class FeatureProjector(object):
         num_logs = len(points)
 
         # points
-        points_train = np.array([])
+        points_train = []
         for i in range(7, num_logs):
             row = [points[i], # label
                    self.avg(points[i-1:i]), # last 1
@@ -219,20 +241,19 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i]), # plus minus avg
                    self.avg(time[0:i])] # time avg
 
-            hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
-            opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
-                             for x in OPPONENT_LIST]
-            position_nums = [TRUE_NUM if x == position else FALSE_NUM
-                             for x in POSITION_LIST]
+            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
+                             for x in self.OPPONENT_LIST]
+            #position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+            #                 for x in self.POSITION_LIST]
             row.append(hva_num) # hva
             row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
-            row = np.array(row)
             points_train.append(row)
 
         # assists
-        assists_train = np.array([])
+        assists_train = []
         for i in range(7, num_logs):
             row = [assists[i], # label
                    self.avg(assists[i-1:i]), # last 1
@@ -242,20 +263,19 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i]), # plus minus avg
                    self.avg(time[0:i])] # time avg
 
-            hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
-            opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
-                             for x in OPPONENT_LIST]
-            position_nums = [TRUE_NUM if x == position else FALSE_NUM
-                             for x in POSITION_LIST]
+            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
+                             for x in self.OPPONENT_LIST]
+            #position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+            #                 for x in self.POSITION_LIST]
             row.append(hva_num) # hva
             row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
-            row = np.array(row)
             assists_train.append(row)
 
         # steals
-        steals_train = np.array([])
+        steals_train = []
         for i in range(7, num_logs):
             row = [steals[i], # label
                    self.avg(steals[i-1:i]), # last 1
@@ -265,20 +285,19 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i]), # plus minus avg
                    self.avg(time[0:i])] # time avg
 
-            hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
-            opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
-                             for x in OPPONENT_LIST]
-            position_nums = [TRUE_NUM if x == position else FALSE_NUM
-                             for x in POSITION_LIST]
+            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
+                             for x in self.OPPONENT_LIST]
+            #position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+            #                 for x in self.POSITION_LIST]
             row.append(hva_num) # hva
             row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
-            row = np.array(row)
             steals_train.append(row)
 
         # turnovers
-        turnovers_train = np.array([])
+        turnovers_train = []
         for i in range(7, num_logs):
             row = [turnovers[i], # labels
                    self.avg(turnovers[i-1:i]), # last 1
@@ -288,20 +307,19 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i]), # plus minus avg
                    self.avg(time[0:i])] # time avg
 
-            hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
-            opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
-                             for x in OPPONENT_LIST]
-            position_nums = [TRUE_NUM if x == position else FALSE_NUM
-                             for x in POSITION_LIST]
+            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
+                             for x in self.OPPONENT_LIST]
+            #position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+            #                 for x in self.POSITION_LIST]
             row.append(hva_num) # hva
             row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
-            row = np.array(row)
             turnovers_train.append(row)
 
         # rebounds
-        rebounds_train = np.array([])
+        rebounds_train = []
         for i in range(7, num_logs):
             row = [rebounds[i], # label
                    self.avg(rebounds[i-1:i]), # last 1
@@ -312,20 +330,19 @@ class FeatureProjector(object):
                    self.avg(time[0:i]), # time avg
                    height] # height
 
-            hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
-            opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
-                             for x in OPPONENT_LIST]
-            position_nums = [TRUE_NUM if x == position else FALSE_NUM
-                             for x in POSITION_LIST]
+            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
+                             for x in self.OPPONENT_LIST]
+            #position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+            #                 for x in self.POSITION_LIST]
             row.append(hva_num) # hva
             row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
-            row = np.array(row)
             rebounds_train.append(row)
 
         # blocks
-        blocks_train = np.array([])
+        blocks_train = []
         for i in range(7, num_logs):
             row = [blocks[i], # label
                    self.avg(blocks[i-1:i]), # last 1
@@ -336,27 +353,26 @@ class FeatureProjector(object):
                    self.avg(time[0:i]), # time avg
                    height] # height
 
-            hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
-            opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
-                             for x in OPPONENT_LIST]
-            position_nums = [TRUE_NUM if x == position else FALSE_NUM
-                             for x in POSITION_LIST]
+            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
+                             for x in self.OPPONENT_LIST]
+            #position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+            #                 for x in self.POSITION_LIST]
             row.append(hva_num) # hva
             row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
-            row = np.array(row)
             blocks_train.append(row)
 
-        return {"assists": assists_train,
-                "points": points_train,
-                "blocks": blocks_train,
-                "rebounds": rebounds_train,
-                "turnovers": turnovers_train,
-                "steals": steals_train}
+        return {"assists": np.array(assists_train),
+                "points": np.array(points_train),
+                "blocks": np.array(blocks_train),
+                "rebounds": np.array(rebounds_train),
+                "turnovers": np.array(turnovers_train),
+                "steals": np.array(steals_train)}
 
     def get_player_projection_features(self, player_id):
-        position = self.players_gamelogs[player_id]['position']
+        #position = self.players_gamelogs[player_id]['position']
         height = float(self.players_gamelogs[player_id]['height'])
 
         gamelog = self.players_gamelogs[player_id]['gamelogs']
@@ -375,11 +391,11 @@ class FeatureProjector(object):
         plus_minus = gamelog[:,self.PLUS_MINUS_IDX].astype(np.float)
 
         # transform the categorical data
-        hva_num = (TRUE_NUM if hva == "True" else FALSE_NUM)
-        opponent_nums = [TRUE_NUM if x == opponent else FALSE_NUM
-                         for x in OPPONENT_LIST]
-        position_nums = [TRUE_NUM if x == position else FALSE_NUM
-                         for x in POSITION_LIST]
+        hva_num = (self.TRUE_NUM if hva == "True" else self.FALSE_NUM)
+        opponent_nums = [self.TRUE_NUM if x == opponent else self.FALSE_NUM
+                         for x in self.OPPONENT_LIST]
+        #position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+        #                 for x in self.POSITION_LIST]
 
         i = len(points)
 
@@ -392,7 +408,7 @@ class FeatureProjector(object):
                        self.avg(time[0:i])]  # time avg
         points_proj.append(hva_num)
         points_proj.extend(opponent_nums)
-        points_proj.extend(position_nums)
+        #points_proj.extend(position_nums)
 
         # assists
         assists_proj = [self.avg(assists[i - 1:i]),  # last 1
@@ -403,7 +419,7 @@ class FeatureProjector(object):
                         self.avg(time[0:i])]  # time avg
         assists_proj.append(hva_num)
         assists_proj.extend(opponent_nums)
-        assists_proj.extend(position_nums)
+        #assists_proj.extend(position_nums)
 
         # steals
         steals_proj = [self.avg(steals[i - 1:i]),  # last 1
@@ -414,7 +430,7 @@ class FeatureProjector(object):
                        self.avg(time[0:i])]  # time avg
         steals_proj.append(hva_num)
         steals_proj.extend(opponent_nums)
-        steals_proj.extend(position_nums)
+        #steals_proj.extend(position_nums)
 
         # turnovers
         turnovers_proj = [self.avg(turnovers[i - 1:i]),  # last 1
@@ -425,7 +441,7 @@ class FeatureProjector(object):
                           self.avg(time[0:i])]  # time avg
         turnovers_proj.append(hva_num)
         turnovers_proj.extend(opponent_nums)
-        turnovers_proj.extend(position_nums)
+        #turnovers_proj.extend(position_nums)
 
         # rebounds
         rebounds_proj = [self.avg(rebounds[i - 1:i]),  # last 1
@@ -437,7 +453,7 @@ class FeatureProjector(object):
                          height]  # height
         rebounds_proj.append(hva_num)
         rebounds_proj.extend(opponent_nums)
-        rebounds_proj.extend(position_nums)
+        #rebounds_proj.extend(position_nums)
 
         # blocks
         blocks_proj = [self.avg(blocks[i - 1:i]),  # last 1
@@ -449,21 +465,21 @@ class FeatureProjector(object):
                        height]  # height
         blocks_proj.append(hva_num)
         blocks_proj.extend(opponent_nums)
-        blocks_proj.extend(position_nums)
+        #blocks_proj.extend(position_nums)
 
-        return {"assists": assists_proj,
-                "points": points_proj,
-                "blocks": blocks_proj,
-                "rebounds": rebounds_proj,
-                "turnovers": turnovers_proj,
-                "steals": steals_proj}
+        return {"assists": np.array(assists_proj).reshape(1, -1),
+                "points": np.array(points_proj).reshape(1, -1),
+                "blocks": np.array(blocks_proj).reshape(1, -1),
+                "rebounds": np.array(rebounds_proj).reshape(1, -1),
+                "turnovers": np.array(turnovers_proj).reshape(1, -1),
+                "steals": np.array(steals_proj).reshape(1, -1)}
 
     def split_train_xy(self, training_feature):
         y, X = np.hsplit(  # split off first column (labels)
             training_feature,
-            [0])
+            [1])
 
-        return X, y
+        return X, np.ravel(y)
 
     def split_train_test(self, training_feature, test_percent):
         X, y = self.split_train_xy(training_feature)
@@ -484,10 +500,12 @@ class LRFeatureProjector(FeatureProjector):
         score = lr.score(x_test, y_test)
         proj = lr.predict(projections[feature_id])
 
+        #print lr.coef_
+
         return proj, score
 
     def get_projection(self, player_id):
-        features = self.get_player_training_features(player_id)
+        features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
@@ -507,7 +525,12 @@ class LRFeatureProjector(FeatureProjector):
 
         tov_proj, tov_score = self.__project_feature('turnovers', features,
                                                      projections)
-
+        return {"assists": (ast_proj, ast_score),
+                "points": (pts_proj, pts_score),
+                "blocks": (blk_proj, blk_score),
+                "rebounds": (reb_proj, reb_score),
+                "turnovers": (tov_proj, tov_score),
+                "steals": (stl_proj, stl_score)}
 
 class LassoFeatureProjector(FeatureProjector):
 
@@ -523,7 +546,7 @@ class LassoFeatureProjector(FeatureProjector):
         return proj, score
 
     def get_projection(self, player_id):
-        features = self.get_player_training_features(player_id)
+        features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
@@ -543,7 +566,12 @@ class LassoFeatureProjector(FeatureProjector):
 
         tov_proj, tov_score = self.__project_feature('turnovers', features,
                                                      projections)
-
+        return {"assists": (ast_proj, ast_score),
+                "points": (pts_proj, pts_score),
+                "blocks": (blk_proj, blk_score),
+                "rebounds": (reb_proj, reb_score),
+                "turnovers": (tov_proj, tov_score),
+                "steals": (stl_proj, stl_score)}
 
 class RFRFeatureProjector(FeatureProjector):
 
@@ -560,7 +588,7 @@ class RFRFeatureProjector(FeatureProjector):
         return proj, score
 
     def get_projection(self, player_id):
-        features = self.get_player_training_features(player_id)
+        features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
@@ -580,7 +608,12 @@ class RFRFeatureProjector(FeatureProjector):
 
         tov_proj, tov_score = self.__project_feature('turnovers', features,
                                                      projections)
-
+        return {"assists": (ast_proj, ast_score),
+                "points": (pts_proj, pts_score),
+                "blocks": (blk_proj, blk_score),
+                "rebounds": (reb_proj, reb_score),
+                "turnovers": (tov_proj, tov_score),
+                "steals": (stl_proj, stl_score)}
 
 class SVRLinearFeatureProjector(FeatureProjector):
 
@@ -597,7 +630,7 @@ class SVRLinearFeatureProjector(FeatureProjector):
         return proj, score
 
     def get_projection(self, player_id):
-        features = self.get_player_training_features(player_id)
+        features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
@@ -617,7 +650,12 @@ class SVRLinearFeatureProjector(FeatureProjector):
 
         tov_proj, tov_score = self.__project_feature('turnovers', features,
                                                      projections)
-
+        return {"assists": (ast_proj, ast_score),
+                "points": (pts_proj, pts_score),
+                "blocks": (blk_proj, blk_score),
+                "rebounds": (reb_proj, reb_score),
+                "turnovers": (tov_proj, tov_score),
+                "steals": (stl_proj, stl_score)}
 
 class SVRRBFFeatureProjector(FeatureProjector):
 
@@ -634,7 +672,7 @@ class SVRRBFFeatureProjector(FeatureProjector):
         return proj, score
 
     def get_projection(self, player_id):
-        features = self.get_player_training_features(player_id)
+        features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
@@ -692,8 +730,30 @@ class DailyProjector(object):
 
     def project_fd_score(self):
         pid = 'nba-lebron-james'
-        player = self.players[pid]
-        print player
 
-        svrrbf = SVRRBFFeatureProjector(self.players, self.upcoming_games)
-        projections = svrrbf.get_projection(pid)
+        print "Projecting for", pid
+
+        print "\nLinear Regression"
+        proj = LRFeatureProjector(self.players, self.upcoming_games)
+        projections = proj.get_projection(pid)
+        print projections
+
+        print "\nLasso Regression"
+        proj = LassoFeatureProjector(self.players, self.upcoming_games)
+        projections = proj.get_projection(pid)
+        print projections
+
+        print "\nRFR Regression"
+        proj = RFRFeatureProjector(self.players, self.upcoming_games)
+        projections = proj.get_projection(pid)
+        print projections
+
+        print "\nSVR (Linear) Regression"
+        proj = SVRLinearFeatureProjector(self.players, self.upcoming_games)
+        projections = proj.get_projection(pid)
+        print projections
+
+        print "\nSVR (RBF) Regression"
+        proj = SVRRBFFeatureProjector(self.players, self.upcoming_games)
+        projections = proj.get_projection(pid)
+        print projections
