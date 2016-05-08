@@ -195,38 +195,38 @@ class FeatureProjector(object):
         gamelog = self.players_gamelogs[player_id]['gamelogs']
         gamelog = np.array(gamelog)
 
-        points = gamelog[:,self.POINTS_IDX].astype(np.float)
-        rebounds = gamelog[:,self.REBOUNDS_IDX].astype(np.float)
-        assists = gamelog[:,self.ASSISTS_IDX].astype(np.float)
-        steals = gamelog[:,self.STEALS_IDX].astype(np.float)
-        blocks = gamelog[:,self.BLOCKS_IDX].astype(np.float)
-        turnovers = gamelog[:,self.TURNOVERS_IDX].astype(np.float)
-        time = gamelog[:,self.TIME_IDX].astype(np.float)
-        plus_minus = gamelog[:,self.PLUS_MINUS_IDX].astype(np.float)
-        opponent = gamelog[:,self.OPPONENT_IDX]
-        hva = gamelog[:,self.HVA_IDX]
+        points = gamelog[:, self.POINTS_IDX].astype(np.float)
+        rebounds = gamelog[:, self.REBOUNDS_IDX].astype(np.float)
+        assists = gamelog[:, self.ASSISTS_IDX].astype(np.float)
+        steals = gamelog[:, self.STEALS_IDX].astype(np.float)
+        blocks = gamelog[:, self.BLOCKS_IDX].astype(np.float)
+        turnovers = gamelog[:, self.TURNOVERS_IDX].astype(np.float)
+        time = gamelog[:, self.TIME_IDX].astype(np.float)
+        plus_minus = gamelog[:, self.PLUS_MINUS_IDX].astype(np.float)
+        opponent = gamelog[:, self.OPPONENT_IDX]
+        hva = gamelog[:, self.HVA_IDX]
 
         num_logs = len(points)
 
         # points
         points_train = np.array([])
         for i in range(7, num_logs):
-            row = [points[i], # label
-                   self.avg(points[i-1:i]), # last 1
-                   self.avg(points[i-3:i]), # last 3
-                   self.avg(points[i-5:i]), # last 5
-                   self.avg(points[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i])] # time avg
+            row = [points[i],  # label
+                   self.avg(points[i - 1:i]),  # last 1
+                   self.avg(points[i - 3:i]),  # last 3
+                   self.avg(points[i - 5:i]),  # last 5
+                   self.avg(points[i - 7:i]),  # last 7
+                   self.avg(plus_minus[0:i]),  # plus minus avg
+                   self.avg(time[0:i])]  # time avg
 
             hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
             opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
                              for x in OPPONENT_LIST]
             position_nums = [TRUE_NUM if x == position else FALSE_NUM
                              for x in POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
+            row.extend(position_nums)  # position
 
             row = np.array(row)
             points_train.append(row)
@@ -234,22 +234,22 @@ class FeatureProjector(object):
         # assists
         assists_train = np.array([])
         for i in range(7, num_logs):
-            row = [assists[i], # label
-                   self.avg(assists[i-1:i]), # last 1
-                   self.avg(assists[i-3:i]), # last 3
-                   self.avg(assists[i-5:i]), # last 5
-                   self.avg(assists[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i])] # time avg
+            row = [assists[i],  # label
+                   self.avg(assists[i - 1:i]),  # last 1
+                   self.avg(assists[i - 3:i]),  # last 3
+                   self.avg(assists[i - 5:i]),  # last 5
+                   self.avg(assists[i - 7:i]),  # last 7
+                   self.avg(plus_minus[0:i]),  # plus minus avg
+                   self.avg(time[0:i])]  # time avg
 
             hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
             opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
                              for x in OPPONENT_LIST]
             position_nums = [TRUE_NUM if x == position else FALSE_NUM
                              for x in POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
+            row.extend(position_nums)  # position
 
             row = np.array(row)
             assists_train.append(row)
@@ -257,22 +257,22 @@ class FeatureProjector(object):
         # steals
         steals_train = np.array([])
         for i in range(7, num_logs):
-            row = [steals[i], # label
-                   self.avg(steals[i-1:i]), # last 1
-                   self.avg(steals[i-3:i]), # last 3
-                   self.avg(steals[i-5:i]), # last 5
-                   self.avg(steals[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i])] # time avg
+            row = [steals[i],  # label
+                   self.avg(steals[i - 1:i]),  # last 1
+                   self.avg(steals[i - 3:i]),  # last 3
+                   self.avg(steals[i - 5:i]),  # last 5
+                   self.avg(steals[i - 7:i]),  # last 7
+                   self.avg(plus_minus[0:i]),  # plus minus avg
+                   self.avg(time[0:i])]  # time avg
 
             hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
             opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
                              for x in OPPONENT_LIST]
             position_nums = [TRUE_NUM if x == position else FALSE_NUM
                              for x in POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
+            row.extend(position_nums)  # position
 
             row = np.array(row)
             steals_train.append(row)
@@ -280,22 +280,22 @@ class FeatureProjector(object):
         # turnovers
         turnovers_train = np.array([])
         for i in range(7, num_logs):
-            row = [turnovers[i], # labels
-                   self.avg(turnovers[i-1:i]), # last 1
-                   self.avg(turnovers[i-3:i]), # last 3
-                   self.avg(turnovers[i-5:i]), # last 5
-                   self.avg(turnovers[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i])] # time avg
+            row = [turnovers[i],  # labels
+                   self.avg(turnovers[i - 1:i]),  # last 1
+                   self.avg(turnovers[i - 3:i]),  # last 3
+                   self.avg(turnovers[i - 5:i]),  # last 5
+                   self.avg(turnovers[i - 7:i]),  # last 7
+                   self.avg(plus_minus[0:i]),  # plus minus avg
+                   self.avg(time[0:i])]  # time avg
 
             hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
             opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
                              for x in OPPONENT_LIST]
             position_nums = [TRUE_NUM if x == position else FALSE_NUM
                              for x in POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
+            row.extend(position_nums)  # position
 
             row = np.array(row)
             turnovers_train.append(row)
@@ -303,23 +303,23 @@ class FeatureProjector(object):
         # rebounds
         rebounds_train = np.array([])
         for i in range(7, num_logs):
-            row = [rebounds[i], # label
-                   self.avg(rebounds[i-1:i]), # last 1
-                   self.avg(rebounds[i-3:i]), # last 3
-                   self.avg(rebounds[i-5:i]), # last 5
-                   self.avg(rebounds[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
-                   height] # height
+            row = [rebounds[i],  # label
+                   self.avg(rebounds[i - 1:i]),  # last 1
+                   self.avg(rebounds[i - 3:i]),  # last 3
+                   self.avg(rebounds[i - 5:i]),  # last 5
+                   self.avg(rebounds[i - 7:i]),  # last 7
+                   self.avg(plus_minus[0:i]),  # plus minus avg
+                   self.avg(time[0:i]),  # time avg
+                   height]  # height
 
             hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
             opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
                              for x in OPPONENT_LIST]
             position_nums = [TRUE_NUM if x == position else FALSE_NUM
                              for x in POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
+            row.extend(position_nums)  # position
 
             row = np.array(row)
             rebounds_train.append(row)
@@ -327,23 +327,23 @@ class FeatureProjector(object):
         # blocks
         blocks_train = np.array([])
         for i in range(7, num_logs):
-            row = [blocks[i], # label
-                   self.avg(blocks[i-1:i]), # last 1
-                   self.avg(blocks[i-3:i]), # last 3
-                   self.avg(blocks[i-5:i]), # last 5
-                   self.avg(blocks[i-7:i]), # last 7
-                   self.avg(plus_minus[0:i]), # plus minus avg
-                   self.avg(time[0:i]), # time avg
-                   height] # height
+            row = [blocks[i],  # label
+                   self.avg(blocks[i - 1:i]),  # last 1
+                   self.avg(blocks[i - 3:i]),  # last 3
+                   self.avg(blocks[i - 5:i]),  # last 5
+                   self.avg(blocks[i - 7:i]),  # last 7
+                   self.avg(plus_minus[0:i]),  # plus minus avg
+                   self.avg(time[0:i]),  # time avg
+                   height]  # height
 
             hva_num = (TRUE_NUM if hva[i] == "True" else FALSE_NUM)
             opponent_nums = [TRUE_NUM if x == opponent[i] else FALSE_NUM
                              for x in OPPONENT_LIST]
             position_nums = [TRUE_NUM if x == position else FALSE_NUM
                              for x in POSITION_LIST]
-            row.append(hva_num) # hva
-            row.extend(opponent_nums) # opponent
-            row.extend(position_nums) # position
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
+            row.extend(position_nums)  # position
 
             row = np.array(row)
             blocks_train.append(row)
@@ -365,14 +365,14 @@ class FeatureProjector(object):
         opponent = self.upcoming_games[player_id]['playing_against']
         hva = self.upcoming_games[player_id]['playing_at_home']
 
-        points = gamelog[:,self.POINTS_IDX].astype(np.float)
-        rebounds = gamelog[:,self.REBOUNDS_IDX].astype(np.float)
-        assists = gamelog[:,self.ASSISTS_IDX].astype(np.float)
-        steals = gamelog[:,self.STEALS_IDX].astype(np.float)
-        blocks = gamelog[:,self.BLOCKS_IDX].astype(np.float)
-        turnovers = gamelog[:,self.TURNOVERS_IDX].astype(np.float)
-        time = gamelog[:,self.TIME_IDX].astype(np.float)
-        plus_minus = gamelog[:,self.PLUS_MINUS_IDX].astype(np.float)
+        points = gamelog[:, self.POINTS_IDX].astype(np.float)
+        rebounds = gamelog[:, self.REBOUNDS_IDX].astype(np.float)
+        assists = gamelog[:, self.ASSISTS_IDX].astype(np.float)
+        steals = gamelog[:, self.STEALS_IDX].astype(np.float)
+        blocks = gamelog[:, self.BLOCKS_IDX].astype(np.float)
+        turnovers = gamelog[:, self.TURNOVERS_IDX].astype(np.float)
+        time = gamelog[:, self.TIME_IDX].astype(np.float)
+        plus_minus = gamelog[:, self.PLUS_MINUS_IDX].astype(np.float)
 
         # transform the categorical data
         hva_num = (TRUE_NUM if hva == "True" else FALSE_NUM)
@@ -629,7 +629,7 @@ class SVRRBFFeatureProjector(FeatureProjector):
             x_train, y_train)
 
         score = svr.score(x_test, y_test)
-        proj =  svr.predict(projections[feature_id])
+        proj = svr.predict(projections[feature_id])
 
         return proj, score
 
