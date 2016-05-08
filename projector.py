@@ -18,6 +18,7 @@ import operator
 from collections import Counter
 from scorer import FanDuelScorer
 import numpy as np
+from copy import deepcopy
 from app import nf_scraper
 from db_helper import CSVHelper
 
@@ -168,14 +169,10 @@ class FeatureProjector(object):
         self.players_gamelogs = players_gamelogs
         self.upcoming_games = upcoming_games
 
-        #self.players_stats = player_stats
-
     def get_projection(self, player_id):
         pass
 
     def get_player_training_features(self, player_id):
-        player = self.players_stats[player_id]
-
         position = self.players_gamelogs[player_id]['position']
         height = self.players_gamelogs[player_id]['height']
 
@@ -649,12 +646,15 @@ class DailyProjector(object):
                 self.upcoming_games[stattleship_slug][attr] = \
                     nf_data[nf_id][attr]
 
-        for player_id in self.upcoming_games.keys():
-            self.players[player_id]['position'] = \
-                self.upcoming_games[player_id]['position']
+        for player_id in deepcopy(self.players.keys()):
+            if player_id not in self.upcoming_games.keys():
+                del(self.players[player_id])
+            else:
+                self.players[player_id]['position'] = \
+                    self.upcoming_games[player_id]['position']
 
     def project_fd_score(self):
-        player = 'nba-damian-lillard'
+        player = 'nba-lebron-james'
         lr = LRFeatureProjector(self.players, self.upcoming_games)
         projections = lr.get_projection(player)
         print projections
