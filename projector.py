@@ -174,8 +174,6 @@ class FeatureProjector(object):
         pass
 
     def get_player_training_features(self, player_id):
-        player = self.players_stats[player_id]
-
         position = self.players_gamelogs[player_id]['position']
         height = self.players_gamelogs[player_id]['height']
 
@@ -300,8 +298,6 @@ class FeatureProjector(object):
                 "steals": steals_train}
 
     def get_player_projection_features(self, player_id):
-        player = self.players_stats[player_id]
-
         position = self.players_gamelogs[player_id]['position']
         height = self.players_gamelogs[player_id]['height']
 
@@ -397,7 +393,7 @@ class FeatureProjector(object):
                        self.avg(plus_minus[0:i-1]), # plus minus avg
                        self.avg(time[0:i-1]), # time avg
                        opponent, # opponent
-                       hva] # home v away
+                       hva, # home v away
                        position] # pos
 
         # assists
@@ -408,7 +404,7 @@ class FeatureProjector(object):
                         self.avg(plus_minus[0:i-1]), # plus minus avg
                         self.avg(time[0:i-1]), # time avg
                         opponent, # opponent
-                        hva] # home v away
+                        hva, # home v away
                         position] # pos
 
         # steals
@@ -419,7 +415,7 @@ class FeatureProjector(object):
                        self.avg(plus_minus[0:i-1]), # plus minus avg
                        self.avg(time[0:i-1]), # time avg
                        opponent, # opponent
-                       hva] # home v away
+                       hva, # home v away
                        position] # pos
 
         # turnovers
@@ -430,7 +426,7 @@ class FeatureProjector(object):
                           self.avg(plus_minus[0:i-1]), # plus minus avg
                           self.avg(time[0:i-1]), # time avg
                           opponent, # opponent
-                          hva] # home v away
+                          hva, # home v away
                           position] # pos
 
         # rebounds
@@ -636,17 +632,20 @@ class DailyProjector(object):
     players = {}
 
     def prepare_data_for_projections(self):
-        nf_data, nf_to_stattleship_map = nf_scraper.get_todays_player_data()
+        nf_data = nf_scraper.get_todays_player_data()
+
+        csv_helper = CSVHelper()
+        self.players, nf_to_stattleship_map = \
+            csv_helper.prepare_data_from_csvs()
 
         for nf_id, attributes in nf_data.iteritems():
             stattleship_slug = nf_to_stattleship_map[nf_id]
+            self.upcoming_games[stattleship_slug] = dict()
             for attr in attributes:
                 self.upcoming_games[stattleship_slug][attr] = \
                     nf_data[nf_id][attr]
 
-        csv_helper = CSVHelper()
-        self.players = csv_helper.prepare_data_from_csvs()
-        for player_id in self.players.keys():
+        for player_id in self.upcoming_games.keys():
             self.players[player_id]['position'] = \
                 self.upcoming_games[player_id]['position']
 
@@ -658,4 +657,4 @@ class DailyProjector(object):
         svrrbf = SVRRBFFeatureProjector(self.players, self.upcoming_games)
         projections = svrrbf.get_projection(pid)
 
-
+        print projections
