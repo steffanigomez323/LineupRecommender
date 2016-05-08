@@ -10,6 +10,7 @@ Player Performance Projector
 
 
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.metrics import r2_score
@@ -18,12 +19,14 @@ import operator
 from collections import Counter
 from scorer import FanDuelScorer
 import numpy as np
+from copy import deepcopy
 from app import nf_scraper
 from db_helper import CSVHelper
 from namespace import Namespace
 
 
 class SimpleProjector(object):
+
     def __init__(self, players):
         self.players = players
         self.avg = lambda x: sum(x) / float(len(x))
@@ -41,36 +44,41 @@ class SimpleProjector(object):
                 scores = self.players[player]
                 for j in range(i, len(scores)):
                     last_n_dict[player][i][0].append(scores[j])
-                    last_n_dict[player][i][1].append(self.avg(scores[j-i:j]))
+                    last_n_dict[player][i][1].append(self.avg(scores[j - i:j]))
         return last_n_dict
 
     def get_best_last_n(self, last_n_dict, num_games):
         r2_dict = {}
         for player in last_n_dict.iterkeys():
-            r2_dict[player] = {}    
+            r2_dict[player] = {}
             for last_n in last_n_dict[player].iterkeys():
                 if len(last_n_dict[player][last_n][0]) > 0:
-                    assert len(last_n_dict[player][last_n][0]) == len(last_n_dict[player][last_n][1])
-                    r2_dict[player][last_n] = r2_score(last_n_dict[player][last_n][0], last_n_dict[player][last_n][1])
+                    assert len(last_n_dict[player][last_n][0]) == len(
+                        last_n_dict[player][last_n][1])
+                    r2_dict[player][last_n] = r2_score(
+                        last_n_dict[player][last_n][0], last_n_dict[player][last_n][1])
 
         count_14s = 0
         last_ns = []
         for player, last_n in r2_dict.iteritems():
             if len(last_n) == num_games - 1:
                 count_14s += 1
-                last_ns.append(max(last_n.iteritems(), key=operator.itemgetter(1))[0])
+                last_ns.append(
+                    max(last_n.iteritems(), key=operator.itemgetter(1))[0])
 
         data = Counter(last_ns)
         return data.most_common(1)[0][0]
 
     def get_projection(self, scores, averages, last_n):
         classifier = LogisticRegression()
-        #print "#### SCORES"
-        #print scores
-        #print "#### AVERAGES"
-        #print averages
-        classifier.fit(numpy.array([numpy.array([average]) for average in averages]), numpy.array([int(score) for score in scores]))
+        # print "#### SCORES"
+        # print scores
+        # print "#### AVERAGES"
+        # print averages
+        classifier.fit(numpy.array([numpy.array([average]) for average in averages]), numpy.array(
+            [int(score) for score in scores]))
         return classifier.predict(self.avg(scores[::-last_n]))
+
 
 class SimpleFeatureProjector(object):
     BEST_N_MAX = 14
@@ -117,7 +125,7 @@ class SimpleFeatureProjector(object):
                 'score': total_score}
 
     def project_feature(self, feature_id, player_id):
-        player_features = {k: v[feature_id] for k,v in self.players.items()}
+        player_features = {k: v[feature_id] for k, v in self.players.items()}
 
         sp = SimpleProjector(player_features)
         player_models = sp.get_models(self.BEST_N_MAX)
@@ -148,8 +156,8 @@ class SimpleFeatureProjector(object):
     def project_blocks(self, player_id):
         return self.project_feature(self.BLOCK_ID, player_id)
 
-class FeatureProjector(object):
 
+class FeatureProjector(object):
     POINTS_IDX = 10
     REBOUNDS_IDX = 5
     ASSISTS_IDX = 6
@@ -177,8 +185,6 @@ class FeatureProjector(object):
         self.players_gamelogs = players_gamelogs
         self.upcoming_games = upcoming_games
 
-        #self.players_stats = player_stats
-
     def get_projection(self, player_id):
         pass
 
@@ -199,7 +205,7 @@ class FeatureProjector(object):
         plus_minus = gamelog[:,self.PLUS_MINUS_IDX].astype(np.float)
         opponent = gamelog[:,self.OPPONENT_IDX]
         hva = gamelog[:,self.HVA_IDX]
-        
+
         num_logs = len(points)
 
         # points
@@ -468,6 +474,7 @@ class FeatureProjector(object):
 
 
 class LRFeatureProjector(FeatureProjector):
+
     def __project_feature(self, feature_id, features, projections):
         x_train, x_test, y_train, y_test = \
             self.split_train_test(features[feature_id], 0.25)
@@ -502,7 +509,44 @@ class LRFeatureProjector(FeatureProjector):
                                                      projections)
 
 
+class LassoFeatureProjector(FeatureProjector):
+
+    def __project_feature(self, feature_id, features, projections):
+        x_train, x_test, y_train, y_test = \
+            self.split_train_test(features[feature_id], 0.25)
+
+        lr = Lasso(alpha=0.1).fit(x_train, y_train)
+
+        score = lr.score(x_test, y_test)
+        proj = lr.predict(projections[feature_id])
+
+        return proj, score
+
+    def get_projection(self, player_id):
+        features = self.get_player_training_features(player_id)
+        projections = self.get_player_projection_features(player_id)
+
+        ast_proj, ast_score = self.__project_feature('assists', features,
+                                                     projections)
+
+        blk_proj, blk_score = self.__project_feature('blocks', features,
+                                                     projections)
+
+        stl_proj, stl_score = self.__project_feature('steals', features,
+                                                     projections)
+
+        pts_proj, pts_score = self.__project_feature('points', features,
+                                                     projections)
+
+        reb_proj, reb_score = self.__project_feature('rebounds', features,
+                                                     projections)
+
+        tov_proj, tov_score = self.__project_feature('turnovers', features,
+                                                     projections)
+
+
 class RFRFeatureProjector(FeatureProjector):
+
     def __project_feature(self, feature_id, features, projections):
         x_train, x_test, y_train, y_test = \
             self.split_train_test(features[feature_id], 0.25)
@@ -539,6 +583,7 @@ class RFRFeatureProjector(FeatureProjector):
 
 
 class SVRLinearFeatureProjector(FeatureProjector):
+
     def __project_feature(self, feature_id, features, projections):
         x_train, x_test, y_train, y_test = \
             self.split_train_test(features[feature_id], 0.25)
@@ -575,6 +620,7 @@ class SVRLinearFeatureProjector(FeatureProjector):
 
 
 class SVRRBFFeatureProjector(FeatureProjector):
+
     def __project_feature(self, feature_id, features, projections):
         x_train, x_test, y_train, y_test = \
             self.split_train_test(features[feature_id], 0.25)
@@ -637,9 +683,12 @@ class DailyProjector(object):
                 self.upcoming_games[stattleship_slug][attr] = \
                     nf_data[nf_id][attr]
 
-        for player_id in self.upcoming_games.keys():
-            self.players[player_id]['position'] = \
-                self.upcoming_games[player_id]['position']
+        for player_id in deepcopy(self.players.keys()):
+            if player_id not in self.upcoming_games.keys():
+                del(self.players[player_id])
+            else:
+                self.players[player_id]['position'] = \
+                    self.upcoming_games[player_id]['position']
 
     def project_fd_score(self):
         pid = 'nba-lebron-james'
@@ -648,5 +697,3 @@ class DailyProjector(object):
 
         svrrbf = SVRRBFFeatureProjector(self.players, self.upcoming_games)
         projections = svrrbf.get_projection(pid)
-
-        print projections
