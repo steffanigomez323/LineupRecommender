@@ -24,7 +24,6 @@ class GameLogs(object):
         player_gamelogs['opponent']
         player_gamelogs['time_stamp']
         '''
-        
 
 
 class Player(object):

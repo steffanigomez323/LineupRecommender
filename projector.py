@@ -18,9 +18,8 @@ import operator
 from collections import Counter
 from scorer import FanDuelScorer
 import numpy as np
-from app import redis_db
-from app import namespace
 from app import nf_scraper
+from db_helper import CSVHelper
 
 
 class SimpleProjector(object):
@@ -631,70 +630,25 @@ class SVRRBFFeatureProjector(FeatureProjector):
 
 
 class DailyProjector(object):
+    # store upcoming games details
+    upcoming_games = {}
+    # store all players details
+    players = {}
 
-# list of number fire id's, inside projector.py
-# create class daily projector
-# for every player in that list, find stattleship id
-# from stattleship id get height and position
-# then np array of their game logs
-# double dictionary for height and position
-# dictionary for gamelogs
-# return both dictionaries
     def prepare_data_for_projections(self):
-        data = nf_scraper.get_todays_player_data()
-        print "data done"
-        stats = self.get_player_stats(data.keys())
-        print "stats done"
-        gamelogs = self.get_player_gamelogs(data.keys())
-        print "gamelogs done"
+        nf_data, nf_to_stattleship_map = nf_scraper.get_todays_player_data()
 
-        print stats
+        for nf_id, attributes in nf_data.iteritems():
+            stattleship_slug = nf_to_stattleship_map[nf_id]
+            for attr in attributes:
+                self.upcoming_games[stattleship_slug][attr] = \
+                    nf_data[nf_id][attr]
 
-        player_stats = {}
-        for k in data.iterkeys():
-            player_stats[k] = {'height': stats[k]['height'],
-                               'position': data[k]['position'],
-                               'next_opponent': data[k]['playing_against'],
-                               'next_hva': data[k]['playing_at_home']}
+        csv_helper = CSVHelper()
+        self.players = csv_helper.prepare_data_from_csvs()
+        for player_id in self.players.keys():
+            self.players[player_id]['position'] = \
+                self.upcoming_games[player_id]['position']
 
-        return player_stats, gamelogs
-
-        # combined = combine the data into the format you need for projecting
-        # project
-
-    def get_player_stats(self, nf_ids):
-      player_stats = {}
-      for nf in nf_ids:
-        nba_id = redis_db.get(nf)
-        stattleship_slug = redis_db.get(nba_id)
-        height = redis_db.hget(stattleship_slug, 'height')
-        #position = redis_db.hget(stattleship_slug, 'position')
-        stats = { 'height': height }
-        player_stats[nf] = stats
-      return player_stats
-
-    def get_player_gamelogs(self, nf_ids):
-      gamelogs = {}
-      for nf in nf_ids:
-        nba_id = redis_db.get(nf)
-        stattleship_slug = redis_db.get(nba_id)
-        gameids = redis_db.lrange(stattleship_slug + namespace.GAMELOGS, 0, -1)
-        games = []
-        for game in gameids:
-          g = [game]
-          g.append(redis_db.hget(game, 'game_time'))
-          g.append(redis_db.hget(game, 'played_at_home'))
-          g.append(redis_db.hget(game, 'played_against'))
-          g.append(redis_db.hget(game, 'plus_minus'))
-          g.append(redis_db.hget(game, 'time_played_total'))
-          g.append(redis_db.hget(game, 'rebounds_total'))
-          g.append(redis_db.hget(game, 'assists'))
-          g.append(redis_db.hget(game, 'steals'))
-          g.append(redis_db.hget(game, 'blocks'))
-          g.append(redis_db.hget(game, 'turnovers'))
-          g.append(redis_db.hget(game, 'points'))
-          games.append(np.array(g))
-          #print game, "done"
-        gamelogs[nf] = np.array(games)
-        print nf, "done"
-      return gamelogs
+    def project_fd_score(self):
+        pass

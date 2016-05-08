@@ -10,6 +10,7 @@ Data Collector
 
 import urllib
 import re
+from namespace import Namespace
 from requestor import CustomRequest
 from bs4 import BeautifulSoup
 from copy import deepcopy
@@ -283,7 +284,7 @@ class NumberFireScraper(object):
             # working with team details
             opponent_match = re.search('([A-Z])\w+', team_details_raw.text)
             if opponent_match:
-                opponent = opponent_match.group(0)
+                opponent = Namespace().TEAM_MAP_NF_NBA[opponent_match.group(0)]
             if '@' in team_details_raw.text:
                 playing_at_home = False
             else:
