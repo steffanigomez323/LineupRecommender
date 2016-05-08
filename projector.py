@@ -156,35 +156,20 @@ class FeatureProjector(object):
     STEALS_IDX = 8;
     BLOCKS_IDX = 9;
     TURNOVERS_IDX = 10;
-    TIME_IDX = 1;
+    TIME_IDX = 5;
     OPPONENT_IDX = 3;
     HVA_IDX = 2;
     PLUS_MINUS_IDX = 4;
 
     # take in pos, height, gamelogs
     # {id: {position: ssfd, height:fasdf}}
-    def __init__(self, players_gamelogs, players_stats):
+    def __init__(self, players_gamelogs, upcoming_games):
         self.avg = lambda x: sum(x) / float(len(x))
 
         self.players_gamelogs = players_gamelogs
+        self.upcoming_games = upcoming_games
 
-        self.players_stats = {}
-
-        for player in players_stats:
-            name = player["name"]
-            weight = player["weight"]
-            height = player["height"]
-            active = player["active"]
-            years_of_experience = player["years_of_experience"]
-
-            self.players_stats[player["slug"]] = {'name': name,
-                                            'height': height,
-                                            'weight': weight,
-                                            'active': active,
-                                            'years_of_experience':
-                                            years_of_experience}
-
-        #self.players_stats = players_stats
+        #self.players_stats = player_stats
 
     def get_projection(self, player_id):
         pass
@@ -192,10 +177,10 @@ class FeatureProjector(object):
     def get_player_training_features(self, player_id):
         player = self.players_stats[player_id]
 
-        #position = player['position']
-        height = player['height']
+        position = self.players_gamelogs[player_id]['position']
+        height = self.players_gamelogs[player_id]['height']
 
-        gamelog = self.players_gamelogs[player_id]['allgames']
+        gamelog = self.players_gamelogs[player_id]['gamelogs']
 
         points = gamelog[:,self.POINTS_IDX]
         rebounds = gamelog[:,self.REBOUNDS_IDX]
@@ -221,8 +206,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i]] # home v away
-                   #position] # pos
+                   hva[i], # home v away
+                   position] # pos
             row = np.array(row)
             points_train.append(row)
 
@@ -237,8 +222,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i]] # home v away
-                   #position] # pos
+                   hva[i], # home v away
+                   position] # pos
             row = np.array(row)
             assists_train.append(row)
 
@@ -253,8 +238,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i]] # home v away
-                   #position] # pos
+                   hva[i], # home v away
+                   position] # pos
             row = np.array(row)
             steals_train.append(row)
 
@@ -269,8 +254,8 @@ class FeatureProjector(object):
                    self.avg(plus_minus[0:i-1]), # plus minus avg
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
-                   hva[i]] # home v away
-                   #position] # pos
+                   hva[i], # home v away
+                   position] # pos
             row = np.array(row)
             turnovers_train.append(row)
 
@@ -286,7 +271,7 @@ class FeatureProjector(object):
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
-                   #position, # pos
+                   position, # pos
                    height] # height
             row = np.array(row)
             rebounds_train.append(row)
@@ -303,7 +288,7 @@ class FeatureProjector(object):
                    self.avg(time[0:i-1]), # time avg
                    opponent[i], # opponent
                    hva[i], # home v away
-                   #position, # pos
+                   position, # pos
                    height] # height
             row = np.array(row)
             blocks_train.append(row)
@@ -318,14 +303,13 @@ class FeatureProjector(object):
     def get_player_projection_features(self, player_id):
         player = self.players_stats[player_id]
 
-        position = player['position']
-        height = player['height']
+        position = self.players_gamelogs[player_id]['position']
+        height = self.players_gamelogs[player_id]['height']
 
-        gamelog = self.players_gamelogs[player_id]
+        gamelog = self.players_gamelogs[player_id]['gamelogs']
 
-        # FILL THIS IN
-        #opponent = player['playing_at_home']
-        hva = player['playing_at_home']
+        opponent = self.upcoming_games[player_id]['playing_against']
+        hva = self.upcoming_games[player_id]['playing_at_home']
 
         points = gamelog[:,self.POINTS_IDX]
         rebounds = gamelog[:,self.REBOUNDS_IDX]
@@ -415,7 +399,7 @@ class FeatureProjector(object):
                        self.avg(time[0:i-1]), # time avg
                        opponent, # opponent
                        hva] # home v away
-                       #position] # pos
+                       position] # pos
 
         # assists
         assists_proj = [self.avg(assists[i-1:i]), # last 1
@@ -426,7 +410,7 @@ class FeatureProjector(object):
                         self.avg(time[0:i-1]), # time avg
                         opponent, # opponent
                         hva] # home v away
-                        #position] # pos
+                        position] # pos
 
         # steals
         steals_proj = [self.avg(steals[i-1:i]), # last 1
@@ -437,7 +421,7 @@ class FeatureProjector(object):
                        self.avg(time[0:i-1]), # time avg
                        opponent, # opponent
                        hva] # home v away
-                       #position] # pos
+                       position] # pos
 
         # turnovers
         turnovers_proj = [self.avg(turnovers[i-1:i]), # last 1
@@ -448,7 +432,7 @@ class FeatureProjector(object):
                           self.avg(time[0:i-1]), # time avg
                           opponent, # opponent
                           hva] # home v away
-                          #position] # pos
+                          position] # pos
 
         # rebounds
         rebounds_proj = [self.avg(rebounds[i-1:i]), # last 1
@@ -459,7 +443,7 @@ class FeatureProjector(object):
                    self.avg(time[0:i-1]), # time avg
                    opponent, # opponent
                    hva, # home v away
-                   #position, # pos
+                   position, # pos
                    height] # height
 
         # blocks
@@ -471,7 +455,7 @@ class FeatureProjector(object):
                        self.avg(time[0:i-1]), # time avg
                        opponent, # opponent
                        hva, # home v away
-                       #position, # pos
+                       position, # pos
                        height] # height
 
         return {"assists": assists_proj,
@@ -666,6 +650,15 @@ class DailyProjector(object):
 
         print stats
 
+        player_stats = {}
+        for k in data.iterkeys():
+            player_stats[k] = {'height': stats[k]['height'],
+                               'position': data[k]['position'],
+                               'next_opponent': data[k]['playing_against'],
+                               'next_hva': data[k]['playing_at_home']}
+
+        return player_stats, gamelogs
+
         # combined = combine the data into the format you need for projecting
         # project
 
@@ -676,7 +669,7 @@ class DailyProjector(object):
         stattleship_slug = redis_db.get(nba_id)
         height = redis_db.hget(stattleship_slug, 'height')
         #position = redis_db.hget(stattleship_slug, 'position')
-        #stats = { 'height': height, 'position': position }
+        stats = { 'height': height }
         player_stats[nf] = stats
       return player_stats
 
@@ -701,5 +694,7 @@ class DailyProjector(object):
           g.append(redis_db.hget(game, 'turnovers'))
           g.append(redis_db.hget(game, 'points'))
           games.append(np.array(g))
+          #print game, "done"
         gamelogs[nf] = np.array(games)
+        print nf, "done"
       return gamelogs
