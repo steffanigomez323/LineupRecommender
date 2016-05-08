@@ -177,6 +177,9 @@ class FeatureProjector(object):
     TRUE_NUM = 1
     FALSE_NUM = 0
 
+    SCORER = lambda x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 +
+        x['blocks']*2 + x['steals']*2 - x['turnovers']
+
     # take in pos, height, gamelogs
     # {id: {position: ssfd, height:fasdf}}
     def __init__(self, players_gamelogs, upcoming_games):
@@ -504,7 +507,7 @@ class LRFeatureProjector(FeatureProjector):
 
         return proj, score
 
-    def get_projection(self, player_id):
+    def get_stat_projections(self, player_id):
         features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
@@ -532,6 +535,13 @@ class LRFeatureProjector(FeatureProjector):
                 "turnovers": (tov_proj, tov_score),
                 "steals": (stl_proj, stl_score)}
 
+    def get_fanduel_score(self, stats_projections):
+
+        pass
+
+    def get_fanduel_projection(self):
+        pass
+
 
 class LassoFeatureProjector(FeatureProjector):
 
@@ -546,7 +556,7 @@ class LassoFeatureProjector(FeatureProjector):
 
         return proj, score
 
-    def get_projection(self, player_id):
+    def get_stat_projections(self, player_id):
         features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
@@ -589,7 +599,7 @@ class RFRFeatureProjector(FeatureProjector):
 
         return proj, score
 
-    def get_projection(self, player_id):
+    def get_stat_projections(self, player_id):
         features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
@@ -632,7 +642,7 @@ class SVRLinearFeatureProjector(FeatureProjector):
 
         return proj, score
 
-    def get_projection(self, player_id):
+    def get_stat_projections(self, player_id):
         features = self.get_all_training_features()
         projections = self.get_player_projection_features(player_id)
 
