@@ -595,13 +595,13 @@ class SVRRBFFeatureProjector(FeatureProjector):
             x_train, y_train)
 
         score = svr.score(x_test, y_test)
-        proj = 0  # svr.predict(projections[feature_id])
+        proj =  svr.predict(projections[feature_id])
 
         return proj, score
 
     def get_projection(self, player_id):
         features = self.get_player_training_features(player_id)
-        # projections = self.get_player_projection_features(player_id)
+        projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
                                                      projections)
@@ -651,4 +651,11 @@ class DailyProjector(object):
                 self.upcoming_games[player_id]['position']
 
     def project_fd_score(self):
-        pass
+        pid = 'nba-damian-lillard'
+        player = self.players[pid]
+        print player
+
+        svrrbf = SVRRBFFeatureProjector(self.players, self.upcoming_games)
+        projections = svrrbf.get_projection(pid)
+
+
