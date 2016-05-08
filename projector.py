@@ -654,5 +654,7 @@ class DailyProjector(object):
                 self.upcoming_games[player_id]['position']
 
     def project_fd_score(self):
-        player = self.players['nba-damian-lillard']
-        print player
+        player = 'nba-damian-lillard'
+        lr = LRFeatureProjector(self.players, self.upcoming_games)
+        projections = lr.get_projection(player)
+        print projections
