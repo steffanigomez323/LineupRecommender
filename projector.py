@@ -165,8 +165,8 @@ class FeatureProjector(object):
     BLOCKS_IDX = 8
     TURNOVERS_IDX = 9
     TIME_IDX = 4
-    OPPONENT_IDX = 2
-    HVA_IDX = 1
+    OPPONENT_IDX = 1
+    HVA_IDX = 2
     PLUS_MINUS_IDX = 3
 
     OPPONENT_LIST = [x for x in Namespace.TEAM_MAP_NF_NBA.itervalues()]
@@ -177,22 +177,22 @@ class FeatureProjector(object):
     TRUE_NUM = 1
     FALSE_NUM = 0
 
-    SCORER = lambda x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 +
-        x['blocks']*2 + x['steals']*2 - x['turnovers']
+    SCORER = (lambda self,x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 +
+        x['blocks']*2 + x['steals']*2 - x['turnovers'])
 
     # take in pos, height, gamelogs
     # {id: {position: ssfd, height:fasdf}}
-    def __init__(self, players_gamelogs, upcoming_games):
+    def __init__(self, players_gamelogs, upcoming_games, regression_maker):
         self.avg = lambda x: sum(x) / float(len(x))
+        self.regression_maker = regression_maker
 
         self.players_gamelogs = players_gamelogs
         self.upcoming_games = upcoming_games
 
-    def get_projection(self, player_id):
-        pass
-
     def __append_features(self, target, append_array):
-        if target == None:
+        if len(append_array) == 0:
+            return target
+        elif target is None:
             return append_array
         else:
             return np.vstack((target, append_array))
@@ -207,6 +207,20 @@ class FeatureProjector(object):
 
         for pid in self.players_gamelogs.iterkeys():
             features = self.get_player_training_features(pid)
+
+            for k, v in features.iteritems():
+                all_features[k] = self.__append_features(all_features[k], v)
+
+        return all_features
+
+    def get_all_training_fanduel(self):
+        all_features = {"fanduel": None}
+
+        for pid in self.players_gamelogs.iterkeys():
+            if len(self.players_gamelogs[pid]['gamelogs']) == 0:
+                continue
+
+            features = self.get_player_training_fanduel(pid)
 
             for k, v in features.iteritems():
                 all_features[k] = self.__append_features(all_features[k], v)
@@ -477,33 +491,137 @@ class FeatureProjector(object):
                 "turnovers": np.array(turnovers_proj).reshape(1, -1),
                 "steals": np.array(steals_proj).reshape(1, -1)}
 
-    def split_train_xy(self, training_feature):
+    def get_player_training_fanduel(self, player_id):
+        # position = self.players_gamelogs[player_id]['position']
+        height = float(self.players_gamelogs[player_id]['height'])
+
+        gamelog = self.players_gamelogs[player_id]['gamelogs']
+        gamelog = np.array(gamelog)
+
+        points = gamelog[:, self.POINTS_IDX].astype(np.float)
+        rebounds = gamelog[:, self.REBOUNDS_IDX].astype(np.float)
+        assists = gamelog[:, self.ASSISTS_IDX].astype(np.float)
+        steals = gamelog[:, self.STEALS_IDX].astype(np.float)
+        blocks = gamelog[:, self.BLOCKS_IDX].astype(np.float)
+        turnovers = gamelog[:, self.TURNOVERS_IDX].astype(np.float)
+        time = gamelog[:, self.TIME_IDX].astype(np.float)
+        plus_minus = gamelog[:, self.PLUS_MINUS_IDX].astype(np.float)
+        opponent = gamelog[:, self.OPPONENT_IDX]
+        hva = gamelog[:, self.HVA_IDX]
+
+        num_logs = len(points)
+
+        # aggregate fanduel scores
+        fanduel = []
+        for i in range(0, num_logs):
+            curr_game  = {'assists': assists[i],
+                          'rebounds': rebounds[i],
+                          'steals': steals[i],
+                          'blocks': blocks[i],
+                          'turnovers': turnovers[i],
+                          'points': points[i]}
+            fanduel.append(self.SCORER(curr_game))
+
+        # fanduel training
+        fanduel_train = []
+        for i in range(10, num_logs):
+            row = [fanduel[i],  # label
+                   self.avg(fanduel[i - 1:i]),  # last 1
+                   self.avg(fanduel[i - 3:i]),  # last 3
+                   self.avg(fanduel[i - 5:i]),  # last 5
+                   self.avg(fanduel[i - 10:i]),  # last 10
+                   self.avg(plus_minus[0:i]),  # plus minus avg
+                   self.avg(time[0:i]),  # time avg
+                   self.avg(turnovers[0:i])] # TO avg
+
+            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
+                             for x in self.OPPONENT_LIST]
+            # position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+            #                 for x in self.POSITION_LIST]
+            row.append(hva_num)  # hva
+            row.extend(opponent_nums)  # opponent
+            # row.extend(position_nums) # position
+
+            fanduel_train.append(row)
+
+        return {"fanduel": np.array(fanduel_train)}
+
+    def get_player_projection_fanduel(self, player_id):
+        # position = self.players_gamelogs[player_id]['position']
+        height = float(self.players_gamelogs[player_id]['height'])
+
+        gamelog = self.players_gamelogs[player_id]['gamelogs']
+        gamelog = np.array(gamelog)
+
+        opponent = self.upcoming_games[player_id]['playing_against']
+        hva = self.upcoming_games[player_id]['playing_at_home']
+
+        points = gamelog[:, self.POINTS_IDX].astype(np.float)
+        rebounds = gamelog[:, self.REBOUNDS_IDX].astype(np.float)
+        assists = gamelog[:, self.ASSISTS_IDX].astype(np.float)
+        steals = gamelog[:, self.STEALS_IDX].astype(np.float)
+        blocks = gamelog[:, self.BLOCKS_IDX].astype(np.float)
+        turnovers = gamelog[:, self.TURNOVERS_IDX].astype(np.float)
+        time = gamelog[:, self.TIME_IDX].astype(np.float)
+        plus_minus = gamelog[:, self.PLUS_MINUS_IDX].astype(np.float)
+
+        # transform the categorical data
+        hva_num = (self.TRUE_NUM if hva == "True" else self.FALSE_NUM)
+        opponent_nums = [self.TRUE_NUM if x == opponent else self.FALSE_NUM
+                         for x in self.OPPONENT_LIST]
+        # position_nums = [self.TRUE_NUM if x == position else self.FALSE_NUM
+        #                 for x in self.POSITION_LIST]
+
+        i = len(points)
+
+        # aggregate fanduel scores
+        fanduel = []
+        for j in range(0, i):
+            curr_game  = {'assists': assists[j],
+                          'rebounds': rebounds[j],
+                          'steals': steals[j],
+                          'blocks': blocks[j],
+                          'turnovers': turnovers[j],
+                          'points': points[j]}
+            fanduel.append(self.SCORER(curr_game))
+
+        # fanduel
+        fanduel_proj = [self.avg(fanduel[i - 1:i]),  # last 1
+                        self.avg(fanduel[i - 3:i]),  # last 3
+                        self.avg(fanduel[i - 5:i]),  # last 5
+                        self.avg(fanduel[i - 10:i]),  # last 10
+                        self.avg(plus_minus[0:i]),  # plus minus avg
+                        self.avg(time[0:i]),  # time avg
+                        self.avg(turnovers[0:i])] # TO avg
+        fanduel_proj.append(hva_num)
+        fanduel_proj.extend(opponent_nums)
+        # points_proj.extend(position_nums)
+
+        return {"fanduel": np.array(fanduel_proj).reshape(1, -1)}
+
+    def __split_train_xy(self, training_feature):
         y, X = np.hsplit(  # split off first column (labels)
             training_feature,
             [1])
 
         return X, np.ravel(y)
 
-    def split_train_test(self, training_feature, test_percent):
-        X, y = self.split_train_xy(training_feature)
+    def __split_train_test(self, training_feature, test_percent):
+        X, y = self.__split_train_xy(training_feature)
 
         return train_test_split(
             X, y,
             test_size=test_percent, random_state=42)
 
-
-class LRFeatureProjector(FeatureProjector):
-
     def __project_feature(self, feature_id, features, projections):
         x_train, x_test, y_train, y_test = \
-            self.split_train_test(features[feature_id], 0.25)
+            self.__split_train_test(features[feature_id], 0.25)
 
-        lr = LinearRegression().fit(x_train, y_train)
+        regr = self.regression_maker().fit(x_train, y_train)
 
-        score = lr.score(x_test, y_test)
-        proj = lr.predict(projections[feature_id])
-
-        # print lr.coef_
+        score = regr.score(x_test, y_test)
+        proj = regr.predict(projections[feature_id])
 
         return proj, score
 
@@ -536,184 +654,68 @@ class LRFeatureProjector(FeatureProjector):
                 "steals": (stl_proj, stl_score)}
 
     def get_fanduel_score(self, stats_projections):
+        projected_scores = {k: v[0][0] for k,v in stats_projections.iteritems()}
+        return self.SCORER(projected_scores)
 
-        pass
+    def get_fanduel_projection(self, player_id, regression_maker=None):
+        features = self.get_all_training_fanduel()
+        projections = self.get_player_projection_fanduel(player_id)
 
-    def get_fanduel_projection(self):
-        pass
+        proj, score = self.__project_feature('fanduel', features,
+                                             projections)
+        return {"fanduel": (proj, score)}
 
+
+class LRFeatureProjector(FeatureProjector):
+    def __init__(self, players_gamelogs, upcoming_games):
+        super(self.__class__, self).__init__(
+            players_gamelogs,
+            upcoming_games,
+            self.__get_regression_object)
+
+    def __get_regression_object(self):
+        return LinearRegression()
 
 class LassoFeatureProjector(FeatureProjector):
+    def __init__(self, players_gamelogs, upcoming_games):
+        super(self.__class__, self).__init__(
+            players_gamelogs,
+            upcoming_games,
+            self.__get_regression_object)
 
-    def __project_feature(self, feature_id, features, projections):
-        x_train, x_test, y_train, y_test = \
-            self.split_train_test(features[feature_id], 0.25)
-
-        lr = Lasso(alpha=0.1).fit(x_train, y_train)
-
-        score = lr.score(x_test, y_test)
-        proj = lr.predict(projections[feature_id])
-
-        return proj, score
-
-    def get_stat_projections(self, player_id):
-        features = self.get_all_training_features()
-        projections = self.get_player_projection_features(player_id)
-
-        ast_proj, ast_score = self.__project_feature('assists', features,
-                                                     projections)
-
-        blk_proj, blk_score = self.__project_feature('blocks', features,
-                                                     projections)
-
-        stl_proj, stl_score = self.__project_feature('steals', features,
-                                                     projections)
-
-        pts_proj, pts_score = self.__project_feature('points', features,
-                                                     projections)
-
-        reb_proj, reb_score = self.__project_feature('rebounds', features,
-                                                     projections)
-
-        tov_proj, tov_score = self.__project_feature('turnovers', features,
-                                                     projections)
-        return {"assists": (ast_proj, ast_score),
-                "points": (pts_proj, pts_score),
-                "blocks": (blk_proj, blk_score),
-                "rebounds": (reb_proj, reb_score),
-                "turnovers": (tov_proj, tov_score),
-                "steals": (stl_proj, stl_score)}
-
+    def __get_regression_object(self):
+        return Lasso(alpha=0.1)
 
 class RFRFeatureProjector(FeatureProjector):
+    def __init__(self, players_gamelogs, upcoming_games):
+        super(self.__class__, self).__init__(
+            players_gamelogs,
+            upcoming_games,
+            self.__get_regression_object)
 
-    def __project_feature(self, feature_id, features, projections):
-        x_train, x_test, y_train, y_test = \
-            self.split_train_test(features[feature_id], 0.25)
-
-        rf = RandomForestRegressor(n_estimators=1000, n_jobs=-1,
-                                   max_features='sqrt').fit(x_train, y_train)
-
-        score = rf.score(x_test, y_test)
-        proj = rf.predict(projections[feature_id])
-
-        return proj, score
-
-    def get_stat_projections(self, player_id):
-        features = self.get_all_training_features()
-        projections = self.get_player_projection_features(player_id)
-
-        ast_proj, ast_score = self.__project_feature('assists', features,
-                                                     projections)
-
-        blk_proj, blk_score = self.__project_feature('blocks', features,
-                                                     projections)
-
-        stl_proj, stl_score = self.__project_feature('steals', features,
-                                                     projections)
-
-        pts_proj, pts_score = self.__project_feature('points', features,
-                                                     projections)
-
-        reb_proj, reb_score = self.__project_feature('rebounds', features,
-                                                     projections)
-
-        tov_proj, tov_score = self.__project_feature('turnovers', features,
-                                                     projections)
-        return {"assists": (ast_proj, ast_score),
-                "points": (pts_proj, pts_score),
-                "blocks": (blk_proj, blk_score),
-                "rebounds": (reb_proj, reb_score),
-                "turnovers": (tov_proj, tov_score),
-                "steals": (stl_proj, stl_score)}
-
+    def __get_regression_object(self):
+        return RandomForestRegressor(n_estimators=1000, n_jobs=-1,
+                                   max_features='sqrt')
 
 class SVRLinearFeatureProjector(FeatureProjector):
+    def __init__(self, players_gamelogs, upcoming_games):
+        super(self.__class__, self).__init__(
+            players_gamelogs,
+            upcoming_games,
+            self.__get_regression_object)
 
-    def __project_feature(self, feature_id, features, projections):
-        x_train, x_test, y_train, y_test = \
-            self.split_train_test(features[feature_id], 0.25)
-
-        svr = SVR(kernel='linear', C=.5).fit(
-            x_train, y_train)
-
-        score = svr.score(x_test, y_test)
-        proj = svr.predict(projections[feature_id])
-
-        return proj, score
-
-    def get_stat_projections(self, player_id):
-        features = self.get_all_training_features()
-        projections = self.get_player_projection_features(player_id)
-
-        ast_proj, ast_score = self.__project_feature('assists', features,
-                                                     projections)
-
-        blk_proj, blk_score = self.__project_feature('blocks', features,
-                                                     projections)
-
-        stl_proj, stl_score = self.__project_feature('steals', features,
-                                                     projections)
-
-        pts_proj, pts_score = self.__project_feature('points', features,
-                                                     projections)
-
-        reb_proj, reb_score = self.__project_feature('rebounds', features,
-                                                     projections)
-
-        tov_proj, tov_score = self.__project_feature('turnovers', features,
-                                                     projections)
-        return {"assists": (ast_proj, ast_score),
-                "points": (pts_proj, pts_score),
-                "blocks": (blk_proj, blk_score),
-                "rebounds": (reb_proj, reb_score),
-                "turnovers": (tov_proj, tov_score),
-                "steals": (stl_proj, stl_score)}
-
+    def __get_regression_object(self):
+        return SVR(kernel='linear', C=.5)
 
 class SVRRBFFeatureProjector(FeatureProjector):
+    def __init__(self, players_gamelogs, upcoming_games):
+        super(self.__class__, self).__init__(
+            players_gamelogs,
+            upcoming_games,
+            self.__get_regression_object)
 
-    def __project_feature(self, feature_id, features, projections):
-        x_train, x_test, y_train, y_test = \
-            self.split_train_test(features[feature_id], 0.25)
-
-        svr = SVR(kernel='rbf', C=.5).fit(
-            x_train, y_train)
-
-        score = svr.score(x_test, y_test)
-        proj = svr.predict(projections[feature_id])
-
-        return proj, score
-
-    def get_projection(self, player_id):
-        features = self.get_all_training_features()
-        projections = self.get_player_projection_features(player_id)
-
-        ast_proj, ast_score = self.__project_feature('assists', features,
-                                                     projections)
-
-        blk_proj, blk_score = self.__project_feature('blocks', features,
-                                                     projections)
-
-        stl_proj, stl_score = self.__project_feature('steals', features,
-                                                     projections)
-
-        pts_proj, pts_score = self.__project_feature('points', features,
-                                                     projections)
-
-        reb_proj, reb_score = self.__project_feature('rebounds', features,
-                                                     projections)
-
-        tov_proj, tov_score = self.__project_feature('turnovers', features,
-                                                     projections)
-
-        return {"assists": (ast_proj, ast_score),
-                "points": (pts_proj, pts_score),
-                "blocks": (blk_proj, blk_score),
-                "rebounds": (reb_proj, reb_score),
-                "turnovers": (tov_proj, tov_score),
-                "steals": (stl_proj, stl_score)}
-
+    def __get_regression_object(self):
+        return SVR(kernel='rbf', C=.5)
 
 class DailyProjector(object):
     # store upcoming games details
@@ -737,7 +739,7 @@ class DailyProjector(object):
 
         for player_id in deepcopy(self.players.keys()):
             if player_id not in self.upcoming_games.keys():
-                del(self.players[player_id])
+                pass #del(self.players[player_id])
             else:
                 self.players[player_id]['position'] = \
                     self.upcoming_games[player_id]['position']
@@ -749,25 +751,25 @@ class DailyProjector(object):
 
         print "\nLinear Regression"
         proj = LRFeatureProjector(self.players, self.upcoming_games)
-        projections = proj.get_projection(pid)
+        projections = proj.get_fanduel_projection(pid)
         print projections
 
         print "\nLasso Regression"
         proj = LassoFeatureProjector(self.players, self.upcoming_games)
-        projections = proj.get_projection(pid)
+        projections = proj.get_fanduel_projection(pid)
         print projections
 
         print "\nRFR Regression"
         proj = RFRFeatureProjector(self.players, self.upcoming_games)
-        projections = proj.get_projection(pid)
+        projections = proj.get_fanduel_projection(pid)
         print projections
 
         print "\nSVR (Linear) Regression"
         proj = SVRLinearFeatureProjector(self.players, self.upcoming_games)
-        projections = proj.get_projection(pid)
+        projections = proj.get_fanduel_projection(pid)
         print projections
 
         print "\nSVR (RBF) Regression"
         proj = SVRRBFFeatureProjector(self.players, self.upcoming_games)
-        projections = proj.get_projection(pid)
+        projections = proj.get_fanduel_projection(pid)
         print projections
