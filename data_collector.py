@@ -10,7 +10,7 @@ Data Collector
 
 import urllib
 import re
-import namespace
+from namespace import Namespace
 from requestor import CustomRequest
 from bs4 import BeautifulSoup
 from copy import deepcopy
@@ -284,7 +284,7 @@ class NumberFireScraper(object):
             # working with team details
             opponent_match = re.search('([A-Z])\w+', team_details_raw.text)
             if opponent_match:
-                opponent = Namespace.TEAM_MAP_NF_NBA[opponent_match.group(0)]
+                opponent = Namespace().TEAM_MAP_NF_NBA[opponent_match.group(0)]
             if '@' in team_details_raw.text:
                 playing_at_home = False
             else:
@@ -343,6 +343,21 @@ class NBAScraper(object):
 
             players.append(result.json())
         return players
+
+    def get_player_position(self, playerid):
+        modifier = 'commonplayerinfo'
+        params = {'PlayerID': playerid, 
+                  'LeagueID': '00'}
+        result = self.nba_request.get_request(modifier, params).json()
+        headers = result['resultSets'][0]['headers']
+        values = result['resultSets'][0]['rowSet']
+
+        position_id_index = headers.index('POSITION')
+
+        position = ""
+        for value in values:
+            position = value[position_id_index]
+        return position
 
     def get_player_name_id_map(self, data):
         name_to_id = {}

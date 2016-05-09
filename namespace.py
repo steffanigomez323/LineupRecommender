@@ -39,6 +39,9 @@ class Namespace(object):
                        "MIL": 'MIL',
                        "HOU": 'HOU'}
 
+    # positions set
+    POSITIONS = set(["PG", "SG", "SF", "PF", "C"])
+
     # csv file names
     PLAYER_INFO_CSV = "data/player_info.csv"
     NBA_TO_STATTLESHIP_CSV = "data/nba_to_stattleship_map.csv"

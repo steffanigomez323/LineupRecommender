@@ -184,24 +184,24 @@ class CSVHelper(object):
     # stattleship, nba and numberfire
     def create_csvs(self):
         # set basic information
-        self.create_basic_player_information_csv()
+        #self.create_basic_player_information_csv()
 
         # get nba players' names and ids
         nba_players = nba_scraper.get_player_data()
         nba_name_to_id = nba_scraper.get_player_name_id_map(nba_players)
+
+        self.create_basic_player_information_csv(nba_name_to_id)
 
         # set nba to stattleship mapping
         self.create_nba_to_stattleship_csv(nba_name_to_id)
 
         # set numberfire to nba mapping
         self.create_numberfire_to_nba_csv(nba_name_to_id)
-        print "#### CHECKPOINT 1"
 
         # set player stats
         self.create_player_stats_csv(nba_name_to_id)
-        print "#### CHECKPOINT 2"
 
-    def create_basic_player_information_csv(self):
+    def create_basic_player_information_csv(self, nba_name_to_id):
         # data to write
         data = [['player_slug', 'name', 'height',
                  'weight', 'active', 'years_of_experience']]
@@ -212,10 +212,24 @@ class CSVHelper(object):
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
 
+        count = 0
         # set the player basic information
         for player in stattleship_players:
+            #print player
             slug = player["slug"]
             name = player["name"]
+
+            if name not in nba_name_to_id.keys():
+                print name
+                print ""
+                count += 1
+                continue
+
+            playerid = nba_name_to_id[name]
+            position = nba_scraper.get_player_position(playerid)
+            #print name
+            #print position
+            #print ""
             height = player["height"]
             weight = player["weight"]
             active = player["active"]
@@ -224,6 +238,7 @@ class CSVHelper(object):
                          years_of_experience])
 
         # write to csv
+        print count
         with open(namespace.PLAYER_INFO_CSV, 'wb') as f:
             writer = csv.writer(f)
             writer.writerows(data)
@@ -240,13 +255,8 @@ class CSVHelper(object):
         # set all the nba id to stattleship slug maps
         for nba_name, nba_id in nba_name_to_id.iteritems():
             if nba_name in stattleship_name_to_slug.iterkeys():
-<<<<<<< HEAD
                 stattleship_slug = stattleship_name_to_slug[nba_name]
-                redis_db.set(nba_id, stattleship_slug)
-=======
-                    stattleship_slug = stattleship_name_to_slug[nba_name]
-                    data.append([nba_id, stattleship_slug])
->>>>>>> e0257826b1bd09470241106ca434f0e17f4f6020
+                data.append([nba_id, stattleship_slug])
 
         # set all the mismatches manually
         data.append(['203933', 'nba-t-j-warren'])
@@ -354,7 +364,7 @@ class CSVHelper(object):
                 continue
 
             for game in gamelog_data[nba_id]['allgames']:
-                data.append([game[0], game[1], game[2], game[3],
+                data.append([nba_id, game[1], game[2], game[3],
                              game[4], game[5], game[6], game[7],
                              game[8], game[9], game[10], game[11]])
 
@@ -362,34 +372,6 @@ class CSVHelper(object):
         with open(namespace.PLAYER_STATS_CSV, 'wb') as f:
             writer = csv.writer(f)
             writer.writerows(data)
-
-        #     gameids = []
-
-        #     if str(nba_id) not in nba_name_to_id.values():
-        #         continue
-
-        #     stattleship_slug = redis_db.get(nba_id)
-
-        #     for game in gamelog_data[nba_id]['allgames']:
-
-        #         gameids.append(game[0])
-        #         redis_db.hmset(game[0], {'game_time': game[1],
-        #                                  'played_at_home': game[2],
-        #                                  'played_against': game[3],
-        #                                  'plus_minus': game[4],
-        #                                  'time_played_total': game[5],
-        #                                  'rebounds_total': game[6],
-        #                                  'assists': game[7],
-        #                                  'steals': game[8],
-        #                                  'blocks': game[9],
-        #                                  'turnovers': game[10],
-        #                                  'points': game[11]})
-
-        #     redis_db.lpush(stattleship_slug + namespace.GAMELOGS, *gameids)
-
-        #     end_time = time.clock()
-
-        #     print("Time taken: {} seconds.\n".format(end_time - start_time))
 
     def prepare_data_from_csvs(self):
         # create player information map from csv
@@ -436,15 +418,12 @@ class CSVHelper(object):
             stattleship_slug = nba_to_stattleship_map[nba_id]
             nf_to_stattleship_map[nf_slug] = stattleship_slug
 
-        print "#### CHECKPOINT 3"
-
         with open(namespace.PLAYER_STATS_CSV) as ps:
             reader = csv.reader(ps)
             reader.next()
             for row in reader:
                 slug = nba_to_stattleship_map[row[0]]
-                players[slug]['gamelogs'].append(row[1:])
-
-        print "#### CHECKPOINT 4"
+                if slug in players:
+                    players[slug]['gamelogs'].append(row[1:])
 
         return players, nf_to_stattleship_map
