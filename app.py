@@ -80,5 +80,9 @@ def blog_post_3():
 def home_page():
 	return render_template('home_page.html')
 
+@app.route('/final_report')
+def final_report():
+    return render_template('final_report.html')
+
 if __name__ == "__main__":
     app.run(debug=True)
