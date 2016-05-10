@@ -51,7 +51,7 @@ fanduel_scorer = FanDuelScorer()
 # daily_projector = DailyProjector()
 
 # namespace
-namespace = Namespace
+namespace = Namespace()
 
 
 @app.route("/")

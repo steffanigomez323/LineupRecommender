@@ -11,9 +11,9 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
-from app import namespace
-import csv
+import namespace
 import time
+import csv
 
 
 class RedisHelper(object):
@@ -45,8 +45,8 @@ class RedisHelper(object):
         # get only the required fields
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
-
-        with open(namespace.PLAYER_INFO_CSV) as f:
+        n = namespace.Namespace()
+        with open(n.PLAYER_INFO_CSV, 'wb') as f:
             writer = csv.writer(f)
             writer.writerow(['player_slug', 'name', 'height', 'weight', 'active', 'years_of_experience'])
             for player in stattleship_players:
@@ -171,7 +171,7 @@ class RedisHelper(object):
                                          'turnovers': game[10],
                                          'points': game[11]})
 
-            redis_db.lpush(stattleship_slug + namespace.GAMELOGS, *gameids)
+            redis_db.lpush(stattleship_slug + Namespace.GAMELOGS, *gameids)
 
             end_time = time.clock()
 
@@ -184,11 +184,13 @@ class CSVHelper(object):
     # stattleship, nba and numberfire
     def create_csvs(self):
         # set basic information
-        self.create_basic_player_information_csv()
+        #self.create_basic_player_information_csv()
 
         # get nba players' names and ids
         nba_players = nba_scraper.get_player_data()
         nba_name_to_id = nba_scraper.get_player_name_id_map(nba_players)
+
+        self.create_basic_player_information_csv(nba_name_to_id)
 
         # set nba to stattleship mapping
         self.create_nba_to_stattleship_csv(nba_name_to_id)
@@ -199,7 +201,7 @@ class CSVHelper(object):
         # set player stats
         self.create_player_stats_csv(nba_name_to_id)
 
-    def create_basic_player_information_csv(self):
+    def create_basic_player_information_csv(self, nba_name_to_id):
         # data to write
         data = [['player_slug', 'name', 'height',
                  'weight', 'active', 'years_of_experience']]
@@ -210,10 +212,24 @@ class CSVHelper(object):
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
 
+        count = 0
         # set the player basic information
         for player in stattleship_players:
+            #print player
             slug = player["slug"]
             name = player["name"]
+
+            if name not in nba_name_to_id.keys():
+                print name
+                print ""
+                count += 1
+                continue
+
+            playerid = nba_name_to_id[name]
+            position = nba_scraper.get_player_position(playerid)
+            #print name
+            #print position
+            #print ""
             height = player["height"]
             weight = player["weight"]
             active = player["active"]
@@ -222,6 +238,7 @@ class CSVHelper(object):
                          years_of_experience])
 
         # write to csv
+        print count
         with open(namespace.PLAYER_INFO_CSV, 'wb') as f:
             writer = csv.writer(f)
             writer.writerows(data)
@@ -238,8 +255,8 @@ class CSVHelper(object):
         # set all the nba id to stattleship slug maps
         for nba_name, nba_id in nba_name_to_id.iteritems():
             if nba_name in stattleship_name_to_slug.iterkeys():
-                    stattleship_slug = stattleship_name_to_slug[nba_name]
-                    data.append([nba_id, stattleship_slug])
+                stattleship_slug = stattleship_name_to_slug[nba_name]
+                data.append([nba_id, stattleship_slug])
 
         # set all the mismatches manually
         data.append(['203933', 'nba-t-j-warren'])
