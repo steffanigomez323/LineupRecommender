@@ -15,8 +15,8 @@ from data_collector import NumberFireScraper
 from data_collector import NBAScraper
 from updater import DailyUpdater
 from scorer import FanDuelScorer
-# from projector import DailyProjector
 from namespace import Namespace
+# from projector import DailyProjector
 # from simple_recommender import SimpleRecommender
 # import os
 

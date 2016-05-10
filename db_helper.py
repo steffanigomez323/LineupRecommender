@@ -445,7 +445,13 @@ class CSVHelper(object):
                 slug = nba_to_stattleship_map[row[0]]
                 if slug in players:
                     players[slug]['gamelogs'].append(row[1:])
-                    
-        players[slug]['position'] = nba_scraper.get_player_position(row[0])
+
+        with open(n.PLAYER_POSITIONS_CSV) as pp:
+            reader = csv.reader(pp)
+            reader.next()
+            for row in reader:
+                slug = nba_to_stattleship_map[row[0]]
+                if slug in players:
+                    players[slug]['position'] = eval(row[1])
 
         return players, nf_to_stattleship_map
