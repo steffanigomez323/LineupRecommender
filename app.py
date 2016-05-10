@@ -76,5 +76,13 @@ def blog_post_2():
 def blog_post_3():
 	return render_template('blog_post_3.html')
 
+@app.route('/home')
+def home_page():
+	return render_template('home_page.html')
+
+@app.route('/final_report')
+def final_report():
+    return render_template('final_report.html')
+
 if __name__ == "__main__":
     app.run(debug=True)

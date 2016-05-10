@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+    <link href="static/css/blog_post_1_style.css" rel="stylesheet" media="screen">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="page-header center">
+                <h1>Lineup Recommender <small>&laquo;Home Page&raquo;</small></h1>
+            </div>
+
+            <h2>Introduction</h2>
+            <p>This week we set out to accomplish 3 goals:</p>
+            <ol>
+                <li>Store game log data in Redis for quick access</li>
+                <li>Improve projections</li>
+                <li>Improve visualizations</li>
+            </ol>
+
+            <h2>Part 1: Redis</h2>
+            <p>There are 1065 keys in the database, where each key is a stattleship player id. The informaton that each player id has include: whether or not they are active, years of experience, name, weight and height.
+            </p>
+
+            <p> Here is an example player: <br><br>
+            <img class="img-responsive" src="static/images/redis_player_fields.png"></img>
+            </p>
+            <p>We also store the game logs for each player in redis but it takes quite some time to get all the game log data for each of the 1065 players. We're going to run the program over night so that it finished populating the database with all the game log data by tomorrow morning. Below is how the game log data looks in a python dictionary for a single season of games for LeBron James:<br><br>
+            <img class="img-responsive" src="static/images/lebron_game_logs.png"></img><br>
+            The above image does not show all the fields. We also store game_time, points, home_or_away, assists, rebounds, steals and turnovers.
+            </p>
+            <hr>
+
+            <h2>Part 2: Projections</h2>
+            <p>We were not sure if we should predict the fantasy score directly or if we should predict each stat that contributes to the fantasy score separately and then calculate the fantasy score from those projections. After thinking about it a little more we realized that predicting each stat could be better because it gives us more fine grained control over the features that are used to predict them. More specifically, the height of the player would effect his ability to rebound but not necessarily his ability to score points and therefore predicting rebounds and points separately and using only the relevant features for each can give us better results. After confirming this with our mentor, we started working with our data and tranforming it into features to create a model for projection. Below are the labels we want to predict and the corresponding features we are using to predict them.</p>
+            <img class="img-responsive" src="static/images/features_labels.png"></img><br>
+
+            We decided for predicting these features and labels, we would use sklearn's Support Vector Regression algorithm for prediction. This is different from out past prediction methods, which both used logistic regression. We decided to switch to using SVR because of the limitations of logistic regression: that sklearn's implementation only accepted integer labels, and required at least two classes present in the training labels (which may not occur with small data sets). We also felt that a SVR would have many advantages over other regression algorithms, mainly the ability to specify margins and kernels for SVR. Customizing margins would enable us to adapt our regression to our player features level of variance, by giving us some built-in "wiggle room" for error in our predictions. The ability to use a kernel would greatly help our predictions, since we can adapt to non-linear correlations easily (a comparison of sklearn SVR kernels can be found <a href="http://scikit-learn.org/stable/auto_examples/svm/plot_svm_regression.html">here</a>). Additionally, we fell that an SVR would better handle the increased dimensionality of our features, now that we are increasing the set of features we are using.
+            
+            <hr>
+
+            <h2>Part 3: Visualizations</h2>
+            <p> We improved the visualization this week to include more than just the lineup. The table below shows the projected FanDuel scores along with the projected points, steals, blocks, turnovers, and rebounds of the player. Directly below the table is a grouped bar chart that shows the projected FanDuel score, the projected points, and the projected assists (this can be easily extended to include other stat groups as well). When a table row is hovered upon, the bar chart changes into a line chart that shows how that specific player's FanDuel score has changed over time. When the mouse leaves the row of the table, the line chart turns back into the bar chart of before.</p>
+
+            <script src="static/js/viz2.js"></script>
+
+            <div id="lineup">
+              <table class="table table-striped" align="center" style="width:70%;" id="viz">
+                <thead>
+                  <tr>
+                    <th>Position</th> 
+                    <th>Name</th>
+                    <th>Game</th>
+                    <th>Projection</th>
+                    <th>Salary</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+            <br>
+
+        <div class="col-md-2"></div>
+    </div> 
+{% endblock %}
