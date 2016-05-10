@@ -345,6 +345,7 @@ class NBAScraper(object):
         return players
 
     def get_player_position(self, playerid):
+
         modifier = 'commonplayerinfo'
         params = {'PlayerID': playerid, 
                   'LeagueID': '00'}
@@ -357,7 +358,24 @@ class NBAScraper(object):
         position = ""
         for value in values:
             position = value[position_id_index]
-        return position
+            if position.encode('utf-8') == "Center-Forward":
+                pos_arr = ['C', 'PF']
+            elif position.encode('utf-8') == "Guard-Forward":
+                pos_arr = ['SF', 'PG']
+            elif position.encode('utf-8') == "Forward-Center":
+                pos_arr = ['SF', 'C']
+            elif position.encode('utf-8') == "Guard":
+                pos_arr = ['PG', 'SG']
+            elif position.encode('utf-8') == "Forward":
+                pos_arr = ['PF', 'SF']
+            elif position.encode('utf-8') == "Forward-Guard":
+                pos_arr = ['PF', 'SG']
+            elif position.encode('utf-8') == "Center":
+                pos_arr = ['C']
+            else:
+                pos_arr = []
+
+        return pos_arr
 
     def get_player_name_id_map(self, data):
         name_to_id = {}
