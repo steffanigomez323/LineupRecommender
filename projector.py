@@ -15,6 +15,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.metrics import r2_score
 from sklearn.cross_validation import train_test_split
+from sklearn.preprocessing import StandardScaler
 import operator
 from collections import Counter
 from scorer import FanDuelScorer
@@ -177,8 +178,8 @@ class FeatureProjector(object):
     TRUE_NUM = 1
     FALSE_NUM = 0
 
-    SCORER = (lambda self,x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 +
-        x['blocks']*2 + x['steals']*2 - x['turnovers'])
+    SCORER = lambda x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 + \
+        x['blocks']*2 + x['steals']*2 - x['turnovers']
 
     # take in pos, height, gamelogs
     # {id: {position: ssfd, height:fasdf}}
@@ -206,6 +207,9 @@ class FeatureProjector(object):
                         "steals": None}
 
         for pid in self.players_gamelogs.iterkeys():
+            if len(self.players_gamelogs[pid]['gamelogs']) == 0:
+                continue
+
             features = self.get_player_training_features(pid)
 
             for k, v in features.iteritems():
@@ -607,26 +611,32 @@ class FeatureProjector(object):
 
         return X, np.ravel(y)
 
-    def __split_train_test(self, training_feature, test_percent):
-        X, y = self.__split_train_xy(training_feature)
-
+    def __split_train_test(self, X, y, test_percent):
         return train_test_split(
             X, y,
             test_size=test_percent, random_state=42)
 
     def __project_feature(self, feature_id, features, projections):
+        X, y = self.__split_train_xy(features[feature_id])
+
+        scaler = StandardScaler().fit(X)
+        X = scaler.transform(X)
+
         x_train, x_test, y_train, y_test = \
-            self.__split_train_test(features[feature_id], 0.25)
+            self.__split_train_test(X, y, 0.25)
+
+        x_proj = projections[feature_id]
+        x_proj = scaler.transform(x_proj)
 
         regr = self.regression_maker().fit(x_train, y_train)
 
         score = regr.score(x_test, y_test)
-        proj = regr.predict(projections[feature_id])
+        proj = regr.predict(x_proj)
 
         return proj, score
 
-    def get_stat_projections(self, player_id):
-        features = self.get_all_training_features()
+    def get_stat_projection(self, player_id):
+        features = self.get_player_training_features(player_id)
         projections = self.get_player_projection_features(player_id)
 
         ast_proj, ast_score = self.__project_feature('assists', features,
@@ -657,14 +667,74 @@ class FeatureProjector(object):
         projected_scores = {k: v[0][0] for k,v in stats_projections.iteritems()}
         return self.SCORER(projected_scores)
 
-    def get_fanduel_projection(self, player_id, regression_maker=None):
-        features = self.get_all_training_fanduel()
+    def get_fanduel_projection(self, player_id):
+        features = self.get_player_training_fanduel(player_id)
         projections = self.get_player_projection_fanduel(player_id)
 
         proj, score = self.__project_feature('fanduel', features,
                                              projections)
         return {"fanduel": (proj, score)}
 
+class ClusteringFeatureProjector(FeatureProjector):
+    N_CLUSTERS = 5
+
+    def __init__(self, players_gamelogs, upcoming_games, regression_maker):
+        super(self.__class__, self).__init__(
+            players_gamelogs,
+            upcoming_games,
+            regression_maker)
+
+    def get_average_fanduel_clusters(self):
+        X, pids = self.get_all_average_fanduel()
+        X = np.array([X]).T # turn into numpy 1-row matrix, and transpose
+
+        clusterer = KMeans(n_clusters=self.N_CLUSTERS)
+        cluster_labels = clusterer.fit_predict(X)
+
+        print silhouette_score(X, cluster_labels)
+
+        return {pids[i]: cluster_labels[i] for i in range(0, len(pids))}
+
+    def get_player_average_fanduel(self, player_id):
+        gamelog = self.players_gamelogs[player_id]['gamelogs']
+        gamelog = np.array(gamelog)
+
+        points = gamelog[:, self.POINTS_IDX].astype(np.float)
+        rebounds = gamelog[:, self.REBOUNDS_IDX].astype(np.float)
+        assists = gamelog[:, self.ASSISTS_IDX].astype(np.float)
+        steals = gamelog[:, self.STEALS_IDX].astype(np.float)
+        blocks = gamelog[:, self.BLOCKS_IDX].astype(np.float)
+        turnovers = gamelog[:, self.TURNOVERS_IDX].astype(np.float)
+
+        num_logs = len(points)
+
+        # aggregate fanduel scores
+        fanduel = 0
+        for i in range(0, num_logs):
+            curr_game  = {'assists': assists[i],
+                          'rebounds': rebounds[i],
+                          'steals': steals[i],
+                          'blocks': blocks[i],
+                          'turnovers': turnovers[i],
+                          'points': points[i]}
+            fanduel += self.SCORER(curr_game)
+
+        return (fanduel / float(num_logs))
+
+    def get_all_average_fanduel(self):
+        all_pid = []
+        all_averages = []
+
+        for pid in self.players_gamelogs.iterkeys():
+            if len(self.players_gamelogs[pid]['gamelogs']) == 0:
+                continue
+
+            average = self.get_player_average_fanduel(pid)
+
+            all_pid.append(pid)
+            all_averages.append(average)
+
+        return all_averages, all_pid
 
 class LRFeatureProjector(FeatureProjector):
     def __init__(self, players_gamelogs, upcoming_games):
@@ -695,7 +765,7 @@ class RFRFeatureProjector(FeatureProjector):
 
     def __get_regression_object(self):
         return RandomForestRegressor(n_estimators=1000, n_jobs=-1,
-                                   max_features='sqrt')
+                                     max_features='sqrt')
 
 class SVRLinearFeatureProjector(FeatureProjector):
     def __init__(self, players_gamelogs, upcoming_games):
@@ -705,7 +775,7 @@ class SVRLinearFeatureProjector(FeatureProjector):
             self.__get_regression_object)
 
     def __get_regression_object(self):
-        return SVR(kernel='linear', C=.5)
+        return SVR(kernel='linear', C=1., cache_size=7000)
 
 class SVRRBFFeatureProjector(FeatureProjector):
     def __init__(self, players_gamelogs, upcoming_games):
@@ -715,7 +785,7 @@ class SVRRBFFeatureProjector(FeatureProjector):
             self.__get_regression_object)
 
     def __get_regression_object(self):
-        return SVR(kernel='rbf', C=.5)
+        return SVR(kernel='rbf', C=1.)
 
 class DailyProjector(object):
     # store upcoming games details
@@ -723,8 +793,13 @@ class DailyProjector(object):
     # store all players details
     players = {}
 
-    def prepare_data_for_projections(self):
-        nf_data = nf_scraper.get_todays_player_data()
+    def prepare_data_for_projections(self, text_file):
+        if text_file:
+            with open(text_file, 'r') as inf:
+                for line in inf:
+                    nf_data = eval(line)
+        else:
+            nf_data = nf_scraper.get_todays_player_data()
 
         csv_helper = CSVHelper()
         self.players, nf_to_stattleship_map = \
@@ -745,7 +820,7 @@ class DailyProjector(object):
                     self.upcoming_games[player_id]['position']
 
     def project_fd_score(self):
-        pid = 'nba-lebron-james'
+        pid = "nba-stephen-curry"
 
         print "Projecting for", pid
 
@@ -763,7 +838,7 @@ class DailyProjector(object):
         proj = RFRFeatureProjector(self.players, self.upcoming_games)
         projections = proj.get_fanduel_projection(pid)
         print projections
-
+        '''
         print "\nSVR (Linear) Regression"
         proj = SVRLinearFeatureProjector(self.players, self.upcoming_games)
         projections = proj.get_fanduel_projection(pid)
@@ -773,3 +848,5 @@ class DailyProjector(object):
         proj = SVRRBFFeatureProjector(self.players, self.upcoming_games)
         projections = proj.get_fanduel_projection(pid)
         print projections
+        '''
+        print "\n------------------------"

@@ -212,6 +212,8 @@ class CSVHelper(object):
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
 
+
+
         count = 0
         # set the player basic information
         for player in stattleship_players:
@@ -345,6 +347,22 @@ class CSVHelper(object):
             writer = csv.writer(f)
             writer.writerows(data)
 
+    # Create a CSV file mapping nba_id to a list of positions
+    def create_player_positions_csv(self):
+        # data to write
+        data = [['nba_id', 'positions']]
+
+        n = namespace.Namespace()
+        with open(n.NBA_TO_STATTLESHIP_CSV, 'rb') as f:
+            reader = csv.reader(f)
+            reader.next()
+            for row in reader:
+                data.append([row[0], nba_scraper.get_player_position(row[0])])
+
+        with open(n.PLAYER_POSITIONS_CSV, 'wb') as pos_f:
+            writer = csv.writer(pos_f)
+            writer.writerows(data)
+
     def create_player_stats_csv(self, nba_name_to_id):
         # data to write
         data = [['nba_id', 'game_time', 'played_at_home',
@@ -377,7 +395,9 @@ class CSVHelper(object):
         # create player information map from csv
         players = {}
 
-        with open(namespace.PLAYER_INFO_CSV, 'rb') as pi:
+        n = namespace.Namespace()
+
+        with open(n.PLAYER_INFO_CSV, 'rb') as pi:
             reader = csv.reader(pi)
             reader.next()
             for row in reader:
@@ -391,12 +411,12 @@ class CSVHelper(object):
                 players[slug] = {'name': name, 'height': height,
                                  'weight': weight, 'active': active,
                                  'years_of_experience': years_of_experience,
-                                 'gamelogs': []}
+                                 'gamelogs': [], 'position': []}
 
         # create nba to stattleship map from csv
         nba_to_stattleship_map = {}
 
-        with open(namespace.NBA_TO_STATTLESHIP_CSV, 'rb') as ns:
+        with open(n.NBA_TO_STATTLESHIP_CSV, 'rb') as ns:
             reader = csv.reader(ns)
             reader.next()
             for row in reader:
@@ -405,7 +425,7 @@ class CSVHelper(object):
         # create number fire to nba map from csv
         nf_to_nba_map = {}
 
-        with open(namespace.NUMBERFIRE_TO_NBA_CSV, 'rb') as nn:
+        with open(n.NUMBERFIRE_TO_NBA_CSV, 'rb') as nn:
             reader = csv.reader(nn)
             reader.next()
             for row in reader:
@@ -418,12 +438,14 @@ class CSVHelper(object):
             stattleship_slug = nba_to_stattleship_map[nba_id]
             nf_to_stattleship_map[nf_slug] = stattleship_slug
 
-        with open(namespace.PLAYER_STATS_CSV) as ps:
+        with open(n.PLAYER_STATS_CSV) as ps:
             reader = csv.reader(ps)
             reader.next()
             for row in reader:
                 slug = nba_to_stattleship_map[row[0]]
                 if slug in players:
                     players[slug]['gamelogs'].append(row[1:])
+                    
+        players[slug]['position'] = nba_scraper.get_player_position(row[0])
 
         return players, nf_to_stattleship_map
