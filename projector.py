@@ -177,7 +177,7 @@ class FeatureProjector(object):
     TRUE_NUM = 1
     FALSE_NUM = 0
 
-    SCORER = lambda x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 +
+    SCORER = lambda x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 + \
         x['blocks']*2 + x['steals']*2 - x['turnovers']
 
     # take in pos, height, gamelogs
@@ -721,8 +721,13 @@ class DailyProjector(object):
     # store all players details
     players = {}
 
-    def prepare_data_for_projections(self):
-        nf_data = nf_scraper.get_todays_player_data()
+    def prepare_data_for_projections(self, text_file):
+        if text_file:
+            with open(text_file, 'r') as inf:
+                for line in inf:
+                    nf_data = eval(line)
+        else:
+            nf_data = nf_scraper.get_todays_player_data()
 
         csv_helper = CSVHelper()
         self.players, nf_to_stattleship_map = \
