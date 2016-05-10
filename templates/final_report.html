@@ -1,146 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
-    <link href="static/css/midterm_report_style.css" rel="stylesheet" media="screen">
+    <link href="static/css/blog_post_1_style.css" rel="stylesheet" media="screen">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <div class="page-header center">
-                <h1>Lineup Recommender <small>&laquo;Midterm Report&raquo;</small></h1>
+                <h1>Lineup Recommender <small>&laquo;Final Report&raquo;</small></h1>
             </div>
 
-            <h2>Part 1: Introduction</h2>
-            <p>For our project, we decided to analyze NBA player scores by game in order to find optimal fantasy basketball lineups for website like FanDuel and DraftKings. We want to look at a player's historical game performance and then predict that player's performance in a future game. We can then take these projected scores to recommend the optimal lineup of players for users of the websites mentioned above. Below are some specific questions we're hoping to tackle in the process.</p>
+            <h2>Part 1: Overview and Hypothesis</h2>
+            <p> FanDuel and DraftKings have one-day fantasy sports contests. For Basketball, the contests require the user to enter with a lineup of 9 players that are playing in the games for that day. People enter these contests everyday by paying a fixed amount of money. Once the day’s games are done, the users with the lineups containing the best performing players (calculated using a linear combination of their individual stats), win a huge amount of money.
+            With the aim of doing well on the daily FanDuel contests, we hypothesized the following:
+            We can attain more than 90% accuracy given enough historical data and the right selection of features.
+            Projecting individual stats that contribute to a player’s overall performance can be better than directly projecting the fanduel score because we can choose only the relevant features for each specific stat.
+            </p>
+            <hr>
 
+            <h2>Part 2: Data Collection</h2>
+            <p> We are using data from 3 different sources: NBA, which returns every player’s historical data, NumberFire, which provides details about the players that are playing in today’s games, and Stattleship, which has information about each player (like height, weight, etc.). 
+
+            The data displayed above is after combination and cleaning which involved the following steps:
             <ul>
-                <li>Can we consistently predict the performance of low variance players? If so, should we tend to lean towards selecting low variance players to become more risk averse in the long run.</li>
-                <li>Can we predict success of low salaried players who have a high variance in their performances? This would help us replace the least useful high salaried players and consequently give us better odds of winning contests because most users tend to choose high salary players.</li>
-                <li>Can we incorporate metrics opposing team, home or away, etc. into our prediction model? If so, can we determine what subset of these metrics provides best results and why?</li>
+                <li>Create id maps to match players between the three data sources.</li>
+                <li>Accumulate data for the same player from different parts of each website.</li>
+                <li>Remove games that the player did not play in.</li>
+                <li>Remove bad values from gamelogs.</li>
             </ul>
 
-            <p>The NBA player data (shown below) is obtained from stats.nba.com. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers.</p>
-            <img class="img-responsive" src="static/images/nba_stats.png"></img>
+
+            For every player, we collect the following information associated with that player:</p>
+            <p>Gamelogs: a list of games they have played in, where each game has:
+            <ul>
+                <li>Time the game was held</li>
+                <li>Information on whether the game was played at home or away</li>
+                <li>The opponent team</li>
+                <li>Plus minus</li>
+                <li>How many times the player played in that game (?)</li>
+                <li>Total rebounds score for the team the player is in</li>
+                <li>Total assists score</li>
+                <li>Total steals score</li>
+                <li>Total blocks score</li>
+                <li>Total turnovers score</li>
+                <li>Total points</li>
+                <li>Position: a list of positions the player has, as some players have more than one position. For instance, Derek Williams plays in Point Forward and Small Forward.</li>
+            </ul>
+            </p>
+            <hr>
+
+            <h2>Part 3: Regression and Projection</h2>
+            <p> We decided to compare 5 different kinds of regression algorithms, and compare their projections:
+                <ul>
+                    <li>A linear regressor</li>
+                    <li>A Lasso regressor (linear model using L1 regularization) with an alpha of 0.1</li>
+                    <li>A random forest regressor using 1000 estimators (trees) and max splits of sqrt(#-of-features)</li>
+                    <li>A support vector regressor with linear kernel, using a penalty coefficient of 1 and epsilon of 0.1</li>
+                    <li>A support vector regressor with RBF kernel, using a penalty coefficient of 1 and epsilon of 0.1</li>
+                </ul>
+            </p>
+            <p> For training data, we decided to use the following features to project each game statistic independently:
+            <img class="img-responsive" src="static/images/features_labels.png">
+            </p>
+            <p> Our linear, Lasso, and random forest regressors were trained on all player game data from the past 4 seasons. Our support vector regressors were trained on a single player’s game data (the player we are projecting) from the past 4 seasons. This was because SVM runtime is approximately O(#-of-observations2), forcing us to limit the number of training samples.
+            </p>
+
+            <img class="img-responsive" src="static/images/regressor_bar_chart.png">
+            <img class="img-responsive" src="static/images/r2_chart.png">
+
+            <hr>
+
+            <h2>Part 4: Finding the Optimal Lineup</h2>
+
+            <hr>
+
+            <h2>Part 5: Challenges</h2>
+
+
             
-            <br><br>
-            <p>We also obtain projections and salary data from Swish Analytics (shown below). We currently used this data to calculate the optimal lineup which is what we use in the Visualization section below. We are also using this data as an example to compare with the projections we make in the ML section below.</p>
-            <img class="img-responsive" src="static/images/swish_data.png"></img>
-            <br>
-
-            <h3>Useful Features</h3>
-            We've built the following small modules to make our lives easier for the rest of the semester:
-            <ul>
-                <li>Reusable populate db module that will flush the redis db and repopulate it with combined data from swish and nba after cleaning them. The module is general enough to adapt to changes in the data.</li>
-                <li>Reusable updater module that will get stats at any given point of time from both nba and swish and update the db to keep up with daily changes.</li>
-                <li>Testing module that has unittests for different functionalities provided by Flask, Redis, Swish Analytics and NBA.</li>
-                <li>Reusable scraping module that uses beautiful soup and requests to get data from swish and any subdomain of stats.nba.com with a data endpoint.</li>
-                <li>Finally, we've deployed the app to heroku. So, we don't need to use WordPress! :)</li>
-            </ul>
-            <hr>
-
-            <h2>Part 2: Visualization</h2>
-            <script src="static/js/viz.js"></script>
-            <script src="static/js/d3_tip.js"></script>
-
-            <div id="positionchart">
-              <div id="PG">
-              </div>
-              <div id="SG">
-              </div>
-              <div id="C">
-              </div>
-              <div id="SF">
-              </div>
-              <div id="PF">
-              </div>
-            </div>
-            <br>
-            <p>
-                This visualization shows a basketball chart, where each circle represents a player on their strong positions. It gives recommendation on which player to choose for a specific position. When hovering over each circle, i.e. each player, there's a tooltip that tells information about the player, such as their salary, position, projected points, and team name. The color scale also gives information as to which player is projected to earn the most points - darkest representing most points.
-
-            </p>
-            <h3>How to get an optimal lineup</h3>
-            <p> 
-                First, data about players and games are scraped from NBA. Data about daily projected points for players are taken from Swish Analytics. These two pieces of data are combined together and stored in Redis.
-            </p>
-            <p>
-                First, the players are sorted by their projected points from highest to lowest. With the sorted list, the players are filtered by their salary and injury status. In order for them to be in the lineup, they have to have salary less than or equal to 60,000/9 and have no injury. We want to recommend players whose salary is affordable and performs well.
-            </p>
-            <p>
-                There are 9 players in a lineup - one in the Center position, and 2 players in other positions each.
-            </p>
-            <p>
-                Then, for this visualization, we pick the player with the highest point from each position. Thus, the visualization recommends 5 players for 5 positions.
-            </p>
-            
-            <hr>
-
-            <h2>Part 3: Machine Learning</h2>
-            <p>
-                Once we have our NBA player data, we can apply machine learning to predict projected player scores. We decided to use logistic regression to make the projections.
-            </p>
-            <p>
-                We transform our player data from their goals, freethrows, assists, etc. into a single FanDuel score. Then, we associate each player's FanDuel score for a game with the average FanDuel score of the prior <i>n</i> games. We create an aggregation of these scores-to-averages for all games a player has played.
-            </p>
-            <p>
-                In order to find the most optimal <i>n</i> prior games to compute the scores-to-averages aggregation, we looked for an <i>n</i> that maximized its respective aggregation's R<sup>2</sup> score. To do this, we first gathered the scores-to-averages aggregations from <i>n=1</i> prior games to <i>n=40</i> prior games for all players. Then we calculated the R<sup>2</sup> score for all of these scores-to-averages aggregations, and picked the <i>n</i> aggregation per player that had the maximal R<sup>2</sup> score. Finally, out of the best <i>n</i> values per player, we found the most common <i>n</i> value that maximized a player aggregation's R<sup>2</sup> score. Interestingly, the most common <i>n</i> value turned out to be 7. This suggests that we only need to look at the 7 prior games for a player to make an accurate projection of their performance.
-            </p>
-            <p>
-                Finally, we applied our ML algorithm to make predictions. For a given player, we take their historic game scores and perform a scores-to-averages aggregation; this aggregation looks at the averaged 7 prior game scores per game score (based on our findings above). We give this to a logistic regression as training data, with scores as the training features and averages as training labels.
-            </p>
-            <p>
-                With this trained logistic regression for a player, we can then give it the player's most recent 7 games, and predict their next game's FanDuel score. We also compared this to Swish Analytics' FanDuel projection for that player, and found similar results. Below are sample projections and actual scores for games played on 3/22/2016:
-            </p>
-            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
-                <tr>
-                    <td>Player Name</td>
-                    <td>Logistic Regression</td>
-                    <td>Swish Analytics</td>
-                    <td>Actual Score</td>
-                </tr>
-                <tr>
-                    <td>Jrue Holiday</td>
-                    <td>42</td>
-                    <td>52.24</td>
-                    <td>47.5</td>
-                </tr>
-                <tr>
-                    <td>Goran Dragic</td>
-                    <td>28</td>
-                    <td>32.34</td>
-                    <td>37.1</td>
-                </tr>
-                <tr>
-                    <td>Dion Waiters</td>
-                    <td>23</td>
-                    <td>11.76</td>
-                    <td>28</td>
-                </tr>
-            </table>
-            <p>
-                We chose these examples to show players with high, medium, and low projection scores.
-            </p>
-
-            <hr>
-            <h2>Part 4: Discussion</h2>
-            <ul>
-                <li><b>What is hardest part of the project that you've encountered so far?</b>
-                    <p>For fantasy scoring, it is not possible to rely on just one source of data to get all information because NBA does not provide fantasy salaries and the fantasy websites do not provide historical data. So, we had to combine data from two sources - NBA and Swish Analytics. We need this data to be updated every day, so we needed to build a module that can just be run each day to update the data. But, the module has to take into account the possibilities of data changing and inconsistent data. Building this module was definitely the hardest part of the project so far.</p>
-                </li>
-                <li><b>What are your initial insights?</b>
-                    <p>We're able to come up with reasonable projections that are quite comparable to those of Swish Analytics. We haven't been able to evaluate how good our results were against real data yet but we'll be doing that as the next step.</p>
-                </li>
-                <li><b>Are there any concrete results you can show at this point? If not, why not?</b>
-                    <p>We've been able to get the optimal lineup given projection data and we've been able to project fantasy scores based on historical data.</p>
-                </li>
-                <li><b>Going forward, what are the current biggest problems you're facing?</b>
-                    <p>One problem we're facing is trying to figure out which ML algorithms or what kind of pure stats could help us improve our predictions. Other than that, we're not facing any specific problems.</p>
-                </li>
-                <li><b>Do you think you are on track with your project? If not, what parts do you need to dedicate more time to?</b>
-                    <p>We think we're on track especially considering the fact that we'll be able to dedicate a lot more time to the project after Spring Break because the workload from the class reduces.</p>
-                </li>
-                <li><b>Given your initial exploration of the data, is it worth proceeding with your project?</b>
-                    <p>Definitely! The initial exploration has proven to be very exciting. Especially the insight that last 7 games is a good indicator of performance. We're excited to see where else we can go with this project.
-                </li>
-            </ul>
 
             
         <!-- In case this is legit -->
