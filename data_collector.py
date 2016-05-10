@@ -300,6 +300,7 @@ class NumberFireScraper(object):
             link_match = re.search('/nba/players/(.*)', link)
             player_id = link_match.group(1)
 
+            # working with position
             position_match = re.search('\((.*),', player_raw.text)
             if position_match:
                 position = position_match.group(1)
@@ -358,6 +359,9 @@ class NBAScraper(object):
         position = ""
         for value in values:
             position = value[position_id_index]
+            # Some players play multiple positions, but the informatoin is
+            # not explicit. Ex: if a player's position is Center-Forward,
+            # it means they play both Center and Power Forward positions.
             if position.encode('utf-8') == "Center-Forward":
                 pos_arr = ['C', 'PF']
             elif position.encode('utf-8') == "Guard-Forward":
