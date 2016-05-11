@@ -472,6 +472,6 @@ class CSVHelper(object):
             for row in reader:
                 slug = nba_to_stattleship_map[row[0]]
                 if slug in players:
-                    players[slug]['position'] = eval(row[1])
+                    players[slug]['position'] = set(eval(row[1]))
 
         return players, nf_to_stattleship_map
