@@ -15,8 +15,8 @@ from data_collector import NumberFireScraper
 from data_collector import NBAScraper
 from updater import DailyUpdater
 from scorer import FanDuelScorer
-# from projector import DailyProjector
 from namespace import Namespace
+# from projector import DailyProjector
 # from simple_recommender import SimpleRecommender
 # import os
 
@@ -68,13 +68,26 @@ def midterm_report():
 def blog_post_1():
     return render_template('blog_post_1.html')
 
+
 @app.route('/blog_post_2')
 def blog_post_2():
     return render_template('blog_post_2.html')
 
+
 @app.route('/blog_post_3')
 def blog_post_3():
-	return render_template('blog_post_3.html')
+    return render_template('blog_post_3.html')
+
+
+@app.route('/home')
+def home_page():
+    return render_template('home_page.html')
+
+
+@app.route('/final_report')
+def final_report():
+    return render_template('final_report.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)

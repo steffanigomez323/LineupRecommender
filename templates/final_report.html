@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+    <link href="static/css/blog_post_1_style.css" rel="stylesheet" media="screen">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="page-header center">
+                <h1>Lineup Recommender <small>&laquo;Final Report&raquo;</small></h1>
+            </div>
+
+            <h2>Part 1: Overview and Hypothesis</h2>
+            <p> FanDuel and DraftKings have one-day fantasy sports contests. For Basketball, the contests require the user to enter with a lineup of 9 players that are playing in the games for that day. People enter these contests everyday by paying a fixed amount of money. Once the day’s games are done, the users with the lineups containing the best performing players (calculated using a linear combination of their individual stats), win a huge amount of money.
+            With the aim of doing well on the daily FanDuel contests, we hypothesized the following:
+            We can attain more than 90% accuracy given enough historical data and the right selection of features.
+            Projecting individual stats that contribute to a player’s overall performance can be better than directly projecting the fanduel score because we can choose only the relevant features for each specific stat.
+            </p>
+            <hr>
+
+            <h2>Part 2: Data Collection</h2>
+            <p> We are using data from 3 different sources: NBA, which returns every player’s historical data, NumberFire, which provides details about the players that are playing in today’s games, and Stattleship, which has information about each player (like height, weight, etc.). 
+
+            The data displayed above is after combination and cleaning which involved the following steps:
+            <ul>
+                <li>Create id maps to match players between the three data sources.</li>
+                <li>Accumulate data for the same player from different parts of each website.</li>
+                <li>Remove games that the player did not play in.</li>
+                <li>Remove bad values from gamelogs.</li>
+            </ul>
+
+
+            For every player, we collect the following information associated with that player:</p>
+            <p>Gamelogs: a list of games they have played in, where each game has:
+            <ul>
+                <li>Time the game was held</li>
+                <li>Information on whether the game was played at home or away</li>
+                <li>The opponent team</li>
+                <li>Plus minus</li>
+                <li>How many times the player played in that game (?)</li>
+                <li>Total rebounds score for the team the player is in</li>
+                <li>Total assists score</li>
+                <li>Total steals score</li>
+                <li>Total blocks score</li>
+                <li>Total turnovers score</li>
+                <li>Total points</li>
+                <li>Position: a list of positions the player has, as some players have more than one position. For instance, Derek Williams plays in Point Forward and Small Forward.</li>
+            </ul>
+            </p>
+            <hr>
+
+            <h2>Part 3: Regression and Projection</h2>
+            <p> We decided to compare 5 different kinds of regression algorithms, and compare their projections:
+                <ul>
+                    <li>A linear regressor</li>
+                    <li>A Lasso regressor (linear model using L1 regularization) with an alpha of 0.1</li>
+                    <li>A random forest regressor using 1000 estimators (trees) and max splits of sqrt(#-of-features)</li>
+                    <li>A support vector regressor with linear kernel, using a penalty coefficient of 1 and epsilon of 0.1</li>
+                    <li>A support vector regressor with RBF kernel, using a penalty coefficient of 1 and epsilon of 0.1</li>
+                </ul>
+            </p>
+            <p> For training data, we decided to use the following features to project each game statistic independently:
+            <img class="img-responsive" src="static/images/features_labels.png">
+            </p>
+            <p> Our linear, Lasso, and random forest regressors were trained on all player game data from the past 4 seasons. Our support vector regressors were trained on a single player’s game data (the player we are projecting) from the past 4 seasons. This was because SVM runtime is approximately O(#-of-observations2), forcing us to limit the number of training samples.
+            </p>
+
+            <img class="img-responsive" src="static/images/regressor_bar_chart.png">
+            <img class="img-responsive" src="static/images/r2_chart.png">
+
+            <hr>
+
+            <h2>Part 4: Finding the Optimal Lineup</h2>
+
+            <hr>
+
+            <h2>Part 5: Challenges</h2>
+
+
+            
+
+            
+        <!-- In case this is legit -->
+<!--             <pre>
+            &lt;html&gt;
+                &lt;head&gt;
+                    &lt;title&gt;Title goes here&lt;/title&gt;
+                &lt;/head&gt;
+                &lt;body&gt;
+                    &lt;p&gt;This is a basic web page!&lt;/p&gt;
+                &lt;/body&gt;
+            &lt;/html&gt;
+            </pre> -->
+       
+            
+
+            <!--<hr> In case you haven't noticed, this is a horizontal rule. It makes a horizontal line in the page. -->
+        <div class="col-md-2"></div>
+    </div> 
+{% endblock %}

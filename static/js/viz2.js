@@ -1,4 +1,4 @@
-d3.csv("static/data/lineup.csv", function(data) {
+d3.csv("static/data/lineup2.csv", function(data) {
     
     data.forEach(function(d) {
         
@@ -17,7 +17,7 @@ d3.csv("static/data/lineup.csv", function(data) {
         cell2.innerHTML = d.Name;
         cell3.id = "team";
         cell3.innerHTML = d.Team;
-        cell4.innerHTML = d.Projection;
+        cell4.innerHTML = d['FanDuel Points'];
         cell5.innerHTML = d.Salary;
         
     })

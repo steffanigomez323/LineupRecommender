@@ -47,3 +47,4 @@ class Namespace(object):
     NBA_TO_STATTLESHIP_CSV = "data/nba_to_stattleship_map.csv"
     NUMBERFIRE_TO_NBA_CSV = "data/numberfire_to_nba_map.csv"
     PLAYER_STATS_CSV = "data/player_stats.csv"
+    PLAYER_POSITIONS_CSV = "data/player_positions.csv"

@@ -1,47 +1,37 @@
-
 $(document).ready(function() {
 	var formatDate = d3.time.format("%Y-%m-%d");
-	gi
+	$("#viz").width('100%');
 	$("#viz").height(600);
 	var q = d3_queue.queue(1);
 	q.defer(function(callback) {
-      d3.csv("static/data/visualization.csv", function(d) {
-      	console.log(d);
-      	/*if (d["Dates"] === "current") {
+      d3.csv("static/data/projection_visuals.csv", function(d) {
+      	if (d["Dates"] === "current") {
       		var dater = new Date();
       		d["Dates"] =  dater.getFullYear().toString().concat("-").concat((dater.getMonth() + 1).toString()).concat("-").concat(dater.getDate().toString());
       	}
-  		d["Dates"] = formatDate.parse(d["Dates"]);*/
-  		//d["Score"] = +d["Score"];
-
+  		d["Dates"] = formatDate.parse(d["Dates"]);
+  		d["Score"] = +d["Score"];
   		d["Assists"] = +d["Assists"];
   		d["Blocks"] = +d["Blocks"];
   		d["Points"] = +d["Points"];
   		d["Rebounds"] = +d["Rebounds"];
   		d["Steals"] = +d["Steals"];
   		d["Turnovers"] = +d["Turnovers"];
-
-  		var score = d['Points'] + (1.2 * d['Rebounds']) + (1.5 * d['Assists']) + (2 * d['Blocks']) + (2 * d['Steals']) + (-1 * d['Turnovers'])
-  		d["Score"] = score;
-
-  		console.log(d);
   		return d;		
       },
       function(data) { 
-      	console.log(data);
       	addTable(data);
       	barChart(data);
       	callback(null, data) });
     	});
 		q.await(function(err, results) {
-			console.log(results);
 			var tbody = document.getElementById("tbody");
 		    var rows = tbody.getElementsByTagName("tr");
 		    for(i = 0; i < rows.length; i++) {
 		        var currentRow = rows[i];
-		        //$('#' + currentRow.id).on('mouseover', function() {
-		        //	linegraph(results, this);
-		        //});
+		        $('#' + currentRow.id).on('mouseover', function() {
+		        	linegraph(results, this);
+		        });
 		        $('#' + currentRow.id).on('mouseleave', function() {
 		        	$("#viz").empty();
 		        	barChart(results);
@@ -64,11 +54,10 @@ function camelCaseName(player) {
 }
 
 function barChart(data) {
-	//var lineData = [];
-	lineData = data;
+	var lineData = [];
 	count = 9;
 	var name = data[0].Player;
-	/*for (var i = 0; i < data.length; i++) {
+	for (var i = 0; i < data.length; i++) {
 		if (count <= 0) {
 			break;
 		}
@@ -77,7 +66,7 @@ function barChart(data) {
     		name = data[i + 1].Player;
     		lineData.push(data[i]);
 		}
-	}*/
+	}
 	var margin = {top: 20, right: 20, bottom: 30, left: 30},
     width = $("#viz").width() - margin.left - margin.right,
     height = $("#viz").height() - margin.top - margin.bottom;
@@ -91,7 +80,7 @@ function barChart(data) {
 	    .range([height, 0]);
 
 	var color = d3.scale.ordinal()
-	    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c"]);
+	    .range(["#98abc5", "#6b486b", "#ff8c00"]);
 
 	var xAxis = d3.svg.axis()
 	    .scale(x0)
@@ -107,14 +96,14 @@ function barChart(data) {
 	  .append("g")
 	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	var names =  ["Score", "Points", "Assists", "Blocks", "Turnovers", "Rebounds"];
+	var names = ["Score", "Points", "Assists"];
 	  lineData.forEach(function(d) {
 	    d.stats = names.map(function(name) { return {name: name, value: +d[name]}; });
 	  });
 
-	  x0.domain(lineData.map(function(d) { return d.Regression; }));//camelCaseName(d.Player); }));
+	  x0.domain(lineData.map(function(d) { return camelCaseName(d.Player); }));
 	  x1.domain(names).rangeRoundBands([0, x0.rangeBand()]);
-	  y.domain([0, d3.max(lineData, function(d) { return d.Score; })]);//return d.Score; })]);
+	  y.domain([0, d3.max(lineData, function(d) { return d.Score; })]);
 
 	  svg.append("g")
 	      .attr("class", "x axis")
@@ -135,7 +124,7 @@ function barChart(data) {
 	      .data(lineData)
 	    .enter().append("g")
 	      .attr("class", "state")
-	      .attr("transform", function(d) { return "translate(" + x0(d.Regression) + ",0)"; });//x0(camelCaseName(d.Player)) + ",0)"; });
+	      .attr("transform", function(d) { return "translate(" + x0(camelCaseName(d.Player)) + ",0)"; });
 
 	  player.selectAll("rect")
 	      .data(function(d) { return d.stats; })
@@ -267,7 +256,7 @@ function addTable(data) {
 	var cell5 = hrow.insertCell(5);
 	var cell6 = hrow.insertCell(6);
 	var cell7 = hrow.insertCell(7);
-	cell0.innerHTML = "Regression Name";
+	cell0.innerHTML = "Player Name";
     cell1.innerHTML = "Projected Score";
     cell2.innerHTML = "Projected Points";
     cell3.innerHTML = "Projected Assists";
@@ -278,20 +267,19 @@ function addTable(data) {
 
     var body = document.createElement('tbody');
     body.setAttribute("id", "tbody");
-    	//count = 9;
-    	console.log(data);
-    	var name = data[0].Regression;
+    	count = 9;
+    	var name = data[0].Player;
     	for (var i = 0; i < data.length; i++) {
-    		// if (count <= 0) {
-    		// 	break;
-    		// }
-	    	//if (data[i + 1].Player !== name) {
-	    		//count--;
+    		if (count <= 0) {
+    			break;
+    		}
+	    	if (data[i + 1].Player !== name) {
+	    		count--;
 
-	    		//name = data[i + 1].Player;
+	    		name = data[i + 1].Player;
 
 		    	var row = body.insertRow(body.rows.length);
-		    	row.id = data[i].Regression.split(" ")[0];
+		    	row.id = data[i].Player;
 		    	
 			    cell0 = row.insertCell(0);
 			    cell1 = row.insertCell(1);
@@ -302,27 +290,16 @@ function addTable(data) {
 			    cell6 = row.insertCell(6);
 			    cell7 = row.insertCell(7);
 
-			    var score = data[i].Points + (1.2 * data[i].Rebounds) + (1.5 * data[i].Assists) + (2 * data[i].Blocks) + (2 * data[i].Steals) + (-1 * data[i].Turnovers)
-			    cell0.innerHTML = data[i].Regression;//camelCaseName(data[i].Regression);
-			    cell1.innerHTML = truncateDecimals(score, 2);
-			    cell2.innerHTML = truncateDecimals(data[i].Points, 2);
-			    cell3.innerHTML = truncateDecimals(data[i].Assists, 2);
-			    cell4.innerHTML = truncateDecimals(data[i].Steals, 2);
-			    cell5.innerHTML = truncateDecimals(data[i].Blocks, 2);
-			    cell6.innerHTML = truncateDecimals(data[i].Turnovers, 2);
-			    cell7.innerHTML = truncateDecimals(data[i].Rebounds, 2);
+			    cell0.innerHTML = camelCaseName(data[i].Player);
+			    cell1.innerHTML = data[i].Score;
+			    cell2.innerHTML = data[i].Points;
+			    cell3.innerHTML = data[i].Assists;
+			    cell4.innerHTML = data[i].Steals;
+			    cell5.innerHTML = data[i].Blocks;
+			    cell6.innerHTML = data[i].Turnovers;
+			    cell7.innerHTML = data[i].Rebounds;
 
-			//}
+			}
 		}
 	table.appendChild(body);
 }
-
-
-// helper function from stackoverflow
-truncateDecimals = function (number, digits) {
-    var multiplier = Math.pow(10, digits),
-        adjustedNum = number * multiplier,
-        truncatedNum = Math[adjustedNum < 0 ? 'ceil' : 'floor'](adjustedNum);
-
-    return truncatedNum / multiplier;
-};

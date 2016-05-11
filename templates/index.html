@@ -1,18 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
+    <link href="static/css/index.css" rel="stylesheet" media="screen">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <div class="page-header center">
-                <h1>Home Page</h1>
-            </div>
+                <img id="logo" src="static/images/logo.png"></img>
+                <h1>Lineup Recommender</h1>
+                <script src="static/js/viz2.js"></script>
 
-            <h2>Overview</h2>
-            <p>
-                <a href="/midterm_report">Midterm Report</a>
-                <a href="/blog_post_1">Progress Report 1</a>
-                <a href="/blog_post_2">Progress Report 2</a>
-            </p>
-        <div class="col-md-2"></div>
+	            <div id="lineup">
+	              <table class="table table-striped" align="center" style="width:70%;" id="viz">
+	                <thead>
+	                  <tr>
+	                    <th>Position</th> 
+	                    <th>Name</th>
+	                    <th>Game</th>
+	                    <th>Projection</th>
+	                    <th>Salary</th>
+	                  </tr>
+	                </thead>
+	                <tbody>
+	                </tbody>
+	              </table>
+	            </div>
+	            </div>
+    
     </div> 
 {% endblock %}

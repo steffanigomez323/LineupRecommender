@@ -300,6 +300,7 @@ class NumberFireScraper(object):
             link_match = re.search('/nba/players/(.*)', link)
             player_id = link_match.group(1)
 
+            # working with position
             position_match = re.search('\((.*),', player_raw.text)
             if position_match:
                 position = position_match.group(1)
@@ -345,6 +346,7 @@ class NBAScraper(object):
         return players
 
     def get_player_position(self, playerid):
+
         modifier = 'commonplayerinfo'
         params = {'PlayerID': playerid, 
                   'LeagueID': '00'}
@@ -357,7 +359,27 @@ class NBAScraper(object):
         position = ""
         for value in values:
             position = value[position_id_index]
-        return position
+            # Some players play multiple positions, but the informatoin is
+            # not explicit. Ex: if a player's position is Center-Forward,
+            # it means they play both Center and Power Forward positions.
+            if position.encode('utf-8') == "Center-Forward":
+                pos_arr = ['C', 'PF']
+            elif position.encode('utf-8') == "Guard-Forward":
+                pos_arr = ['SF', 'PG']
+            elif position.encode('utf-8') == "Forward-Center":
+                pos_arr = ['SF', 'C']
+            elif position.encode('utf-8') == "Guard":
+                pos_arr = ['PG', 'SG']
+            elif position.encode('utf-8') == "Forward":
+                pos_arr = ['PF', 'SF']
+            elif position.encode('utf-8') == "Forward-Guard":
+                pos_arr = ['PF', 'SG']
+            elif position.encode('utf-8') == "Center":
+                pos_arr = ['C']
+            else:
+                pos_arr = []
+
+        return pos_arr
 
     def get_player_name_id_map(self, data):
         name_to_id = {}
