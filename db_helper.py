@@ -184,7 +184,6 @@ class CSVHelper(object):
     # stattleship, nba and numberfire
     def create_csvs(self):
         # set basic information
-        #self.create_basic_player_information_csv()
 
         # get nba players' names and ids
         nba_players = nba_scraper.get_player_data()
@@ -201,6 +200,12 @@ class CSVHelper(object):
         # set player stats
         self.create_player_stats_csv(nba_name_to_id)
 
+
+    '''
+    This function creates a csv file that stores basic information about a player: 
+    Player slug, player name, height, weight, whether or not the player is active,
+    and years of experience. This data is obtained from Stattleship.
+    '''
     def create_basic_player_information_csv(self, nba_name_to_id):
         # data to write
         data = [['player_slug', 'name', 'height',
@@ -212,26 +217,18 @@ class CSVHelper(object):
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
 
-
-
         count = 0
         # set the player basic information
         for player in stattleship_players:
-            #print player
             slug = player["slug"]
             name = player["name"]
 
             if name not in nba_name_to_id.keys():
-                print name
-                print ""
                 count += 1
                 continue
 
             playerid = nba_name_to_id[name]
             position = nba_scraper.get_player_position(playerid)
-            #print name
-            #print position
-            #print ""
             height = player["height"]
             weight = player["weight"]
             active = player["active"]
@@ -245,6 +242,13 @@ class CSVHelper(object):
             writer = csv.writer(f)
             writer.writerows(data)
 
+    '''
+    This function sets a mapping from nba id to the Stattleship slug,
+    for future easy access. There are some mismatches whereby the 
+    names of the players in NBA data source show up differently from 
+    the player names in Stattleship data source. In that case, we set
+    mappings manually.
+    '''
     def create_nba_to_stattleship_csv(self, nba_name_to_id):
         # data to write
         data = [['nba_id', 'stattleship_slug']]
@@ -306,6 +310,13 @@ class CSVHelper(object):
             writer = csv.writer(f)
             writer.writerows(data)
 
+    '''
+    This function sets a mapping of NumberFire player slug to
+    NBA ID, using data source from NumberFire and NBA. There are mismatches
+    whereby the player names in both data sources show up differently, even
+    if they refer to the same player. In that case, we manually set their 
+    mappings.
+    '''
     def create_numberfire_to_nba_csv(self, nba_name_to_id):
         # data to write
         data = [['numberfire_slug', 'nba_id']]
@@ -347,7 +358,7 @@ class CSVHelper(object):
             writer = csv.writer(f)
             writer.writerows(data)
 
-    # Create a CSV file mapping nba_id to a list of positions
+    # Create a CSV file mapping nba_id to a list of positions of the players
     def create_player_positions_csv(self):
         # data to write
         data = [['nba_id', 'positions']]
@@ -357,12 +368,15 @@ class CSVHelper(object):
             reader = csv.reader(f)
             reader.next()
             for row in reader:
+                # get the player positions using their id. Some players play in 
+                # one position while others play in multiple.
                 data.append([row[0], nba_scraper.get_player_position(row[0])])
 
         with open(n.PLAYER_POSITIONS_CSV, 'wb') as pos_f:
             writer = csv.writer(pos_f)
             writer.writerows(data)
 
+    # Create a CSV file that stores the gamelogs of the players
     def create_player_stats_csv(self, nba_name_to_id):
         # data to write
         data = [['nba_id', 'game_time', 'played_at_home',
@@ -391,6 +405,10 @@ class CSVHelper(object):
             writer = csv.writer(f)
             writer.writerows(data)
 
+    '''
+    This function uses the CSV files created to prepare data that will 
+    be used to make projections.
+    '''
     def prepare_data_from_csvs(self):
         # create player information map from csv
         players = {}
@@ -438,6 +456,7 @@ class CSVHelper(object):
             stattleship_slug = nba_to_stattleship_map[nba_id]
             nf_to_stattleship_map[nf_slug] = stattleship_slug
 
+        # store the gamelogs records
         with open(n.PLAYER_STATS_CSV) as ps:
             reader = csv.reader(ps)
             reader.next()
@@ -446,6 +465,7 @@ class CSVHelper(object):
                 if slug in players:
                     players[slug]['gamelogs'].append(row[1:])
 
+        # Also store a list of positions of the players
         with open(n.PLAYER_POSITIONS_CSV) as pp:
             reader = csv.reader(pp)
             reader.next()

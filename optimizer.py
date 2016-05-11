@@ -161,6 +161,41 @@ class LineupOptimizer(object):
 #             salary_2d[5].append(sf[2])
 #             salary_2d[6].append(sf[2])
             
+
+"""
+
+        update = []
+        lineup = []
+
+        j = 0
+        while value_2d[0][j][2] >= salary_cap/9:
+            j += 1
+
+        lineup.append((value_2d[0][j][0], value_2d[0][j][1], value_2d[0][j][2]))
+        update.append(value_2d[0][j][2]) # salary
+
+        for i in range(1, 9):
+            k = 0
+            while (lineup[i-1] == value_2d[i][k][0] or (value_2d[i][k][2] + update[i-1]) >= (salary_cap/9)*(i+1)):
+                k += 1
+            lineup.append((value_2d[i][k][0], value_2d[i][k][1], value_2d[i][k][2]))
+            update.append(value_2d[i][k][2])
+
+        return lineup       
+
+    def pack5(items,sizeLimit):
+        P = {}
+        for nItems in range(len(items)+1):
+            for lim in range(sizeLimit+1):
+                if nItems == 0:
+                    P[nItems,lim] = 0
+                elif itemSize(items[nItems-1]) > lim:
+                    P[nItems,lim] = P[nItems-1,lim]
+                else:
+                    P[nItems,lim] = max(P[nItems-1,lim],
+                        P[nItems-1,lim-itemSize(items[nItems-1])] +
+                        itemValue(items[nItems-1]))
+=======
 #         for pf in value_2d[7]:
 #             salary_2d[7].append(pf[2])
 #             salary_2d[8].append(pf[2])
@@ -277,6 +312,7 @@ class LineupOptimizer(object):
 #                     P[nItems,lim] = max(P[nItems-1,lim],
 #                         P[nItems-1,lim-itemSize(items[nItems-1])] +
 #                         itemValue(items[nItems-1]))
+
         
 #         L = []      
 #         nItems = len(items)
