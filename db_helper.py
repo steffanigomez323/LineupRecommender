@@ -11,7 +11,7 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
-import namespace
+from app import namespace
 import time
 import csv
 
