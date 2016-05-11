@@ -11,7 +11,7 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
-from app import namespace
+import namespace
 import time
 import csv
 
@@ -473,5 +473,7 @@ class CSVHelper(object):
                 slug = nba_to_stattleship_map[row[0]]
                 if slug in players:
                     players[slug]['position'] = set(eval(row[1]))
+                    if len(players[slug]['position']) == 0:
+                        players[slug]['position'] = set(['UN'])
 
         return players, nf_to_stattleship_map

@@ -377,7 +377,7 @@ class NBAScraper(object):
             elif position.encode('utf-8') == "Center":
                 pos_arr = ['C']
             else:
-                pos_arr = []
+                pos_arr = ['UN']
 
         return pos_arr
 

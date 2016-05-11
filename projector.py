@@ -24,6 +24,7 @@ from copy import deepcopy
 from app import nf_scraper
 from db_helper import CSVHelper
 from namespace import Namespace
+#np.set_printoptions(threshold=np.inf)
 
 '''
 class SimpleProjector(object):
@@ -202,37 +203,10 @@ class FeatureCreator(object):
             return np.vstack((target, append_array))
 
     def calc_all_training_features(self):
-        all_features = {"assists": None,
-                        "points": None,
-                        "blocks": None,
-                        "rebounds": None,
-                        "turnovers": None,
-                        "steals": None}
-
-        for pid in self.players_gamelogs.iterkeys():
-            if len(self.players_gamelogs[pid]['gamelogs']) == 0:
-                continue
-
-            features = self.get_player_training_features(pid)
-
-            for k, v in features.iteritems():
-                all_features[k] = self.__append_features(all_features[k], v)
-
-        return all_features
+        return self.calc_some_training_features(self.players_gamelogs.iterkeys())
 
     def calc_all_training_fanduel(self):
-        all_features = {"fanduel": None}
-
-        for pid in self.players_gamelogs.iterkeys():
-            if len(self.players_gamelogs[pid]['gamelogs']) == 0:
-                continue
-
-            features = self.get_player_training_fanduel(pid)
-
-            for k, v in features.iteritems():
-                all_features[k] = self.__append_features(all_features[k], v)
-
-        return all_features
+        return self.calc_some_training_fanduel(self.players_gamelogs.iterkeys())
 
     def calc_some_training_features(self, player_ids):
         all_features = {"assists": None,
@@ -268,7 +242,6 @@ class FeatureCreator(object):
         return all_features
 
     def calc_player_training_features(self, player_id):
-        position = self.players_gamelogs[player_id]['position']
         height = float(self.players_gamelogs[player_id]['height'])
 
         gamelog = self.players_gamelogs[player_id]['gamelogs']
@@ -284,6 +257,10 @@ class FeatureCreator(object):
         plus_minus = gamelog[:, self.PLUS_MINUS_IDX].astype(np.float)
         opponent = gamelog[:, self.OPPONENT_IDX]
         hva = gamelog[:, self.HVA_IDX]
+
+        #position = self.players_gamelogs[player_id]['position']
+        #position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
+        #                 for x in self.POSITION_LIST]
 
         num_logs = len(points)
 
@@ -301,11 +278,9 @@ class FeatureCreator(object):
             hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                             for x in self.POSITION_LIST]
             row.append(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
             points_train.append(row)
 
@@ -323,11 +298,9 @@ class FeatureCreator(object):
             hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                             for x in self.POSITION_LIST]
             row.append(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
             assists_train.append(row)
 
@@ -345,11 +318,9 @@ class FeatureCreator(object):
             hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                             for x in self.POSITION_LIST]
             row.append(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
             steals_train.append(row)
 
@@ -367,11 +338,9 @@ class FeatureCreator(object):
             hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                             for x in self.POSITION_LIST]
             row.append(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
             turnovers_train.append(row)
 
@@ -390,11 +359,9 @@ class FeatureCreator(object):
             hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                             for x in self.POSITION_LIST]
             row.append(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
             rebounds_train.append(row)
 
@@ -413,11 +380,9 @@ class FeatureCreator(object):
             hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                             for x in self.POSITION_LIST]
             row.append(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
             blocks_train.append(row)
 
@@ -429,7 +394,6 @@ class FeatureCreator(object):
                 "steals": np.array(steals_train)}
 
     def calc_player_projection_features(self, player_id):
-        position = self.players_gamelogs[player_id]['position']
         height = float(self.players_gamelogs[player_id]['height'])
 
         gamelog = self.players_gamelogs[player_id]['gamelogs']
@@ -451,8 +415,10 @@ class FeatureCreator(object):
         hva_num = (self.TRUE_NUM if hva == "True" else self.FALSE_NUM)
         opponent_nums = [self.TRUE_NUM if x == opponent else self.FALSE_NUM
                          for x in self.OPPONENT_LIST]
-        position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                         for x in self.POSITION_LIST]
+
+        #position = self.players_gamelogs[player_id]['position']
+        #position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
+        #                 for x in self.POSITION_LIST]
 
         i = len(points)
 
@@ -465,7 +431,7 @@ class FeatureCreator(object):
                        self.avg(time[0:i])]  # time avg
         points_proj.append(hva_num)
         points_proj.extend(opponent_nums)
-        points_proj.extend(position_nums)
+        #points_proj.extend(position_nums)
 
         # assists
         assists_proj = [self.avg(assists[i - 1:i]),  # last 1
@@ -476,7 +442,7 @@ class FeatureCreator(object):
                         self.avg(time[0:i])]  # time avg
         assists_proj.append(hva_num)
         assists_proj.extend(opponent_nums)
-        assists_proj.extend(position_nums)
+        #assists_proj.extend(position_nums)
 
         # steals
         steals_proj = [self.avg(steals[i - 1:i]),  # last 1
@@ -487,7 +453,7 @@ class FeatureCreator(object):
                        self.avg(time[0:i])]  # time avg
         steals_proj.append(hva_num)
         steals_proj.extend(opponent_nums)
-        steals_proj.extend(position_nums)
+        #steals_proj.extend(position_nums)
 
         # turnovers
         turnovers_proj = [self.avg(turnovers[i - 1:i]),  # last 1
@@ -498,7 +464,7 @@ class FeatureCreator(object):
                           self.avg(time[0:i])]  # time avg
         turnovers_proj.append(hva_num)
         turnovers_proj.extend(opponent_nums)
-        turnovers_proj.extend(position_nums)
+        #turnovers_proj.extend(position_nums)
 
         # rebounds
         rebounds_proj = [self.avg(rebounds[i - 1:i]),  # last 1
@@ -510,7 +476,7 @@ class FeatureCreator(object):
                          height]  # height
         rebounds_proj.append(hva_num)
         rebounds_proj.extend(opponent_nums)
-        rebounds_proj.extend(position_nums)
+        #rebounds_proj.extend(position_nums)
 
         # blocks
         blocks_proj = [self.avg(blocks[i - 1:i]),  # last 1
@@ -522,7 +488,7 @@ class FeatureCreator(object):
                        height]  # height
         blocks_proj.append(hva_num)
         blocks_proj.extend(opponent_nums)
-        blocks_proj.extend(position_nums)
+        #blocks_proj.extend(position_nums)
 
         return {"assists": np.array(assists_proj).reshape(1, -1),
                 "points": np.array(points_proj).reshape(1, -1),
@@ -532,7 +498,6 @@ class FeatureCreator(object):
                 "steals": np.array(steals_proj).reshape(1, -1)}
 
     def calc_player_training_fanduel(self, player_id):
-        position = self.players_gamelogs[player_id]['position']
         height = float(self.players_gamelogs[player_id]['height'])
 
         gamelog = self.players_gamelogs[player_id]['gamelogs']
@@ -548,6 +513,10 @@ class FeatureCreator(object):
         plus_minus = gamelog[:, self.PLUS_MINUS_IDX].astype(np.float)
         opponent = gamelog[:, self.OPPONENT_IDX]
         hva = gamelog[:, self.HVA_IDX]
+
+        #position = self.players_gamelogs[player_id]['position']
+        #position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
+        #                 for x in self.POSITION_LIST]
 
         num_logs = len(points)
 
@@ -577,18 +546,15 @@ class FeatureCreator(object):
             hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                             for x in self.POSITION_LIST]
             row.append(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
-            row.extend(position_nums) # position
+            #row.extend(position_nums) # position
 
             fanduel_train.append(row)
 
         return {"fanduel": np.array(fanduel_train)}
 
     def calc_player_projection_fanduel(self, player_id):
-        position = self.players_gamelogs[player_id]['position']
         height = float(self.players_gamelogs[player_id]['height'])
 
         gamelog = self.players_gamelogs[player_id]['gamelogs']
@@ -610,8 +576,10 @@ class FeatureCreator(object):
         hva_num = (self.TRUE_NUM if hva == "True" else self.FALSE_NUM)
         opponent_nums = [self.TRUE_NUM if x == opponent else self.FALSE_NUM
                          for x in self.OPPONENT_LIST]
-        position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
-                         for x in self.POSITION_LIST]
+
+        #position = self.players_gamelogs[player_id]['position']
+        #position_nums = [self.TRUE_NUM if x in position else self.FALSE_NUM
+        #                 for x in self.POSITION_LIST]
 
         i = len(points)
 
@@ -636,7 +604,7 @@ class FeatureCreator(object):
                         self.avg(turnovers[0:i])] # TO avg
         fanduel_proj.append(hva_num)
         fanduel_proj.extend(opponent_nums)
-        fanduel_proj.extend(position_nums)
+        #fanduel_proj.extend(position_nums)
 
         return {"fanduel": np.array(fanduel_proj).reshape(1, -1)}
 
@@ -992,13 +960,38 @@ class DailyProjector(object):
             for attr in attributes:
                 self.upcoming_games[stattleship_slug][attr] = \
                     nf_data[nf_id][attr]
-
+        '''
         for player_id in deepcopy(self.players.keys()):
             if player_id not in self.upcoming_games.keys():
                 pass #del(self.players[player_id])
             else:
                 self.players[player_id]['position'] = \
-                    set(self.upcoming_games[player_id]['position'])
+                    set([self.upcoming_games[player_id]['position']])
+        '''
+
+    def test_fd_score(self):
+        fc = FeatureCreator(self.players, self.upcoming_games)
+
+        pid = 'nba-demar-derozan'
+        print pid
+        print fc.get_player_projection_features(pid)['points']
+
+        '''
+        print "\nLinear Regression"
+        proj = LRFeatureProjector(fc)
+        print "r2 score"
+        print proj.fit_all()
+        print "Projecting for", pid
+        print "stats"
+        projections = proj.get_stat_projection(pid)
+        print projections
+        stats_fanduel = proj.get_fanduel_score(projections)
+        print "stats: fanduel", stats_fanduel
+        #print "fanduel"
+        #projections = LRproj.get_fanduel_projection(pid)
+        #print projections
+        print "\n------------------------"
+        '''
 
     def project_fd_score(self):
         fc = FeatureCreator(self.players, self.upcoming_games)
