@@ -11,4 +11,6 @@ dependencies:
 - pandas
 - numpy
 - scikit-learn
-- pip
+- pip:
+  - openopt
+  - FuncDesigner
