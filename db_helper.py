@@ -453,7 +453,7 @@ class CSVHelper(object):
             reader = csv.reader(ps)
             reader.next()
             for row in reader:
-                slug = nba_to_stattleship_map[row[0]]
+                slug = nba_to_stattleship_map.get(row[0], '')
                 if slug in players:
                     players[slug]['gamelogs'].append(row[1:])
 
@@ -462,7 +462,7 @@ class CSVHelper(object):
             reader = csv.reader(pp)
             reader.next()
             for row in reader:
-                slug = nba_to_stattleship_map[row[0]]
+                slug = nba_to_stattleship_map.get(row[0], '')
                 if slug in players:
                     players[slug]['position'] = set(eval(row[1]))
                     if len(players[slug]['position']) == 0:
