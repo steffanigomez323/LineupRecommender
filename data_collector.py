@@ -418,7 +418,7 @@ class NBAScraper(object):
                                         '2014-15',
                                         '2015-16']):
         j = []
-        for s in season:
+        for s in seasons:
             modifier = 'leaguegamelog'
             params = {'Direction': 'DESC',
                       'LeagueID': '00',
