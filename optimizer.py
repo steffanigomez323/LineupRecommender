@@ -28,7 +28,7 @@ class LineupOptimizer(object):
         num_ids = 0
         check_position = lambda x, y: 1 if x == y else 0
 
-        for player in self.players: #.iterkeys():
+        for player in self.players:
             num_ids += 1
 
             position = player['position']
@@ -87,16 +87,16 @@ class LineupOptimizer(object):
 # import json
 
 # class SimpleOptimizer(object):
-#     global salary_cap 
+#     global salary_cap
 #     salary_cap = 60000000;
 #     lineup_size = 9
 
 #     # input: projections.json
 #     f = open('projections.json', 'r')
-#     global projections 
+#     global projections
 #     projections= json.load(f)
-    
-    
+
+
 #     """
 #     This is a method returns a simple, optimal lineup based on the salaries from swish analytics.
 #     """
@@ -138,21 +138,21 @@ class LineupOptimizer(object):
 #         value_2d.append(sorted(PG_list, key=lambda x: x[1], reverse=True)) # PG1
 #         value_2d.append(sorted(PG_list, key=lambda x: x[1], reverse=True)) # PG2
 #         value_2d.append(sorted(SG_list, key=lambda x: x[1], reverse=True))
-#         value_2d.append(sorted(SG_list, key=lambda x: x[1], reverse=True)) 
+#         value_2d.append(sorted(SG_list, key=lambda x: x[1], reverse=True))
 #         value_2d.append(sorted(SF_list, key=lambda x: x[1], reverse=True))
-#         value_2d.append(sorted(SF_list, key=lambda x: x[1], reverse=True)) 
+#         value_2d.append(sorted(SF_list, key=lambda x: x[1], reverse=True))
 #         value_2d.append(sorted(PF_list, key=lambda x: x[1], reverse=True))
-#         value_2d.append(sorted(PF_list, key=lambda x: x[1], reverse=True)) 
+#         value_2d.append(sorted(PF_list, key=lambda x: x[1], reverse=True))
 
 #         """
 #         # create a list of 9 lists that stores salaries; O(number of players)
 #         for c in value_2d[0]:
 #             salary_2d[0].append(c[2]) # (point, salary)
-            
+
 #         for pg in value_2d[1]:
 #             salary_2d[1].append(pg[2])
 #             salary_2d[2].append(pg[2])
-            
+
 #         for sg in value_2d[3]:
 #             salary_2d[3].append(sg[2])
 #             salary_2d[4].append(sg[2])
@@ -160,7 +160,7 @@ class LineupOptimizer(object):
 #         for sf in value_2d[5]:
 #             salary_2d[5].append(sf[2])
 #             salary_2d[6].append(sf[2])
-            
+
 
 """
 
@@ -181,7 +181,7 @@ class LineupOptimizer(object):
             lineup.append((value_2d[i][k][0], value_2d[i][k][1], value_2d[i][k][2]))
             update.append(value_2d[i][k][2])
 
-        return lineup       
+        return lineup
 
     def pack5(items,sizeLimit):
         P = {}
@@ -267,14 +267,14 @@ class LineupOptimizer(object):
 #                                                         PF_list[pf2_index][2]])
 
 #                                             if salary <= salary_cap:
-#                                                 lineup = [C_list[c_index][0], 
-#                                                             PG_list[pg1_index][0], 
-#                                                             PG_list[pg2_index][0], 
-#                                                             SG_list[sg1_index][0], 
-#                                                             SG_list[sg2_index][0], 
-#                                                             SF_list[sf1_index][0], 
-#                                                             SF_list[sf2_index][0], 
-#                                                             PF_list[pf1_index][0], 
+#                                                 lineup = [C_list[c_index][0],
+#                                                             PG_list[pg1_index][0],
+#                                                             PG_list[pg2_index][0],
+#                                                             SG_list[sg1_index][0],
+#                                                             SG_list[sg2_index][0],
+#                                                             SF_list[sf1_index][0],
+#                                                             SF_list[sf2_index][0],
+#                                                             PF_list[pf1_index][0],
 #                                                             PF_list[pf2_index][0]]
 
 #                                                 score = sum([C_list[c_index][1],
@@ -292,10 +292,10 @@ class LineupOptimizer(object):
 #                                                 else:
 #                                                     if best[0][1] < score:
 #                                                         best[0] = (lineup, score)
-                                                        
+
 #         # print best
-#         return best                                               
-                                                
+#         return best
+
 #     get_simple_lineup(object)
 #     # get_lineup_bruteforce(object)
 
@@ -313,8 +313,8 @@ class LineupOptimizer(object):
 #                         P[nItems-1,lim-itemSize(items[nItems-1])] +
 #                         itemValue(items[nItems-1]))
 
-        
-#         L = []      
+
+#         L = []
 #         nItems = len(items)
 #         lim = sizeLimit
 #         while nItems > 0:
@@ -366,4 +366,4 @@ class LineupOptimizer(object):
 #             result.append(items[i - 1])
 #             j -= items[i - 1][1]
 #     result.reverse()
-#     return bestvalue(len(items), maxweight), result 
+#     return bestvalue(len(items), maxweight), result

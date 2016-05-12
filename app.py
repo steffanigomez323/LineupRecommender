@@ -13,7 +13,6 @@ from redis import Redis
 from data_collector import Stattleship
 from data_collector import NumberFireScraper
 from data_collector import NBAScraper
-from updater import DailyUpdater
 from scorer import FanDuelScorer
 from namespace import Namespace
 # from projector import DailyProjector
@@ -41,14 +40,8 @@ nba_scraper = NBAScraper()
 # numberfire
 nf_scraper = NumberFireScraper()
 
-# daily updater
-daily_updater = DailyUpdater()
-
 # scorers
 fanduel_scorer = FanDuelScorer()
-
-# projector
-# daily_projector = DailyProjector()
 
 # namespace
 namespace = Namespace()
