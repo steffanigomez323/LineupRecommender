@@ -141,7 +141,7 @@ $(document).ready(function() {
                           .attr("y", 9)
                           .attr("dy", ".35em")
                           .style("text-anchor", "end")
-                          .text(function(d) { return d; });
+                          .text(function(d) { return "Projection"; });
                 });
                     };
             
@@ -254,7 +254,7 @@ $(document).ready(function() {
                   .attr("y", 9)
                   .attr("dy", ".35em")
                   .style("text-anchor", "end")
-                  .text(function(d) { return d; });
+                  .text(function(d) { return "Projection"; });
         //});
         
     });
@@ -336,7 +336,7 @@ function linegraph(row) {
           .attr("y", 6)
           .attr("dy", ".71em")
           .style("text-anchor", "end")
-          .text("FanDuel Scores");
+          .text("FanDuel Projection");
 
         var line = d3.svg.line()
             .x(function(d) { return x(d["game_time"]); })
