@@ -3,8 +3,6 @@ $(document).ready(function() {
     $("#viz").height(600);
     d3.json('static/data/optimal_lineup.json', function(error, data) {
         
-        console.log(data);
-        
         //data.forEach(function(d) {
 
         sorteddata = []
@@ -41,113 +39,111 @@ $(document).ready(function() {
         
         sorteddata.forEach(function(d) {
 
-        //console.log(data);
             
             var table = document.getElementById("chart").getElementsByTagName('tbody')[0];
             
             var row = table.insertRow(table.rows.length);
-            row.id = d.name;
+            row.id = d.slug;
             row.onmouseover = function() {
                 linegraph(row);
             }
             row.onmouseleave = function() {
                 $("#viz").empty();
                  var margin = {top: 20, right: 20, bottom: 30, left: 30},
-    width = $("#viz").width() - margin.left - margin.right,
-    height = $("#viz").height() - margin.top - margin.bottom;
+            width = $("#viz").width() - margin.left - margin.right,
+            height = $("#viz").height() - margin.top - margin.bottom;
 
-    var x0 = d3.scale.ordinal()
-        .rangeRoundBands([0, width], .1);
+            var x0 = d3.scale.ordinal()
+                .rangeRoundBands([0, width], .1);
 
-    var x1 = d3.scale.ordinal();
+            var x1 = d3.scale.ordinal();
 
-    var y = d3.scale.linear()
-        .range([height, 0]);
+            var y = d3.scale.linear()
+                .range([height, 0]);
 
-    var color = d3.scale.ordinal()
-        .range(["#98abc5"]);
+            var color = d3.scale.ordinal()
+                .range(["#98abc5"]);
 
-    var xAxis = d3.svg.axis()
-        .scale(x0)
-        .orient("bottom");
+            var xAxis = d3.svg.axis()
+                .scale(x0)
+                .orient("bottom");
 
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
 
-   d3.json('static/data/optimal_lineup.json', function(d) {
+           d3.json('static/data/optimal_lineup.json', function(d) {
 
-    //    d.projection = +d.projection
-//
- //   },function(error, data) {
+            //    d.projection = +d.projection
+        //
+         //   },function(error, data) {
 
-        console.log(data);
 
-        var svg = d3.select("#viz").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                var svg = d3.select("#viz").append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                  .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var names = ["projection"];
-          data.forEach(function(d) {
-            d.stats = names.map(function(name) { return {name: name, value: +d[name]}; });
-          });
+                var names = ["projection"];
+                  data.forEach(function(d) {
+                    d.stats = names.map(function(name) { return {name: name, value: +d[name]}; });
+                  });
 
-          x0.domain(data.map(function(d) { return d.name; }));
-          x1.domain(names).rangeRoundBands([0, x0.rangeBand()]);
-          y.domain([0, d3.max(data, function(d) { return d.projection; })]);
+                  x0.domain(data.map(function(d) { return d.name; }));
+                  x1.domain(names).rangeRoundBands([0, x0.rangeBand()]);
+                  y.domain([0, d3.max(data, function(d) { return d.projection; })]);
 
-          svg.append("g")
-              .attr("class", "x axis")
-              .attr("transform", "translate(0," + height + ")")
-              .call(xAxis);
+                  svg.append("g")
+                      .attr("class", "x axis")
+                      .attr("transform", "translate(0," + height + ")")
+                      .call(xAxis);
 
-          svg.append("g")
-              .attr("class", "y axis")
-              .call(yAxis);
-            /*.append("text")
-              .attr("transform", "rotate(-90)")
-              .attr("y", 6)
-              .attr("dy", ".71em")
-              .style("text-anchor", "end")
-              .text("Scores, Points, Assists");*/
+                  svg.append("g")
+                      .attr("class", "y axis")
+                      .call(yAxis);
+                    /*.append("text")
+                      .attr("transform", "rotate(-90)")
+                      .attr("y", 6)
+                      .attr("dy", ".71em")
+                      .style("text-anchor", "end")
+                      .text("Scores, Points, Assists");*/
 
-              var player = svg.selectAll(".player")
-                  .data(data)
-                .enter().append("g")
-                  .attr("class", "projection")
-                  .attr("transform", function(d) { return "translate(" + x0(d.name) + ",0)"; });
+                      var player = svg.selectAll(".player")
+                          .data(data)
+                        .enter().append("g")
+                          .attr("class", "projection")
+                          .attr("transform", function(d) { return "translate(" + x0(d.name) + ",0)"; });
 
-              player.selectAll("rect")
-                  .data(function(d) { return d.stats; })
-                .enter().append("rect")
-                  .attr("width", x1.rangeBand())
-                  .attr("x", function(d) { return x1(d.name); })
-                  .attr("y", function(d) { return y(d.value); })
-                  .attr("height", function(d) { return height - y(d.value); })
-                  .style("fill", function(d) { return color(d.name); });
+                      player.selectAll("rect")
+                          .data(function(d) { return d.stats; })
+                        .enter().append("rect")
+                          .attr("width", x1.rangeBand())
+                          .attr("x", function(d) { return x1(d.name); })
+                          .attr("y", function(d) { return y(d.value); })
+                          .attr("height", function(d) { return height - y(d.value); })
+                          .style("fill", function(d) { return color(d.name); });
 
-              var legend = svg.selectAll(".legend")
-                  .data(names.slice().reverse())
-                .enter().append("g")
-                  .attr("class", "legend")
-                  .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+                      var legend = svg.selectAll(".legend")
+                          .data(names.slice().reverse())
+                        .enter().append("g")
+                          .attr("class", "legend")
+                          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-              legend.append("rect")
-                  .attr("x", width - 18)
-                  .attr("width", 18)
-                  .attr("height", 18)
-                  .style("fill", color);
+                      legend.append("rect")
+                          .attr("x", width - 18)
+                          .attr("width", 18)
+                          .attr("height", 18)
+                          .style("fill", color);
 
-              legend.append("text")
-                  .attr("x", width - 24)
-                  .attr("y", 9)
-                  .attr("dy", ".35em")
-                  .style("text-anchor", "end")
-                  .text(function(d) { return d; });
-        });
-            };
+                      legend.append("text")
+                          .attr("x", width - 24)
+                          .attr("y", 9)
+                          .attr("dy", ".35em")
+                          .style("text-anchor", "end")
+                          .text(function(d) { return "Projection"; });
+                });
+                    };
             
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
@@ -163,7 +159,6 @@ $(document).ready(function() {
                 game += " @ " + d.opponent_team;
             }
 
-            console.log(game);
 
             cell1.innerHTML = d.position;
             cell2.id = "name";
@@ -197,14 +192,6 @@ $(document).ready(function() {
         .scale(y)
         .orient("left");
 
-   // d3.json('static/data/optimal_lineup.json', function(d) {
-
-    //    d.projection = +d.projection
-//
- //   },function(error, data) {
-
-        console.log(data);
-
         var svg = d3.select("#viz").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -267,7 +254,7 @@ $(document).ready(function() {
                   .attr("y", 9)
                   .attr("dy", ".35em")
                   .style("text-anchor", "end")
-                  .text(function(d) { return d; });
+                  .text(function(d) { return "Projection"; });
         //});
         
     });
@@ -277,24 +264,31 @@ $(document).ready(function() {
 
 function linegraph(row) {
 
-    console.log(row.id)
+    d3.csv('static/data/nba_to_stattleship_map.csv', function(err, nbadata) {
 
-    d3.csv('static/data/lineup_time.csv', function(d) {
+        nbadata = nbadata.filter(function(d) {
+            return d.stattleship_slug === row.id;
+        })
 
-        d.game_time = new Date(+d.game_time);
-        var score = +d['points'] + (1.2 * +d['rebounds_total']) + (1.5 * +d['assists']) + (2 * +d['blocks']) + (2 * +d['steals']) + (-1 * +d['turnovers'])
-        d["Score"] = score;
-        return d;
+        nba_id = nbadata[0]['nba_id'];
 
-    },function(error, data) {
 
-        console.log(data);
+        d3.csv('static/data/player_stats.csv', function(d) {
+            d.game_time = new Date(+d.game_time);
+            var score = +d['points'] + (1.2 * +d['rebounds_total']) + (1.5 * +d['assists']) + (2 * +d['blocks']) + (2 * +d['steals']) + (-1 * +d['turnovers'])
+            d["Score"] = score;
+            return d;
+        }, function(e, data) {
 
-        var lineData = data.filter(function(d) {
-            return d.player === row.id;
-        });
+            lineData = data.filter(function(d) {
+                return d.nba_id === nba_id;
+            });
 
-        console.log(lineData);
+            lineData.sort(function(a, b) {
+                var x = a['game_time']; var y = b['game_time'];
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
+
 
         $("#viz").empty();
         var margin = {top: 10, right: 20, bottom: 20, left: 40},
@@ -342,7 +336,7 @@ function linegraph(row) {
           .attr("y", 6)
           .attr("dy", ".71em")
           .style("text-anchor", "end")
-          .text("FanDuel Scores");
+          .text("FanDuel Projection");
 
         var line = d3.svg.line()
             .x(function(d) { return x(d["game_time"]); })
@@ -353,23 +347,6 @@ function linegraph(row) {
             .attr("class", "line")
             .attr("d", line);
 
-
-        /*$("svg").on('click', function() {
-
-            $("#viz").empty();
-            //addTable(data);
-            barChart(data);
-            var tbody = document.getElementById("tbody");
-            var rows = tbody.getElementsByTagName("tr");
-            for(i = 0; i < rows.length; i++) {
-                var currentRow = rows[i];
-                $('#' + currentRow.id).on('mouseover', function() {
-                    linegraph(this);
-                });
-                $('#' + currentRow.id).on('mouseleave', function() {
-                    linegraph(this);
-                });
-            };  
-        });*/
-});
+        });
+    });
 }
