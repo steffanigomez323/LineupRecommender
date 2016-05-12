@@ -47,10 +47,10 @@ $(document).ready(function() {
             
             var row = table.insertRow(table.rows.length);
             row.id = d.name;
-            //row.onmouseover = function() {
-            //    linegraph(row);
-            //}
-            /*row.onmouseleave = function() {
+            row.onmouseover = function() {
+                linegraph(row);
+            }
+            row.onmouseleave = function() {
                 $("#viz").empty();
                  var margin = {top: 20, right: 20, bottom: 30, left: 30},
     width = $("#viz").width() - margin.left - margin.right,
@@ -113,7 +113,7 @@ $(document).ready(function() {
               .style("text-anchor", "end")
               .text("Scores, Points, Assists");*/
 
-              /*var player = svg.selectAll(".player")
+              var player = svg.selectAll(".player")
                   .data(data)
                 .enter().append("g")
                   .attr("class", "projection")
@@ -147,7 +147,7 @@ $(document).ready(function() {
                   .style("text-anchor", "end")
                   .text(function(d) { return d; });
         });
-            };*/
+            };
             
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
@@ -277,14 +277,25 @@ $(document).ready(function() {
 
 function linegraph(row) {
 
+    console.log(row.id)
+
     d3.csv('static/data/lineup_time.csv', function(d) {
 
+        d.game_time = new Date(+d.game_time);
+        var score = +d['points'] + (1.2 * +d['rebounds_total']) + (1.5 * +d['assists']) + (2 * +d['blocks']) + (2 * +d['steals']) + (-1 * +d['turnovers'])
+        d["Score"] = score;
+        return d;
+
     },function(error, data) {
+
+        console.log(data);
+
         var lineData = data.filter(function(d) {
-            return d.name === row.id;
+            return d.player === row.id;
         });
 
         console.log(lineData);
+
         $("#viz").empty();
         var margin = {top: 10, right: 20, bottom: 20, left: 40},
             width = $("#viz").width() - margin.left - margin.right,
@@ -306,8 +317,8 @@ function linegraph(row) {
 
 
 
-        x.domain(d3.extent(lineData, function(d) { return d["Dates"]; }));
-        y.domain(d3.extent(lineData, function(d) { return d["Score"]; }));
+        x.domain(d3.extent(lineData, function(d) { return d['game_time']; }));
+        y.domain(d3.extent(lineData, function(d) { return d['Score']; }));
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -334,7 +345,7 @@ function linegraph(row) {
           .text("FanDuel Scores");
 
         var line = d3.svg.line()
-            .x(function(d) { return x(d["Dates"]); })
+            .x(function(d) { return x(d["game_time"]); })
             .y(function(d) { return y(d["Score"]); });
 
         chart.append("path")
@@ -343,7 +354,7 @@ function linegraph(row) {
             .attr("d", line);
 
 
-        $("svg").on('click', function() {
+        /*$("svg").on('click', function() {
 
             $("#viz").empty();
             //addTable(data);
@@ -353,12 +364,12 @@ function linegraph(row) {
             for(i = 0; i < rows.length; i++) {
                 var currentRow = rows[i];
                 $('#' + currentRow.id).on('mouseover', function() {
-                    linegraph(data, this);
+                    linegraph(this);
                 });
                 $('#' + currentRow.id).on('mouseleave', function() {
-                    linegraph(results, this);
+                    linegraph(this);
                 });
             };  
-        });
+        });*/
 });
 }
