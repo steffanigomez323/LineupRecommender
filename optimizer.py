@@ -18,7 +18,7 @@ class LineupOptimizer(object):
 
     def __init__(self, players, budget=60000, solver="glpk"):
         self.players = players
-        self.player_sack = load_players_into_sack()
+        self.player_sack = self.load_players_into_sack()
         self.budget = budget
         self.solver = solver
 
