@@ -2,15 +2,15 @@
 {% block content %}
     <link href="static/css/index.css" rel="stylesheet" media="screen">
     <div class="row">
-        <div class="col-md-2"></div>
         <div class="col-md-8">
             <div class="page-header center">
                 <img id="logo" src="static/images/logo.png"></img>
                 <h1>Lineup Recommender</h1>
-                <script src="static/js/viz2.js"></script>
+             </div>
+                <script src="static/js/final_viz.js"></script>
 
 	            <div id="lineup">
-	              <table class="table table-striped" align="center" style="width:70%;" id="viz">
+	              <table class="table table-striped" align="center" style="width:100%;" id="chart">
 	                <thead>
 	                  <tr>
 	                    <th>Position</th> 
@@ -24,7 +24,7 @@
 	                </tbody>
 	              </table>
 	            </div>
-	            </div>
-    
+	            <div id="viz">
+        		</div>    
     </div> 
 {% endblock %}
