@@ -1,4 +1,4 @@
-""" 
+"""
 CS1951A Final Project
 Brown University
 Spring 2016
@@ -10,6 +10,8 @@ Update Module
 
 # from app import redis_db
 # from app import namespace
+from projector import DailyProjector
+from db_helper import CSVHelper
 
 
 class DailyUpdater(object):
@@ -47,7 +49,7 @@ class DailyUpdater(object):
 
     #     # TODO: insert into redis db
     #     #print fanduel_scorer.score_all_players(player_stats)
-        
+
     #     return player_stats
 
     # def get_scores(self):
@@ -112,7 +114,7 @@ class DailyUpdater(object):
 
     # def store_stattleship_gamelogs(self, stattleship_gamelogs):
     #     TIME_ID_LEN = 19 # length of time component of id, ex: -201602011900000500
-        
+
     #     player_games = defaultdict(list)
     #     for player_game_id, player_gamelogs in stattleship_gamelogs.items():
     #         '''
@@ -135,7 +137,7 @@ class DailyUpdater(object):
     #     for player_id, games_list in player_games.items():
     #         gamelog_id = player_id + "|" + namespace.GAMELOGS
     #         redis_db.lpush(gamelog_id, *games_list)
-            
+
     def nf_playerlookup(self):
         player_data = nf_scraper.get_todays_player_data()
         players = {}
@@ -277,3 +279,16 @@ class DailyUpdater(object):
     #         "blocks": list(blocks),
     #         "dates": list(d)}
     #     return player_stats
+
+    def update_projections(self):
+        # let's first get all the data we need and store it in csvs
+        ch = CSVHelper()
+        ch.create_csvs()
+
+        # now let's prepare out data for projections
+        dp = DailyProjector()
+        dp.
+
+if __name__ == '__main__':
+    du = DailyUpdater()
+    du.update_projections()

@@ -183,12 +183,11 @@ class CSVHelper(object):
     # populate the database with all players using
     # stattleship, nba and numberfire
     def create_csvs(self):
-        # set basic information
-
         # get nba players' names and ids
         nba_players = nba_scraper.get_player_data()
         nba_name_to_id = nba_scraper.get_player_name_id_map(nba_players)
 
+        # set basic information
         self.create_basic_player_information_csv(nba_name_to_id)
 
         # set nba to stattleship mapping
@@ -202,7 +201,7 @@ class CSVHelper(object):
 
 
     '''
-    This function creates a csv file that stores basic information about a player: 
+    This function creates a csv file that stores basic information about a player:
     Player slug, player name, height, weight, whether or not the player is active,
     and years of experience. This data is obtained from Stattleship.
     '''
@@ -244,8 +243,8 @@ class CSVHelper(object):
 
     '''
     This function sets a mapping from nba id to the Stattleship slug,
-    for future easy access. There are some mismatches whereby the 
-    names of the players in NBA data source show up differently from 
+    for future easy access. There are some mismatches whereby the
+    names of the players in NBA data source show up differently from
     the player names in Stattleship data source. In that case, we set
     mappings manually.
     '''
@@ -314,7 +313,7 @@ class CSVHelper(object):
     This function sets a mapping of NumberFire player slug to
     NBA ID, using data source from NumberFire and NBA. There are mismatches
     whereby the player names in both data sources show up differently, even
-    if they refer to the same player. In that case, we manually set their 
+    if they refer to the same player. In that case, we manually set their
     mappings.
     '''
     def create_numberfire_to_nba_csv(self, nba_name_to_id):
@@ -368,7 +367,7 @@ class CSVHelper(object):
             reader = csv.reader(f)
             reader.next()
             for row in reader:
-                # get the player positions using their id. Some players play in 
+                # get the player positions using their id. Some players play in
                 # one position while others play in multiple.
                 data.append([row[0], nba_scraper.get_player_position(row[0])])
 
@@ -406,7 +405,7 @@ class CSVHelper(object):
             writer.writerows(data)
 
     '''
-    This function uses the CSV files created to prepare data that will 
+    This function uses the CSV files created to prepare data that will
     be used to make projections.
     '''
     def prepare_data_from_csvs(self):

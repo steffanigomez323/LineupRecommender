@@ -305,6 +305,12 @@ class NumberFireScraper(object):
             if position_match:
                 position = position_match.group(1)
 
+            # working with team
+            team_match = re.search(',\s(.*)\)', player_raw.text)
+            if team_match:
+                team = Namespace().TEAM_MAP_NF_NBA[team_match.group(1)]
+
+            # working with status
             status = player_raw.find('span', attrs={'class': 'injury-tag-OUT'})
             if status:
                 out = (status.text == "OUT")
@@ -316,7 +322,8 @@ class NumberFireScraper(object):
                 players[player_id] = {"position": position,
                                       "playing_at_home": playing_at_home,
                                       "salary": salary,
-                                      "playing_against": opponent}
+                                      "playing_against": opponent,
+                                      "team": team}
 
         return players
 
@@ -348,7 +355,7 @@ class NBAScraper(object):
     def get_player_position(self, playerid):
 
         modifier = 'commonplayerinfo'
-        params = {'PlayerID': playerid, 
+        params = {'PlayerID': playerid,
                   'LeagueID': '00'}
         result = self.nba_request.get_request(modifier, params).json()
         headers = result['resultSets'][0]['headers']
@@ -417,7 +424,7 @@ class NBAScraper(object):
         return j
 
 
-    # returns a dictionary of players and their game logs for the past 4 seasons. 
+    # returns a dictionary of players and their game logs for the past 4 seasons.
     # sorted from oldest to most recent game
 
     # 0 = game_id
