@@ -841,8 +841,10 @@ class DailyProjector(object):
             for attr in attributes:
                 self.upcoming_games[stattleship_slug][attr] = \
                     nf_data[nf_id][attr]
-                # hardcoded for now
-                self.upcoming_games[stattleship_slug]['team'] = 'OKC'
+            # setting team to unknown if it is not known
+            # it is unknown between days when numberfire is switching over
+            if 'team' not in self.upcoming_games[stattleship_slug].keys():
+                self.upcoming_games[stattleship_slug]['team'] = 'UNK'
 
     def project_fd_score(self):
         fc = FeatureCreator(self.players, self.upcoming_games)
