@@ -28,13 +28,12 @@ class LineupOptimizer(object):
         num_ids = 0
         check_position = lambda x, y: 1 if x == y else 0
 
-        for player in self.players.iterkeys():
+        for name in self.players.iterkeys():
             num_ids += 1
 
-            position = player['position']
-            name = player
-            salary = player['salary']
-            score = player['projection']
+            position = self.players[name]['position']
+            salary = self.players[name]['salary']
+            score = self.players[name]['projection']
 
             player_sack.append({"player_id": num_ids,
                                 "name": name,

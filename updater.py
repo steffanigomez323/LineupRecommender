@@ -13,6 +13,7 @@ Update Module
 from projector import DailyProjector
 from db_helper import CSVHelper
 from optimizer import LineupOptimizer
+import json
 
 
 class DailyUpdater(object):
@@ -39,7 +40,8 @@ class DailyUpdater(object):
         print "Step 3: Let's get that golden lineup!!!!"
         # let's get the optimal lineup based on the projections
         lo = LineupOptimizer(projections)
-        print lo.optimize()
+        with open('static/data/optimal_lineup.json', 'wb') as ol:
+            json.dump(lo.optimize(), ol)
         print "------> Your lineup has been stored in data/optimal_lineup.json. \
             Let's make some cash money ;)"
         print "------> This lineup can also be viewed at \
