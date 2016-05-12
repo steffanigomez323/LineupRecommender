@@ -15,7 +15,6 @@ import namespace
 import time
 import csv
 
-
 class RedisHelper(object):
     # populate the database with all players using
     # stattleship, nba and numberfire

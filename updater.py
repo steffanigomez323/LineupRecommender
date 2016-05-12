@@ -287,7 +287,7 @@ class DailyUpdater(object):
 
         # now let's prepare out data for projections
         dp = DailyProjector()
-        dp.
+        #dp.
 
 if __name__ == '__main__':
     du = DailyUpdater()
