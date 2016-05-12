@@ -61,6 +61,20 @@
                     </li>
                     <li>Position: a list of positions the player has, as some players have more than one position. For instance, Derek Williams plays in Point Forward and Small Forward.</li>
             </p>
+
+            <h3>Challenges</h3>
+            Data Processing:
+            <ul>
+                <li>Collecting  and combining the data from multiple sources (Stattleship, NumberFire and NBA) was time-consuming and complicated.</li>
+                <li>Since player position can change per-game, we had no consistent source of per-game player position data. Ultimately, we decided to not use player position in our projection features.</li>
+            </ul>
+
+            Data Warehousing:
+            <ul>
+                <li>We originally stored the cleaned and transformed data into a hosted Redis database.</li>
+                <li>Latency of requesting all player data ended up making our Redis database slower than using CSV files with our cleaned data.</li>
+                <li>For our final projections, we switched back to locally hosted CSV files.</li>
+            </ul>
             <hr>
 
             <h2>Part 3: Regression and Projection</h2>
@@ -106,13 +120,20 @@
                 </ul>
                 This suggests that using a linear regressor, with or without L1 regularization, has the best results for projecting.
             </p>
-
+            <h3>Challenges</h3>
+            Feature Flexibility:
+            <ul>
+                <li>We were not able to try all the different combinations of features we were hoping to for projections because it is very difficult to get data about new features. It might involve having to scrape a different website or page and cleaning and then adapting it to our existing data structures.</li>
+            </ul>
             <hr>
 
             <h2>Part 4: Finding the Optimal Lineup</h2>
+            <p>Fanduel has daily contests for the games that are occurring on that day. In the below image, you can see the information about one such contest.</p>
+            <img class="img-responsive" src="static/images/fanduel_contest_information.png"></img>
+            <p>As seen above, the user needs to pick 9 players (collectively called a lineup) from the 3 games to enter the contest with.<br>Below is an image of the screen after I built my lineup.</p>
 
+            <img class="img-responsive" src="static/images/fanduel_contest_entry.png"></img>
             <p>Two details are important to understanding how a lineup works:
-
             <ol>
                 <li>A player can be playing in one of these positions - Point Guard (PG), Shooting Guard (SG), Small Forward (SF), Power Forward (PF) or Center (C).</li>
                 <li>Each player has a salary that is not their real salary but their fantasy salary assigned to them by Fanduel based on how well they have been performing.</li>
@@ -121,42 +142,36 @@
             </p>
             <p>
             Given the above information there are two constraints to keep in mind when creating the lineup:
-
             <ol>
                 <li>The user needs to choose two players for each of the PG, SG, SF, and PF positions and one player for the C position. This adds up to a total of 9 players.</li>
                 <li>The sum of the salaries of the 9 players cannot exceed the salary cap which in the above contest was $60,000 (it almost always is $60,000).</li>
             </ol>
 
-            To accomplish this, we implemented a modification of the traditional dynamic programming approach to solving a knapsack problem. We added multiple weight vectors and optimized each subproblem (per position) and combined them to get the final lineup. Our optimal lineup for the games on April 18th is below. On looking back, this turned out to be the 37th best lineup for that day. This lineup would have won the user a significant amount of money on most contests.
-    
+            We first implemented the traditional dynamic programming approach to solving a knapsack problem. But, this does not take into account the additional constraints. After searching a lot for packages that might do this on python, we finally found openopt (a python module for numerical optimization). Although openopt is not documented online, we tinkered around a lot and finally got it to work with our constraints. Our optimal lineup for the games on April 18th is below. On looking back, this turned out to be the 37th best lineup for that day. This lineup would have won the user a significant amount of money on most contests.
             </p>
-
             <img class="img-responsive" src="static/images/optimal_lineup.png">
 
+            <h3>Challenges</h3>
+            Optimization:
+            <ul>
+                <li>Going over all possible lineups never finishes running because even on a day when just 50 players are playing there are a total of 2505433700 possible lineups. On most days there are more than 100 players which would be 1902231808400 lineups to go over.
+                <li>Finding and working with openopt was very difficult and took a long time to figure out.</li>
+            </ul>
             <hr>
 
-            <h2>Part 5: Challenges</h2>
+            <h2>Part 5: Future Work</h2>
+            <ul>
+            <li>To improve the r-score, the current ideas we have are:
+                <ol>
+                    <li>Find a more specific set of data (like hustle stats, etc.) for predicting steals and blocks.
+                    <li>Use rolling averages over games for more features (like minutes played and plus-minus).
+                </ol>
+            <li>Replace high salaried players with low salaried high variance players to beat out most traditional lineups.
+            <li>Create a fully fledged website. Since we have a lineup optimizer in place, we can provide an optimzation tool on the webpage itself where any user can upload their own data and ask for the optimal lineup. We found a website that does this but funnily enough, they do not suggest the optimal lineup. Our program on the other hand did find the optimal lineup (the one with a total projected score of 289 as opposed to their 286).<br><br>
+            <img class="img-responsive" src="static/images/rotoraider_lineup.png"><br>
+            <img class="img-responsive" src="static/images/lineup-recommender_lineup.png">
 
-            <p>
-                One of the challenges we faced is data processing:
-                <ul>
-                    <li>Collecting  and combining the data from multiple sources (Stattleship, NumberFire and NBA) was time-consuming and complicated.</li>
-                    <li>Since player position can change per-game, we had no consistent source of per-game player position data. Ultimately, we decided to not use player position in our projection features.</li>
-                </ul>
 
-                We also faced latency issue with our data warehousing:
-                <ul>
-                    <li>We originally stored the cleaned and transformed data into a hosted Redis database.</li>
-                    <li>Latency of requesting all player data ended up making our Redis database slower than using CSV files with our cleaned data.</li>
-                    <li>For our final projections, we switched back to locally hosted CSV files.</li>
-                </ul>
-
-                Projections:
-                <ul>
-                    <li>We haven’t found a set of features that gets us more than 0.9 r-score. We need to try to understand player performance better especially for each stat group.</li>
-                </ul>
-
-            </p>
 
             <!--<hr> In case you haven't noticed, this is a horizontal rule. It makes a horizontal line in the page. -->
         <div class="col-md-2"></div>
