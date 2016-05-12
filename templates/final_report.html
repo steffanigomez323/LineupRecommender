@@ -8,6 +8,10 @@
                 <h1>Lineup Recommender <small>&laquo;Final Report&raquo;</small></h1>
             </div>
 
+            For our final product, please click <a href="https://lineup-recommender.herokuapp.com/">here</a>!
+
+            <h2>Abstract</h2>
+
             <h2>Part 1: Overview and Hypothesis</h2>
             <p> FanDuel and DraftKings have one-day fantasy sports contests. For Basketball, the contests require the user to enter with a lineup of 9 players that are playing in the games for that day. People enter these contests everyday by paying a fixed amount of money. Once the day’s games are done, the users with the lineups containing the best performing players (calculated using a linear combination of their individual stats), win a huge amount of money.
             </p>
@@ -23,21 +27,21 @@
             <h2>Part 2: Data Collection</h2>
             <p> We are using data from 3 different sources:
             <ul>
-                <li>NBA, which returns every player’s historical data
+                <li> The NBA data we used is being scraped from <a href="http://stats.nba.com/">stats.nba.com</a>, which returns every player’s historical data. It contains the player scores, with each entry representing a particular player's score for a particular game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers. Each score is associated with a player through that player's player id, which we convert into a slug in the form of 'nba-first_name-last_name':
                 <img class="img-responsive" src="static/images/nba_stats.png"><br>
                 <img class="img-responsive" src="static/images/nba_data.png"</li>
-                <li>NumberFire, which provides details about the players that are playing in today’s games
+                <li><a href="https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections">NumberFire</a>, which provides details about the players that are playing in today’s games. We comb through the html of the page to get the player's name, salary, position, the opposing team, and whether the player is playing at home or not, and store this data in a double dictionary, where the key is the player name and the value is another dictionary containing all the fields previously mentioned.
                 <img class="img-responsive" src="static/images/nf_data.png"></li>
-                <li>Stattleship, which has information about each player (like height, weight, etc.)
+                <li><a href="https://www.stattleship.com/">Stattleship</a>, which has information about each player not directly related to their game statistics. The data we are retrieving for each player is weight, height, name, and years of experience. The idea behind using this kind of data is that we would use these features in trying to predict different basketball statistics, like height for rebounds and weight for blocks, in trying to create as accurate of a prediction model as we can. 
                 <img class="img-responsive" src="static/images/ss_data.png"></li>
             </ul>
 
             The data displayed above is after combination and cleaning which involved the following steps:
             <ul>
-                <li>Create id maps to match players between the three data sources.</li>
-                <li>Accumulate data for the same player from different parts of each website.</li>
-                <li>Remove games that the player did not play in.</li>
-                <li>Remove bad values from gamelogs.</li>
+                <li>Create id maps to match players between the three data sources. Each data source keeps track of players, their features, and their gamelogs differently, using different player names and different ways to idenfity players. So this involved going through each of the data sources, creating a naming convention that would be used in generating the lineup, and using this convention to match the player data from all the sources to the same player. </li>
+                <li>Accumulate data for the same player from different parts of each website. The NBA data is used for getting the gamelogs for each player as well as the positions for all the players. The Stattleship API is used in getting information about the player himself, and NumberFire is used to get the players that are playig in today's games.</li>
+                <li>Remove games that the player did not play in, so that each player's gamelogs only contains the games that they played in. </li>
+                <li>Remove bad values from gamelogs, such as invalid game dates and negative game statistics.</li>
             </ul>
 
 
@@ -50,7 +54,6 @@
                             <li>Information on whether the game was played at home or away</li>
                             <li>The opponent team</li>
                             <li>Plus minus</li>
-                            <li>How many times the player played in that game (?)</li>
                             <li>Total rebounds score for the team the player is in</li>
                             <li>Total assists score</li>
                             <li>Total steals score</li>
@@ -75,6 +78,11 @@
                 <li>Latency of requesting all player data ended up making our Redis database slower than using CSV files with our cleaned data.</li>
                 <li>For our final projections, we switched back to locally hosted CSV files.</li>
             </ul>
+
+            <p>
+                One of the main challenges that we did not foresee is that data manipulation is very difficult, because of how rigid our data structure is; since there is not a single source that has all the features and player information we needed, we had to pull and consolidate data from three different sources, which involved a lot of data wrangling and entity resolution. If we wanted to add more features or even change how a feature is represented, we would have to change a large part of the data structure. An example of this would be if we tried to include hustle stats for each player. The hustle stats are hosted on a different website, which means we have to create another scraper to get the data and then link that data to each player, which sounds easy in theory but in reality these hustle stats are not easily associated with each player. 
+            </p>
+
             <hr>
 
             <h2>Part 3: Regression and Projection</h2>
@@ -109,6 +117,11 @@
             </p>
             <img class="img-responsive" src="static/images/regressor_table.png">
             <h4>Analysis</h4>
+
+            <img class="img-responsive" src="static/images/joe_johnson_linechart.png">
+
+            Joe Johnson's FanDuel projections changing over the past 4 years of colleted data.
+
             <img class="img-responsive" src="static/images/r2_chart.png">
 
             <p>
@@ -159,7 +172,15 @@
             </ul>
             <hr>
 
-            <h2>Part 5: Future Work</h2>
+            <h2>Part 5: Final Product vs. Project Proposal</h2>
+
+            <p>
+                We met our 75% goal of creating a framework for projecting fantasy scores. We collected player data over 4 seasons, instead of 5, and used this data to project scores for all the players playing today. Then taking inspiration from the knapsack problem, we created an ideal, optimal lineup consisting of 9 players. We tried different machine learning algorithms in the process of trying to increase the accuracy of our prediction model, but were unable to get the 90%+ accuracy that we originally wanted in our proposal. After comparing all the results from various regressors, like logistic regression, linear regression, SVR, lasso regression, and random forest regression, linear regression had the highest accuracy (JJ put accuracy if you can?) , so we are using linear regression instead of logistic regression. [Evaluation module?] Because of the time spent dealing with all of the challenges that arose in doing this project, were were unable suggest multiple lineups, but extending our code to return multiple high variance lineups would not be overly difficult.
+            </p>
+
+            <hr>
+
+            <h2>Part 6: Future Work</h2>
             <ul>
             <li>To improve the r-score, the current ideas we have are:
                 <ol>
