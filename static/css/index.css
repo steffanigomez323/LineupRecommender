@@ -22,4 +22,10 @@ thead {
 
 #team {
     font-weight: bold;
+
+}
+
+@font-face {
+    font-family: circular;
+    src: "static/fonts/circular.ttf";
 }
