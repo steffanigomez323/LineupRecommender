@@ -17,29 +17,30 @@ from optimizer import LineupOptimizer
 
 class DailyUpdater(object):
     def get_todays_optimal_lineup(self):
-        print "Storing data in CSVs :)"
-        # let's first get all the data we need and store it in csvs
-        ch = CSVHelper()
-        ch.create_csvs()
-        print "Data successfully stored!"
+        # # uncomment to also prepare csvs
+        # print "Step 0: Getting data and creating CSVs."
+        # # let's first get all the data we need and store it in csvs
+        # ch = CSVHelper()
+        # ch.create_csvs()
+        # print "---> Data successfully stored!"
 
-        print "Preparing data from CSVs :)"
+        print "Step 1: Preparing data from CSVs :)"
         # let's prepare out data for projections
         dp = DailyProjector()
-        dp.prepare_data_for_projections()
-        print "Data is prepared!"
+        dp.prepare_data_for_projections("sample.txt")
+        print "------> Data is prepared!"
 
-        print "Time to make some projections :)"
+        print "Step 2: Time to make some projections :)"
         # let's get the projections based on the prepared data
         projections = dp.project_fd_score()
-        print "Projections are ready!"
+        print "------> Projections are ready!"
 
-        print "Let's get that golden lineup!!!!"
+        print "Step 3: Let's get that golden lineup!!!!"
         # let's get the optimal lineup based on the projections
-        lo = LineupOptimizer()
+        lo = LineupOptimizer(projections)
         print lo.optimize()
-        print "Your lineup has been stored in data/optimal_lineup.json. Let's make some cash money ;)"
-        print "This lineup can also be viewed at http://lineup-recommender.herokuapp.com/. Enjoy!"
+        print "------> Your lineup has been stored in data/optimal_lineup.json. Let's make some cash money ;)"
+        print "------> This lineup can also be viewed at http://lineup-recommender.herokuapp.com/. Enjoy!"
 
 
 if __name__ == '__main__':
