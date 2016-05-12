@@ -825,7 +825,7 @@ class DailyProjector(object):
                 for line in inf:
                     nf_data = eval(line)
         else:
-            nf_data = NumberFireScraper().get_todays_player_data()
+            nf_data = nf_scraper.get_todays_player_data()
 
         csv_helper = CSVHelper()
         self.players, nf_to_stattleship_map = \
@@ -837,14 +837,8 @@ class DailyProjector(object):
             for attr in attributes:
                 self.upcoming_games[stattleship_slug][attr] = \
                     nf_data[nf_id][attr]
-        '''
-        for player_id in deepcopy(self.players.keys()):
-            if player_id not in self.upcoming_games.keys():
-                pass #del(self.players[player_id])
-            else:
-                self.players[player_id]['position'] = \
-                    set([self.upcoming_games[player_id]['position']])
-        '''
+                # hardcoded for now
+                self.upcoming_games[stattleship_slug]['team'] = 'OKC'
 
     def project_fd_score(self):
         fc = FeatureCreator(self.players, self.upcoming_games)
