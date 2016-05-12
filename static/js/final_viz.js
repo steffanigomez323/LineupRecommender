@@ -28,6 +28,12 @@ $(document).ready(function() {
         }
 
         for (var i = 0; i < data.length; i++) {
+            if (data[i].position === 'PF') {
+                sorteddata.push(data[i]);
+            }
+        }
+
+        for (var i = 0; i < data.length; i++) {
             if (data[i].position === 'C') {
                 sorteddata.push(data[i]);
             }
@@ -271,7 +277,9 @@ $(document).ready(function() {
 
 function linegraph(row) {
 
-    d3.csv('static/data/optimal_lineup.json', function(error, data) {
+    d3.csv('static/data/lineup_time.csv', functon(d) {
+
+    },function(error, data) {
         var lineData = data.filter(function(d) {
             return d.name === row.id;
         });
