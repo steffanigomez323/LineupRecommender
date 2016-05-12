@@ -588,7 +588,7 @@ class FeatureProjector(object):
             X, y,
             test_size=test_percent, random_state=42)
 
-    def fit_all(self):
+    def fit_all_stats(self):
         fc = self.feature_creator
 
         r2_score = {}
@@ -596,6 +596,13 @@ class FeatureProjector(object):
         sf = fc.get_all_training_features()
         for fid in self.STAT_FEATURES:
             r2_score[fid] = self.fit_feature(fid, sf)
+
+        return r2_score
+
+    def fit_all_fanduel(self):
+        fc = self.feature_creator
+
+        r2_score = {}
 
         ff = fc.get_all_training_fanduel()
         for fid in self.FD_FEATURES:
@@ -812,7 +819,7 @@ class DailyProjector(object):
 
     def prepare_data_for_projections(self, text_file=None):
         nf_scraper = NumberFireScraper()
-        
+
         if text_file:
             with open(text_file, 'r') as inf:
                 for line in inf:
@@ -847,7 +854,7 @@ class DailyProjector(object):
         #print "\nLinear Regression"
         proj = LRFeatureProjector(fc)
         #print "r2 score"
-        r_score = proj.fit_all()
+        r_score = proj.fit_all_stats()
         #print r_score
         for pid in self.upcoming_games.keys():
             #print "Projecting for", pid
@@ -867,8 +874,9 @@ class DailyProjector(object):
                 'name': self.players[pid]['name'],
                 'salary': self.upcoming_games[pid]['salary'],
                 'projection': stats_fanduel,
+                'playing_at_home': self.upcoming_games[player_id]['playing_at_home'],
                 'player_team': self.upcoming_games[pid]['team'],
-                'opponent_team': self.upcoming_games[pid]['opponent']
+                'opponent_team': self.upcoming_games[pid]['playing_against']
                 })
 
         return players_projected
