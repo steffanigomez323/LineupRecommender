@@ -1,8 +1,18 @@
+/* Fonts */
+@font-face {
+    font-family: Circular;
+    src: url(../fonts/linetocircularbook.woff);
+}
+
 #logo {
     width: 55px;
     height: auto;
     float: left;
     margin-right: 20px;
+}
+
+h1 {
+  font-family: Circular;
 }
 
 table {
@@ -25,10 +35,6 @@ thead {
 
 }
 
-@font-face {
-    font-family: circular;
-    src: "static/fonts/circular.ttf";
-}
 .axis path,
 .axis line {
   fill: none;
