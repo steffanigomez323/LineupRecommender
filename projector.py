@@ -874,6 +874,7 @@ class DailyProjector(object):
                 'name': self.players[pid]['name'],
                 'salary': self.upcoming_games[pid]['salary'],
                 'projection': stats_fanduel,
+                'playing_at_home': self.upcoming_games[player_id]['playing_at_home'],
                 'player_team': self.upcoming_games[pid]['team'],
                 'opponent_team': self.upcoming_games[pid]['playing_against']
                 })
