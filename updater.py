@@ -27,7 +27,7 @@ class DailyUpdater(object):
         print "Step 1: Preparing data from CSVs :)"
         # let's prepare out data for projections
         dp = DailyProjector()
-        dp.prepare_data_for_projections("sample.txt")
+        dp.prepare_data_for_projections("data/numberfire_data_sample.txt")
         print "------> Data is prepared!"
 
         print "Step 2: Time to make some projections :)"
