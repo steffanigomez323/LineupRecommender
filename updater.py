@@ -42,7 +42,7 @@ class DailyUpdater(object):
         lo = LineupOptimizer(projections)
         with open('static/data/optimal_lineup.json', 'wb') as ol:
             json.dump(lo.optimize(), ol)
-        print "------> Your lineup has been stored in data/optimal_lineup.json. \
+        print "------> Your lineup has been stored in static/data/optimal_lineup.json. \
             Let's make some cash money ;)"
         print "------> This lineup can also be viewed at \
             http://lineup-recommender.herokuapp.com/. Enjoy!"
