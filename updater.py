@@ -17,12 +17,12 @@ from optimizer import LineupOptimizer
 
 class DailyUpdater(object):
     def get_todays_optimal_lineup(self):
-        # # uncomment to also prepare csvs
-        # print "Step 0: Getting data and creating CSVs."
-        # # let's first get all the data we need and store it in csvs
-        # ch = CSVHelper()
-        # ch.create_csvs()
-        # print "---> Data successfully stored!"
+        # uncomment to also prepare csvs
+        print "Step 0: Getting data and creating CSVs."
+        # let's first get all the data we need and store it in csvs
+        ch = CSVHelper()
+        ch.create_csvs()
+        print "---> Data successfully stored!"
 
         print "Step 1: Preparing data from CSVs :)"
         # let's prepare out data for projections

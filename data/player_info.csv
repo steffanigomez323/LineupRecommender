@@ -519,8 +519,8 @@ nba-patrick-mills,Patty Mills,72,185,True,6
 nba-elijah-millsap,Elijah Millsap,78,215,False,0
 nba-paul-millsap,Paul Millsap,80,246,True,9
 nba-nikola-mirotic,Nikola Mirotic,82,220,True,1
-tony-mitchell,Tony Mitchell,78,210,False,0
 nba-tony-mitchell,Tony Mitchell,81,235,False,1
+tony-mitchell,Tony Mitchell,78,210,False,0
 nba-nazr-mohammed,Nazr Mohammed,82,250,True,16
 nba-greg-monroe,Greg Monroe,83,265,True,5
 nba-luis-montero,Luis Montero,79,185,True,0
@@ -742,7 +742,7 @@ nba-ekpe-udoh,Ekpe Udoh,82,245,True,4
 nba-beno-udrih,Beno Udrih,75,205,False,11
 nba-ben-uzoh,Ben Uzoh,75,205,False,0
 nba-jonas-valanciunas,Jonas Valanciunas,84,255,True,3
-nba-anderson-varejao,Anderson Varejao,83,273,False,11
+nba-anderson-varejao,Anderson Varejao,83,273,True,11
 nba-jarvis-varnado,Jarvis Varnado,81,230,True,1
 nba-greivis-vasquez,Greivis Vasquez,78,217,True,5
 nba-rashad-vaughn,Rashad Vaughn,78,202,True,0
