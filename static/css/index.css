@@ -23,8 +23,7 @@ table {
 
 thead {
     background-color: darkslategray;
-    color: lightgray;
-    /*font-weight: ;*/
+    color: lightgray;    
 }
 
 #name {
@@ -37,6 +36,11 @@ thead {
 }
 
 .row {
+  margin: 0 auto;
+}
+
+.container {
+  width: 66.6%;
   margin: 0 auto;
 }
 
