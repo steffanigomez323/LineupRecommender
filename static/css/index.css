@@ -35,15 +35,6 @@ thead {
 
 }
 
-.row {
-  margin: 0 auto;
-}
-
-.container {
-  width: 66.6%;
-  margin: 0 auto;
-}
-
 .axis path,
 .axis line {
   fill: none;
