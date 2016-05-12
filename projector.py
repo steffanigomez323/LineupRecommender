@@ -855,7 +855,7 @@ class DailyProjector(object):
         proj = LRFeatureProjector(fc)
         #print "r2 score"
         r_score = proj.fit_all_stats()
-        #print r_score
+        print r_score
         for pid in self.upcoming_games.keys():
             #print "Projecting for", pid
             #print "stats"

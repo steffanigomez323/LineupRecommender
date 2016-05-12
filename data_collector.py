@@ -336,7 +336,11 @@ class NBAScraper(object):
         self.nba_request = CustomRequest("http://stats.nba.com/stats/",
                                          self.headers)
 
-    def get_player_data(self, seasons=['2012-13',
+    def get_player_data(self, seasons=['2008-09',
+                                       '2009-10',
+                                       '2010-11',
+                                       '2011-12',
+                                       '2012-13',
                                        '2013-14',
                                        '2014-15',
                                        '2015-16']):
@@ -405,10 +409,14 @@ class NBAScraper(object):
 
         return name_to_id
 
-    def get_player_stats(self, season=['2012-13',
-                                       '2013-14',
-                                       '2014-15',
-                                       '2015-16']):
+    def get_player_stats(self, seasons=['2008-09',
+                                        '2009-10',
+                                        '2010-11',
+                                        '2011-12',
+                                        '2012-13',
+                                        '2013-14',
+                                        '2014-15',
+                                        '2015-16']):
         j = []
         for s in season:
             modifier = 'leaguegamelog'
