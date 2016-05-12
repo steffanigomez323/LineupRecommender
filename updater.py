@@ -8,8 +8,6 @@ Vann, Steffani, JJ, Chaitu
 Update Module
 """
 
-# from app import redis_db
-# from app import namespace
 from projector import DailyProjector
 from db_helper import CSVHelper
 from optimizer import LineupOptimizer
