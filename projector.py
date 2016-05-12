@@ -847,7 +847,7 @@ class DailyProjector(object):
     def project_fd_score(self):
         fc = FeatureCreator(self.players, self.upcoming_games)
 
-        players_projected = []
+        players_projected = {}
 
         #print "\nLinear Regression"
         proj = LRFeatureProjector(fc)
@@ -868,16 +868,16 @@ class DailyProjector(object):
             #print projections
             #print "\n------------------------"
 
-            players_projected.append({
+            players_projected[self.players[pid]['name']] = {
                 'slug': pid,
                 'position': self.upcoming_games[pid]['position'],
                 'name': self.players[pid]['name'],
-                'salary': self.upcoming_games[pid]['salary'],
+                'salary': float(self.upcoming_games[pid]['salary']),
                 'projection': stats_fanduel,
                 'playing_at_home': self.upcoming_games[pid]['playing_at_home'],
                 'player_team': self.upcoming_games[pid]['team'],
                 'opponent_team': self.upcoming_games[pid]['playing_against']
-                })
+                }
 
         return players_projected
 
