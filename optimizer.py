@@ -28,13 +28,11 @@ class LineupOptimizer(object):
         num_ids = 0
         check_position = lambda x, y: 1 if x == y else 0
 
-        print self.players
-
-        for player in self.players:
+        for player in self.players.iterkeys():
             num_ids += 1
 
             position = player['position']
-            name = player['name']
+            name = player
             salary = player['salary']
             score = player['projection']
 
@@ -49,7 +47,7 @@ class LineupOptimizer(object):
                                 "point_guard": check_position(
                                     "PG", position),
                                 "center": check_position("C", position),
-                                "salary": salary,
+                                "salary": int(salary),
                                 "score": score})
 
         all_ids = range(num_ids + 1)
@@ -83,7 +81,7 @@ class LineupOptimizer(object):
         ksp = KSP(objective, self.player_sack, constraints=constraints)
         r = ksp.solve(self.solver, iprint=1, nProc=2)
 
-        print r.xf
+        return [self.players[name] for name in r.xf]
 
 
 # import random

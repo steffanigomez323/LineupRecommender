@@ -40,8 +40,10 @@ class DailyUpdater(object):
         # let's get the optimal lineup based on the projections
         lo = LineupOptimizer(projections)
         print lo.optimize()
-        print "------> Your lineup has been stored in data/optimal_lineup.json. Let's make some cash money ;)"
-        print "------> This lineup can also be viewed at http://lineup-recommender.herokuapp.com/. Enjoy!"
+        print "------> Your lineup has been stored in data/optimal_lineup.json. \
+            Let's make some cash money ;)"
+        print "------> This lineup can also be viewed at \
+            http://lineup-recommender.herokuapp.com/. Enjoy!"
 
 
 if __name__ == '__main__':
