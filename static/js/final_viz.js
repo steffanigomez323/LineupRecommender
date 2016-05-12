@@ -277,7 +277,7 @@ $(document).ready(function() {
 
 function linegraph(row) {
 
-    d3.csv('static/data/lineup_time.csv', functon(d) {
+    d3.csv('static/data/lineup_time.csv', function(d) {
 
     },function(error, data) {
         var lineData = data.filter(function(d) {
