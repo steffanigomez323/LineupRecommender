@@ -17,7 +17,7 @@ from optimizer import LineupOptimizer
 
 class DailyUpdater(object):
     def get_todays_optimal_lineup(self):
-        print "Storing data in CSVs :)"
+        print "Getting data and storing CSVs :)"
         # let's first get all the data we need and store it in csvs
         ch = CSVHelper()
         ch.create_csvs()

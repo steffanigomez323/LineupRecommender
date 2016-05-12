@@ -11,7 +11,7 @@ from app import nba_stattleship
 from app import nf_scraper
 from app import redis_db
 from app import nba_scraper
-import namespace
+from app import namespace
 import time
 import csv
 
@@ -198,6 +198,8 @@ class CSVHelper(object):
         # set player stats
         self.create_player_stats_csv(nba_name_to_id)
 
+        # set player positions
+        self.create_player_positions_csv(nba_name_to_id)
 
     '''
     This function creates a csv file that stores basic information about a player:
@@ -211,18 +213,17 @@ class CSVHelper(object):
 
         # get player data from stattleship
         stattleship_data = nba_stattleship.get_player_data()
+
         # get only the required fields
         stattleship_players = nba_stattleship.get_player_fields(
             stattleship_data)
 
-        count = 0
         # set the player basic information
         for player in stattleship_players:
             slug = player["slug"]
             name = player["name"]
 
             if name not in nba_name_to_id.keys():
-                count += 1
                 continue
 
             playerid = nba_name_to_id[name]
@@ -235,7 +236,6 @@ class CSVHelper(object):
                          years_of_experience])
 
         # write to csv
-        print count
         with open(namespace.PLAYER_INFO_CSV, 'wb') as f:
             writer = csv.writer(f)
             writer.writerows(data)
@@ -357,20 +357,16 @@ class CSVHelper(object):
             writer.writerows(data)
 
     # Create a CSV file mapping nba_id to a list of positions of the players
-    def create_player_positions_csv(self):
+    def create_player_positions_csv(self, nba_name_to_id):
         # data to write
         data = [['nba_id', 'positions']]
 
-        n = namespace.Namespace()
-        with open(n.NBA_TO_STATTLESHIP_CSV, 'rb') as f:
-            reader = csv.reader(f)
-            reader.next()
-            for row in reader:
-                # get the player positions using their id. Some players play in
-                # one position while others play in multiple.
-                data.append([row[0], nba_scraper.get_player_position(row[0])])
+        for nba_id in nba_name_to_id.itervalues():
+            # get the player positions using their id. Some players play in
+            # one position while others play in multiple.
+            data.append([nba_id, nba_scraper.get_player_position(nba_id)])
 
-        with open(n.PLAYER_POSITIONS_CSV, 'wb') as pos_f:
+        with open(namespace.PLAYER_POSITIONS_CSV, 'wb') as pos_f:
             writer = csv.writer(pos_f)
             writer.writerows(data)
 
@@ -411,9 +407,7 @@ class CSVHelper(object):
         # create player information map from csv
         players = {}
 
-        n = namespace.Namespace()
-
-        with open(n.PLAYER_INFO_CSV, 'rb') as pi:
+        with open(namespace.PLAYER_INFO_CSV, 'rb') as pi:
             reader = csv.reader(pi)
             reader.next()
             for row in reader:
@@ -432,7 +426,7 @@ class CSVHelper(object):
         # create nba to stattleship map from csv
         nba_to_stattleship_map = {}
 
-        with open(n.NBA_TO_STATTLESHIP_CSV, 'rb') as ns:
+        with open(namespace.NBA_TO_STATTLESHIP_CSV, 'rb') as ns:
             reader = csv.reader(ns)
             reader.next()
             for row in reader:
@@ -441,7 +435,7 @@ class CSVHelper(object):
         # create number fire to nba map from csv
         nf_to_nba_map = {}
 
-        with open(n.NUMBERFIRE_TO_NBA_CSV, 'rb') as nn:
+        with open(namespace.NUMBERFIRE_TO_NBA_CSV, 'rb') as nn:
             reader = csv.reader(nn)
             reader.next()
             for row in reader:
@@ -455,7 +449,7 @@ class CSVHelper(object):
             nf_to_stattleship_map[nf_slug] = stattleship_slug
 
         # store the gamelogs records
-        with open(n.PLAYER_STATS_CSV) as ps:
+        with open(namespace.PLAYER_STATS_CSV) as ps:
             reader = csv.reader(ps)
             reader.next()
             for row in reader:
@@ -464,7 +458,7 @@ class CSVHelper(object):
                     players[slug]['gamelogs'].append(row[1:])
 
         # Also store a list of positions of the players
-        with open(n.PLAYER_POSITIONS_CSV) as pp:
+        with open(namespace.PLAYER_POSITIONS_CSV) as pp:
             reader = csv.reader(pp)
             reader.next()
             for row in reader:
