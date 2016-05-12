@@ -40,7 +40,7 @@ class Namespace(object):
                        "HOU": 'HOU'}
 
     # positions set
-    POSITIONS = set(["PG", "SG", "SF", "PF", "C"])
+    POSITIONS = set(["PG", "SG", "SF", "PF", "C", "UN"])
 
     # csv file names
     PLAYER_INFO_CSV = "data/player_info.csv"

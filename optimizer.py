@@ -28,7 +28,7 @@ class LineupOptimizer(object):
         num_ids = 0
         check_position = lambda x, y: 1 if x == y else 0
 
-        for player in self.players.iterkeys():
+        for player in self.players: #.iterkeys():
             num_ids += 1
 
             position = player['position']
