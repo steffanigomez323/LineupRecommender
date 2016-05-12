@@ -28,19 +28,19 @@ class DailyUpdater(object):
         # let's prepare out data for projections
         dp = DailyProjector()
         dp.prepare_data_for_projections()
-        print "-----> Data is prepared!"
+        print "------> Data is prepared!"
 
         print "Step 2: Time to make some projections :)"
         # let's get the projections based on the prepared data
         projections = dp.project_fd_score()
-        print "-----> Projections are ready!"
+        print "------> Projections are ready!"
 
         print "Step 3: Let's get that golden lineup!!!!"
         # let's get the optimal lineup based on the projections
         lo = LineupOptimizer(projections)
         print lo.optimize()
-        print "-----> Your lineup has been stored in data/optimal_lineup.json. Let's make some cash money ;)"
-        print "-----> This lineup can also be viewed at http://lineup-recommender.herokuapp.com/. Enjoy!"
+        print "------> Your lineup has been stored in data/optimal_lineup.json. Let's make some cash money ;)"
+        print "------> This lineup can also be viewed at http://lineup-recommender.herokuapp.com/. Enjoy!"
 
 
 if __name__ == '__main__':

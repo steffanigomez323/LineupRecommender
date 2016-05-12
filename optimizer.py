@@ -28,6 +28,8 @@ class LineupOptimizer(object):
         num_ids = 0
         check_position = lambda x, y: 1 if x == y else 0
 
+        print self.players
+
         for player in self.players:
             num_ids += 1
 
@@ -59,6 +61,7 @@ class LineupOptimizer(object):
         return player_sack
 
     def optimize(self):
+        print len(self.player_sack)
         all_ids = range(self.player_sack[-1]['player_id'] + 1)
 
         constraints = lambda values: (
