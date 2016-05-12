@@ -2,30 +2,29 @@
 {% block content %}
     <link href="static/css/index.css" rel="stylesheet" media="screen">
     <div class="row">
-        <div class="col-md-2"></div>
         <div class="col-md-8">
             <div class="page-header center">
                 <img id="logo" src="static/images/logo.png"></img>
                 <h1>Lineup Recommender</h1>
-            </div>
+             </div>
+                <script src="static/js/final_viz.js"></script>
 
-            <script src="static/js/viz2.js"></script>
-
-            <div id="lineup">
-                <table class="table table-striped" align="center" style="width:70%;" id="viz">
-                    <thead>
-                    <tr>
-                        <th>Position</th> 
-                        <th>Name</th>
-                        <th>Game</th>
-                        <th>Projection</th>
-                        <th>Salary</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+	            <div id="lineup">
+	              <table class="table table-striped" align="center" style="width:100%;" id="chart">
+	                <thead>
+	                  <tr>
+	                    <th>Position</th> 
+	                    <th>Name</th>
+	                    <th>Game</th>
+	                    <th>Projection</th>
+	                    <th>Salary</th>
+	                  </tr>
+	                </thead>
+	                <tbody>
+	                </tbody>
+	              </table>
+	            </div>
+	            <div id="viz">
+        		</div>    
     </div> 
 {% endblock %}
