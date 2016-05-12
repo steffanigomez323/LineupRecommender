@@ -40,7 +40,7 @@ class FeatureCreator(object):
     PLUS_MINUS_IDX = 3
 
     OPPONENT_LIST = [x for x in Namespace.TEAM_MAP_NF_NBA.itervalues()]
-    OPPONENT_LIST.pop()
+    OPPONENT_LIST.pop() # for one-hot conversion from catergorical data
     POSITION_LIST = [x for x in Namespace.POSITIONS]
     #POSITION_LIST.pop()
 
@@ -811,6 +811,8 @@ class DailyProjector(object):
     players = {}
 
     def prepare_data_for_projections(self, text_file=None):
+        nf_scraper = NumberFireScraper()
+        
         if text_file:
             with open(text_file, 'r') as inf:
                 for line in inf:
@@ -837,56 +839,36 @@ class DailyProjector(object):
                     set([self.upcoming_games[player_id]['position']])
         '''
 
-    def test_fd_score(self):
-        fc = FeatureCreator(self.players, self.upcoming_games)
-
-        pid = 'nba-demar-derozan'
-        print pid
-        print fc.get_player_projection_features(pid)['points']
-
-        '''
-        print "\nLinear Regression"
-        proj = LRFeatureProjector(fc)
-        print "r2 score"
-        print proj.fit_all()
-        print "Projecting for", pid
-        print "stats"
-        projections = proj.get_stat_projection(pid)
-        print projections
-        stats_fanduel = proj.get_fanduel_score(projections)
-        print "stats: fanduel", stats_fanduel
-        #print "fanduel"
-        #projections = LRproj.get_fanduel_projection(pid)
-        #print projections
-        print "\n------------------------"
-        '''
-
     def project_fd_score(self):
         fc = FeatureCreator(self.players, self.upcoming_games)
 
         players_projected = []
 
-        print "\nLinear Regression"
+        #print "\nLinear Regression"
         proj = LRFeatureProjector(fc)
-        print "r2 score"
-        print proj.fit_all()
+        #print "r2 score"
+        r_score = proj.fit_all()
+        #print r_score
         for pid in self.upcoming_games.keys():
-            print "Projecting for", pid
-            print "stats"
+            #print "Projecting for", pid
+            #print "stats"
             projections = proj.get_stat_projection(pid)
-            print projections
+            #print projections
             stats_fanduel = proj.get_fanduel_score(projections)
-            print "stats: fanduel", stats_fanduel
+            #print "stats: fanduel", stats_fanduel
             #print "fanduel"
             #projections = LRproj.get_fanduel_projection(pid)
             #print projections
-            print "\n------------------------"
+            #print "\n------------------------"
 
             players_projected.append({
+                'slug': pid,
                 'position': self.upcoming_games[pid]['position'],
                 'name': self.players[pid]['name'],
                 'salary': self.upcoming_games[pid]['salary'],
-                'projection': stats_fanduel
+                'projection': stats_fanduel,
+                'player_team': self.upcoming_games[pid]['team'],
+                'opponent_team': self.upcoming_games[pid]['opponent']
                 })
 
         return players_projected
