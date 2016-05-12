@@ -74,7 +74,7 @@ nba-matt-bonner,Matt Bonner,82,235,True,11
 nba-devin-booker,Devin Booker,78,206,True,0
 nba-trevor-booker,Trevor Booker,80,228,True,5
 nba-carlos-boozer,Carlos Boozer,81,258,True,12
-nba-chris-bosh,Chris Bosh,83,235,True,12
+nba-chris-bosh,Chris Bosh,83,235,False,12
 nba-avery-bradley,Avery Bradley,74,180,True,5
 nba-elton-brand,Elton Brand,81,254,True,16
 nba-corey-brewer,Corey Brewer,81,186,True,8
@@ -105,7 +105,7 @@ nba-kentavious-caldwell-pope,Kentavious Caldwell-Pope,77,205,True,2
 nba-marcus-camby,Marcus Camby,83,240,False,17
 nba-isaiah-canaan,Isaiah Canaan,72,201,True,2
 nba-clint-capela,Clint Capela,82,240,True,1
-nba-demarre-carroll,DeMarre Carroll,80,212,True,6
+nba-demarre-carroll,DeMarre Carroll,80,212,False,6
 nba-matt-carroll,Matt Carroll,78,212,False,9
 nba-vince-carter,Vince Carter,78,220,True,17
 nba-michael-carter-williams,Michael Carter-Williams,78,190,True,2
@@ -149,6 +149,7 @@ nba-stephen-curry,Stephen Curry,75,190,True,6
 nba-samuel-dalembert,Samuel Dalembert,83,255,False,12
 nba-marquis-daniels,Marquis Daniels,78,200,True,9
 nba-troy-daniels,Troy Daniels,76,205,True,2
+nba-luigi-datome,Luigi Datome,80,215,True,0
 nba-brandon-davies,Brandon Davies,81,235,True,0
 nba-anthony-davis,Anthony Davis,82,253,True,3
 nba-ed-davis,Ed Davis,82,240,True,5
@@ -156,12 +157,13 @@ nba-glen-davis,Glen Davis,81,289,True,7
 nba-andre-dawkins,Andre Dawkins,77,219,False,0
 nba-branden-dawson,Branden Dawson,78,225,True,0
 nba-austin-daye,Austin Daye,83,220,False,5
+nba-nando-de-colo,Nando de Colo,77,195,False,1
 nba-dewayne-dedmon,Dewayne Dedmon,84,245,True,2
 nba-bryce-dejean-jones,Bryce Dejean-Jones,77,203,True,0
 nba-sam-dekker,Sam Dekker,81,230,True,0
 nba-carlos-delfino,Carlos Delfino,78,230,True,8
 nba-matthew-dellavedova,Matthew Dellavedova,76,198,True,2
-nba-luol-deng,Luol Deng,81,220,True,11
+nba-luol-deng,Luol Deng,81,220,False,11
 nba-justin-dentmon,Justin Dentmon,71,185,True,3
 nba-demar-derozan,DeMar DeRozan,79,220,True,6
 nba-boris-diaw,Boris Diaw,80,250,True,12
@@ -173,6 +175,7 @@ nba-toney-douglas,Toney Douglas,74,195,True,6
 nba-chris-douglas-roberts,Chris Douglas-Roberts,79,210,False,5
 nba-goran-dragic,Goran Dragic,75,190,True,7
 nba-zoran-dragic,Zoran Dragic,77,200,True,0
+nba-larry-drew-ii,Larry Drew II,74,180,False,0
 nba-andre-drummond,Andre Drummond,83,279,True,3
 nba-jared-dudley,Jared Dudley,79,225,True,8
 nba-chris-duhon,Chris Duhon,73,190,True,8
@@ -249,6 +252,7 @@ nba-donte-greene,Donte Greene,83,226,True,4
 nba-blake-griffin,Blake Griffin,82,251,True,5
 nba-jorge-gutierrez,Jorge Gutierrez,75,195,False,1
 nba-hamed-haddadi,Hamed Haddadi,86,265,False,4
+nba-p-j-hairston,P.J. Hairston,78,230,True,1
 nba-jordan-hamilton,Jordan Hamilton,79,220,True,3
 nba-justin-hamilton,Justin Hamilton,84,255,True,1
 nba-richard-hamilton,Richard Hamilton,79,193,True,13
@@ -265,11 +269,13 @@ nba-devin-harris,Devin Harris,75,185,True,11
 nba-gary-harris,Gary Harris,76,210,True,1
 nba-joe-harris,Joe Harris,78,225,False,0
 nba-manny-harris,Manny Harris,77,185,False,2
+nba-mike-harris,Mike Harris,78,235,False,2
 nba-terrel-harris,Terrel Harris,76,190,False,1
 nba-tobias-harris,Tobias Harris,81,235,False,4
 nba-aaron-harrison,Aaron Harrison,78,210,True,0
 nba-udonis-haslem,Udonis Haslem,80,235,True,12
 nba-spencer-hawes,Spencer Hawes,85,245,True,8
+nba-chuck-hayes,Chuck Hayes,78,240,False,9
 nba-gordon-hayward,Gordon Hayward,80,226,True,5
 nba-lazar-hayward,Lazar Hayward,78,225,False,2
 nba-brendan-haywood,Brendan Haywood,84,263,True,12
@@ -278,6 +284,7 @@ nba-xavier-henry,Xavier Henry,78,220,False,4
 nba-john-henson,John Henson,83,229,True,3
 nba-mario-hezonja,Mario Hezonja,80,218,True,0
 nba-roy-hibbert,Roy Hibbert,86,270,True,7
+nba-j-j-hickson,J.J. Hickson,81,242,True,7
 nba-cory-higgins,Cory Higgins,77,180,False,1
 nba-george-hill,George Hill,75,188,True,7
 nba-grant-hill,Grant Hill,80,225,True,17
@@ -302,6 +309,7 @@ nba-marcelo-huertas,Marcelo Huertas,75,200,True,0
 nba-josh-huestis,Josh Huestis,79,230,True,0
 nba-robbie-hummel,Robbie Hummel,81,219,True,1
 nba-kris-humphries,Kris Humphries,81,235,False,11
+nba-r-j-hunter,R.J. Hunter,77,185,True,0
 nba-serge-ibaka,Serge Ibaka,82,245,True,6
 nba-andre-iguodala,Andre Iguodala,78,215,True,11
 nba-ersan-ilyasova,Ersan Ilyasova,82,235,True,7
@@ -328,7 +336,6 @@ nba-brandon-jennings,Brandon Jennings,73,169,True,6
 nba-jonas-jerebko,Jonas Jerebko,82,231,True,5
 nba-grant-jerrett,Grant Jerrett,82,232,False,0
 nba-amir-johnson,Amir Johnson,81,240,True,10
-nba-chris-johnson,Chris Johnson,78,206,True,3
 chris-johnson,Chris Johnson,84,210,False,3
 nba-ivan-johnson,Ivan Johnson,80,255,False,2
 nba-james-johnson,James Johnson,81,250,True,6
@@ -368,6 +375,7 @@ nba-linas-kleiza,Linas Kleiza,80,234,True,6
 nba-brandon-knight,Brandon Knight,75,189,True,4
 nba-kyle-korver,Kyle Korver,79,212,True,12
 nba-kosta-koufos,Kosta Koufos,84,265,True,7
+nba-vyacheslav-kravtsov,Vyacheslav Kravtsov,83,247,False,1
 nba-ognjen-kuzmic,Ognjen Kuzmic,84,260,True,2
 nba-doron-lamb,Doron Lamb,76,210,False,1
 nba-jeremy-lamb,Jeremy Lamb,77,185,True,3
@@ -417,7 +425,10 @@ nba-o-j-mayo,O.J. Mayo,77,210,True,7
 nba-luc-mbah-a-moute,Luc Mbah a Moute,80,230,True,7
 nba-james-michael-mcadoo,James Michael McAdoo,81,240,True,1
 nba-ray-mccallum,Ray McCallum,75,190,False,2
+nba-c-j-mccollum,C.J. McCollum,76,200,True,2
+nba-t-j-mcconnell,T.J. McConnell,74,200,True,0
 nba-chris-mccullough,Chris McCullough,83,200,True,0
+nba-k-j-mcdaniels,K.J. McDaniels,78,205,True,1
 nba-doug-mcdermott,Doug McDermott,80,225,True,1
 nba-mitch-mcgary,Mitch McGary,82,255,True,1
 nba-javale-mcgee,JaVale McGee,84,270,True,7
@@ -433,6 +444,7 @@ nba-gal-mekel,Gal Mekel,75,191,False,1
 nba-fab-melo,Fab Melo,84,255,True,0
 nba-jordan-mickey,Jordan Mickey,80,235,True,0
 nba-khris-middleton,Khris Middleton,80,234,True,3
+nba-c-j-miles,C.J. Miles,78,231,True,10
 nba-darko-milicic,Darko Milicic,84,275,False,9
 nba-andre-miller,Andre Miller,75,200,True,16
 nba-darius-miller,Darius Miller,80,235,True,1
@@ -442,7 +454,6 @@ nba-patrick-mills,Patty Mills,72,185,True,6
 nba-elijah-millsap,Elijah Millsap,78,215,False,0
 nba-paul-millsap,Paul Millsap,80,246,True,9
 nba-nikola-mirotic,Nikola Mirotic,82,220,True,1
-nba-tony-mitchell,Tony Mitchell,81,235,False,1
 tony-mitchell,Tony Mitchell,78,210,False,0
 nba-nazr-mohammed,Nazr Mohammed,82,250,True,16
 nba-greg-monroe,Greg Monroe,83,265,True,5
@@ -463,6 +474,7 @@ nba-xavier-munford,Xavier Munford,75,180,True,0
 nba-erik-murphy,Erik Murphy,82,230,True,0
 nba-kevin-murphy,Kevin Murphy,78,185,False,0
 nba-troy-murphy,Troy Murphy,83,245,False,0
+nba-toure-murry,Toure' Murry,77,195,False,1
 nba-mike-muscala,Mike Muscala,83,240,True,2
 nba-larry-nance-jr,Larry Nance Jr.,81,230,True,0
 nba-shabazz-napier,Shabazz Napier,73,175,True,1
@@ -471,6 +483,7 @@ nba-hamady-n-diaye,Hamady Ndiaye,84,235,False,2
 nba-gary-neal,Gary Neal,76,210,False,5
 nba-nemanja-nedovic,Nemanja Nedovic,75,197,False,1
 nba-jameer-nelson,Jameer Nelson,72,190,True,11
+nba-nene, Nene,83,250,True,13
 nba-raul-neto,Raul Neto,73,179,True,0
 nba-andrew-nicholson,Andrew Nicholson,81,250,True,3
 nba-joakim-noah,Joakim Noah,83,232,True,8
@@ -481,6 +494,7 @@ nba-dirk-nowitzki,Dirk Nowitzki,84,245,True,17
 nba-james-nunnally,James Nunnally,79,205,False,0
 nba-jusuf-nurkic,Jusuf Nurkic,84,280,True,1
 nba-j-j-o-brien,J.J. O'Brien,79,220,False,0
+nba-johnny-o-bryant-iii,Johnny O'Bryant III,81,257,True,1
 nba-greg-oden,Greg Oden,84,285,False,0
 nba-lamar-odom,Lamar Odom,82,230,True,13
 nba-tim-ohlbrecht,Tim Ohlbrecht,83,255,False,1
@@ -504,6 +518,7 @@ nba-chandler-parsons,Chandler Parsons,82,230,True,4
 nba-lamar-patterson,Lamar Patterson,77,225,True,0
 nba-patrick-patterson,Patrick Patterson,81,235,True,5
 nba-chris-paul,Chris Paul,72,175,True,10
+nba-aleksandar-pavlovic,Aleksandar Pavlovic,79,235,False,9
 nba-adreian-payne,Adreian Payne,82,237,True,1
 nba-cameron-payne,Cameron Payne,75,185,True,0
 nba-elfrid-payton,Elfrid Payton,76,185,True,1
@@ -536,6 +551,7 @@ nba-julius-randle,Julius Randle,81,250,True,1
 nba-anthony-randolph,Anthony Randolph,83,225,True,5
 nba-shavlik-randolph,Shavlik Randolph,82,236,False,7
 nba-zach-randolph,Zach Randolph,81,260,True,14
+nba-j-j-redick,J.J. Redick,76,190,True,9
 nba-willie-reed,Willie Reed,82,220,True,0
 nba-glen-rice-jr,Glen Rice Jr.,78,206,False,1
 nba-jason-richardson,Jason Richardson,78,225,True,12
@@ -547,6 +563,7 @@ nba-andre-roberson,Andre Roberson,79,210,True,2
 nba-brian-roberts,Brian Roberts,73,173,True,3
 nba-nate-robinson,Nate Robinson,69,180,False,9
 nba-thomas-robinson,Thomas Robinson,82,237,True,3
+nba-glenn-robinson-iii,Glenn Robinson III,79,222,True,1
 nba-rajon-rondo,Rajon Rondo,73,186,True,9
 nba-derrick-rose,Derrick Rose,75,190,True,6
 nba-terrence-ross,Terrence Ross,79,195,True,3
@@ -558,6 +575,7 @@ nba-brandon-rush,Brandon Rush,78,220,True,7
 nba-d-angelo-russell,D'Angelo Russell,77,195,True,0
 nba-robert-sacre,Robert Sacre,84,270,True,3
 nba-john-salmons,John Salmons,78,207,False,11
+nba-jakarr-sampson,Jakarr Sampson,81,214,False,1
 nba-samardo-samuels,Samardo Samuels,81,260,False,2
 nba-larry-sanders,Larry Sanders,83,235,False,4
 nba-dennis-schroder,Dennis Schroder,73,172,True,2
@@ -592,8 +610,10 @@ nba-marreese-speights,Marreese Speights,82,255,True,7
 nba-tiago-splitter,Tiago Splitter,83,245,True,5
 nba-jerry-stackhouse,Jerry Stackhouse,78,218,True,17
 nba-nik-stauskas,Nik Stauskas,78,205,True,1
+nba-d-j-stephens,D.J. Stephens,77,188,False,0
 nba-lance-stephenson,Lance Stephenson,77,230,False,5
 nba-alex-stepheson,Alex Stepheson,82,250,False,0
+nba-deshawn-stevenson,Deshawn Stevenson,77,218,True,12
 nba-greg-stiemsma,Greg Stiemsma,83,260,False,3
 nba-david-stockton,David Stockton,71,165,False,0
 nba-jarnell-stokes,Jarnell Stokes,81,255,False,1
@@ -603,6 +623,7 @@ nba-rodney-stuckey,Rodney Stuckey,77,205,True,8
 nba-jared-sullinger,Jared Sullinger,81,260,True,3
 nba-dajuan-summers,DaJuan Summers,80,240,False,3
 nba-walter-tavares,Walter Tavares,87,260,True,0
+nba-jeffery-taylor,Jeffery Taylor,79,225,True,1
 nba-tyshawn-taylor,Tyshawn Taylor,75,185,False,1
 nba-jeff-teague,Jeff Teague,74,186,True,6
 nba-marquis-teague,Marquis Teague,74,190,True,1
@@ -626,6 +647,7 @@ nba-jamaal-tinsley,Jamaal Tinsley,75,197,False,10
 nba-anthony-tolliver,Anthony Tolliver,80,240,True,7
 nba-axel-toupane,Axel Toupane,79,210,False,0
 nba-karl-anthony-towns,Karl-Anthony Towns,84,244,True,0
+nba-p-j-tucker,P.J. Tucker,78,245,True,4
 nba-ronny-turiaf,Ronny Turiaf,82,249,False,9
 nba-hedo-turkoglu,Hedo Turkoglu,82,220,True,14
 nba-evan-turner,Evan Turner,79,220,True,5
@@ -633,7 +655,7 @@ nba-myles-turner,Myles Turner,83,243,True,0
 nba-jeremy-tyler,Jeremy Tyler,82,250,False,1
 nba-ekpe-udoh,Ekpe Udoh,82,245,True,4
 nba-beno-udrih,Beno Udrih,75,205,False,11
-nba-jonas-valanciunas,Jonas Valanciunas,84,255,True,3
+nba-jonas-valanciunas,Jonas Valanciunas,84,255,False,3
 nba-anderson-varejao,Anderson Varejao,83,273,True,11
 nba-jarvis-varnado,Jarvis Varnado,81,230,True,1
 nba-greivis-vasquez,Greivis Vasquez,78,217,True,5
@@ -652,7 +674,9 @@ nba-gerald-wallace,Gerald Wallace,79,220,True,12
 nba-rasheed-wallace,Rasheed Wallace,83,230,True,15
 nba-luke-walton,Luke Walton,80,235,True,9
 nba-casper-ware,Casper Ware,70,175,True,0
+nba-t-j-warren,T.J. Warren,80,230,True,1
 nba-hakim-warrick,Hakim Warrick,81,219,False,7
+nba-c-j-watson,C.J. Watson,74,175,True,8
 nba-earl-watson,Earl Watson,73,199,True,11
 nba-maalik-wayns,Maalik Wayns,73,195,False,0
 nba-briante-weber,Briante Weber,74,165,True,3
@@ -660,17 +684,20 @@ nba-martell-webster,Martell Webster,79,230,False,9
 nba-sonny-weems,Sonny Weems,78,205,False,3
 nba-david-west,David West,81,250,True,12
 nba-russell-westbrook,Russell Westbrook,75,200,True,7
+nba-d-j-white,D.J. White,81,250,True,5
 nba-james-white,James White,79,215,True,2
 nba-royce-white,Royce White,80,260,False,1
-nba-hassan-whiteside,Hassan Whiteside,84,265,True,3
+nba-hassan-whiteside,Hassan Whiteside,84,265,False,3
 nba-shayne-whittington,Shayne Whittington,83,250,True,1
 nba-andrew-wiggins,Andrew Wiggins,80,199,True,1
 nba-chris-wilcox,Chris Wilcox,82,235,True,10
+nba-c-j-wilcox,C.J. Wilcox,77,195,True,1
 nba-damien-wilkins,Damien Wilkins,78,225,False,9
 nba-alan-williams,Alan Williams,80,265,True,0
 nba-deron-williams,Deron Williams,75,200,True,10
 nba-derrick-williams,Derrick Williams,80,240,True,4
 nba-elliot-williams,Elliot Williams,77,183,False,3
+nba-louis-williams,Louis Williams,73,175,True,10
 nba-marvin-williams,Marvin Williams,81,237,True,10
 nba-mo-williams,Mo Williams,73,198,True,12
 nba-reggie-williams,Reggie Williams,78,205,False,4
@@ -682,12 +709,12 @@ nba-nate-wolters,Nate Wolters,76,190,False,1
 nba-christian-wood,Christian Wood,83,220,True,0
 nba-metta-world-peace,Metta World Peace,79,260,True,15
 nba-brandan-wright,Brandan Wright,82,210,True,7
-nba-chris-wright,Chris Wright,81,226,False,2
 chris-wright,Chris Wright,73,210,False,0
 nba-delon-wright,Delon Wright,77,190,True,0
 nba-dorell-wright,Dorell Wright,81,205,True,10
 nba-tony-wroten,Tony Wroten,78,205,False,2
 nba-james-young,James Young,78,215,True,1
+nba-joseph-young,Joseph Young,74,180,True,0
 nba-nick-young,Nick Young,79,210,True,8
 nba-sam-young,Sam Young,78,225,False,3
 nba-thaddeus-young,Thaddeus Young,80,221,True,8

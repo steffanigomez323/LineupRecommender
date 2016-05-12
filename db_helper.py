@@ -186,17 +186,18 @@ class CSVHelper(object):
         nba_players = nba_scraper.get_player_data()
         nba_name_to_id = nba_scraper.get_player_name_id_map(nba_players)
 
-        # set basic information
-        self.create_basic_player_information_csv(nba_name_to_id)
-
         # set nba to stattleship mapping
-        self.create_nba_to_stattleship_csv(nba_name_to_id)
+        stattleship_slug_to_nba_id = \
+            self.create_nba_to_stattleship_csv(nba_name_to_id)
+
+        # set basic information
+        self.create_basic_player_information_csv(stattleship_slug_to_nba_id)
 
         # set numberfire to nba mapping
         self.create_numberfire_to_nba_csv(nba_name_to_id)
 
         # set player stats
-        self.create_player_stats_csv(nba_name_to_id)
+        self.create_player_stats_csv(stattleship_slug_to_nba_id)
 
         # set player positions
         self.create_player_positions_csv(nba_name_to_id)
@@ -206,7 +207,7 @@ class CSVHelper(object):
     Player slug, player name, height, weight, whether or not the player is active,
     and years of experience. This data is obtained from Stattleship.
     '''
-    def create_basic_player_information_csv(self, nba_name_to_id):
+    def create_basic_player_information_csv(self, stattleship_slug_to_nba_id):
         # data to write
         data = [['player_slug', 'name', 'height',
                  'weight', 'active', 'years_of_experience']]
@@ -223,11 +224,10 @@ class CSVHelper(object):
             slug = player["slug"]
             name = player["name"]
 
-            if name not in nba_name_to_id.keys():
+            if slug not in stattleship_slug_to_nba_id.keys():
                 continue
 
-            playerid = nba_name_to_id[name]
-            position = nba_scraper.get_player_position(playerid)
+            #playerid = stattleship_slug_to_nba_id[slug]
             height = player["height"]
             weight = player["weight"]
             active = player["active"]
@@ -308,6 +308,8 @@ class CSVHelper(object):
             writer = csv.writer(f)
             writer.writerows(data)
 
+        return {x[1]: x[0] for x in data}
+
     '''
     This function sets a mapping of NumberFire player slug to
     NBA ID, using data source from NumberFire and NBA. There are mismatches
@@ -371,7 +373,7 @@ class CSVHelper(object):
             writer.writerows(data)
 
     # Create a CSV file that stores the gamelogs of the players
-    def create_player_stats_csv(self, nba_name_to_id):
+    def create_player_stats_csv(self, stattleship_slug_to_nba_id):
         # data to write
         data = [['nba_id', 'game_time', 'played_at_home',
                  'played_against', 'plus_minus',
@@ -386,7 +388,7 @@ class CSVHelper(object):
 
         for nba_id in gamelog_data:
 
-            if str(nba_id) not in nba_name_to_id.values():
+            if str(nba_id) not in stattleship_slug_to_nba_id.values():
                 continue
 
             for game in gamelog_data[nba_id]['allgames']:
@@ -453,7 +455,7 @@ class CSVHelper(object):
             reader = csv.reader(ps)
             reader.next()
             for row in reader:
-                slug = nba_to_stattleship_map.get(row[0], '')
+                slug = nba_to_stattleship_map[row[0]]
                 if slug in players:
                     players[slug]['gamelogs'].append(row[1:])
 
@@ -462,7 +464,7 @@ class CSVHelper(object):
             reader = csv.reader(pp)
             reader.next()
             for row in reader:
-                slug = nba_to_stattleship_map.get(row[0], '')
+                slug = nba_to_stattleship_map[row[0]]
                 if slug in players:
                     players[slug]['position'] = set(eval(row[1]))
                     if len(players[slug]['position']) == 0:

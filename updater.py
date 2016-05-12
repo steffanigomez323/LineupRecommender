@@ -33,6 +33,7 @@ class DailyUpdater(object):
         print "Step 2: Time to make some projections :)"
         # let's get the projections based on the prepared data
         projections = dp.project_fd_score()
+        print projections
         print "------> Projections are ready!"
 
         print "Step 3: Let's get that golden lineup!!!!"

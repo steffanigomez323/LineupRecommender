@@ -40,7 +40,7 @@ class FeatureCreator(object):
     PLUS_MINUS_IDX = 3
 
     OPPONENT_LIST = [x for x in Namespace.TEAM_MAP_NF_NBA.itervalues()]
-    OPPONENT_LIST.pop() # for one-hot conversion from catergorical data
+    #OPPONENT_LIST.pop() # for one-hot conversion from catergorical data
     POSITION_LIST = [x for x in Namespace.POSITIONS]
     #POSITION_LIST.pop()
 
@@ -407,14 +407,16 @@ class FeatureCreator(object):
                    self.avg(fanduel[i - 3:i]),  # last 3
                    self.avg(fanduel[i - 5:i]),  # last 5
                    self.avg(fanduel[i - 10:i]),  # last 10
-                   self.avg(plus_minus[0:i]),  # plus minus avg
-                   self.avg(time[0:i]),  # time avg
-                   self.avg(turnovers[0:i])] # TO avg
+                   #self.avg(plus_minus[0:i]),  # plus minus avg
+                   time[i-1],  # time avg
+                   turnovers[i-1]] # TO avg
 
-            hva_num = (self.TRUE_NUM if hva[i] == "True" else self.FALSE_NUM)
+            hva_num = ([self.TRUE_NUM, self.FALSE_NUM]
+                       if hva[i] == "True" else
+                       [self.FALSE_NUM, self.TRUE_NUM])
             opponent_nums = [self.TRUE_NUM if x == opponent[i] else self.FALSE_NUM
                              for x in self.OPPONENT_LIST]
-            row.append(hva_num)  # hva
+            row.extend(hva_num)  # hva
             row.extend(opponent_nums)  # opponent
             #row.extend(position_nums) # position
 
@@ -441,7 +443,9 @@ class FeatureCreator(object):
         plus_minus = gamelog[:, self.PLUS_MINUS_IDX].astype(np.float)
 
         # transform the categorical data
-        hva_num = (self.TRUE_NUM if hva == "True" else self.FALSE_NUM)
+        hva_num = ([self.TRUE_NUM, self.FALSE_NUM]
+                   if hva == "True" else
+                   [self.FALSE_NUM, self.TRUE_NUM])
         opponent_nums = [self.TRUE_NUM if x == opponent else self.FALSE_NUM
                          for x in self.OPPONENT_LIST]
 
@@ -467,10 +471,10 @@ class FeatureCreator(object):
                         self.avg(fanduel[i - 3:i]),  # last 3
                         self.avg(fanduel[i - 5:i]),  # last 5
                         self.avg(fanduel[i - 10:i]),  # last 10
-                        self.avg(plus_minus[0:i]),  # plus minus avg
-                        self.avg(time[0:i]),  # time avg
-                        self.avg(turnovers[0:i])] # TO avg
-        fanduel_proj.append(hva_num)
+                        #self.avg(plus_minus[0:i]),  # plus minus avg
+                        time[i-1],  # time avg
+                        turnovers[i-1]] # TO avg
+        fanduel_proj.extend(hva_num)
         fanduel_proj.extend(opponent_nums)
         #fanduel_proj.extend(position_nums)
 
@@ -848,14 +852,16 @@ class DailyProjector(object):
         #print "\nLinear Regression"
         proj = LRFeatureProjector(fc)
         #print "r2 score"
-        r_score = proj.fit_all_stats()
+        r_score = proj.fit_all_fanduel()
         print r_score
         for pid in self.upcoming_games.keys():
             #print "Projecting for", pid
             #print "stats"
-            projections = proj.get_stat_projection(pid)
+            projections = proj.get_fanduel_projection(pid)
+            print projections
             #print projections
-            stats_fanduel = proj.get_fanduel_score(projections)
+            #stats_fanduel = proj.get_fanduel_score(projections)
+            stats_fanduel = projections['fanduel']
             #print "stats: fanduel", stats_fanduel
             #print "fanduel"
             #projections = LRproj.get_fanduel_projection(pid)
