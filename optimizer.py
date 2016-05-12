@@ -10,8 +10,6 @@ Optimal Lineup Recommender
 
 
 from openopt import *
-from sys import argv
-import csv
 
 
 class LineupOptimizer(object):
@@ -58,7 +56,6 @@ class LineupOptimizer(object):
         return player_sack
 
     def optimize(self):
-        print len(self.player_sack)
         all_ids = range(self.player_sack[-1]['player_id'] + 1)
 
         constraints = lambda values: (
