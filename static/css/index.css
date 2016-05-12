@@ -17,13 +17,13 @@ h1 {
 
 table {
     margin-top: 10px;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
     font-family: Circular;
 }
 
 thead {
-    background-color: darkslategray;
-    color: lightgray;    
+    /*background-color: darkslategray;*/
+    /*color: lightgray;    */
 }
 
 #name {
@@ -32,7 +32,6 @@ thead {
 
 #team {
     font-weight: bold;
-
 }
 
 .axis path,
