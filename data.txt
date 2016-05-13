@@ -1,0 +1,12 @@
+We collected data from the following sources:
+
+1. https://www.stattleship.com/basketball/nba/
+You need a token for this url to work. However, the data obtained from there is already stored in CSV files.
+
+2. https://www.numberfire.com/nba/
+	https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections
+	https://www.numberfire.com/nba/players
+
+3. http://stats.nba.com/
+
+We already made requests to the above sources in our code. They are stored in our CSV files, which are inside the data folder.

@@ -18,7 +18,14 @@ from collections import defaultdict
 from datetime import datetime
 import numpy as np
 
-
+'''
+We collect the following information from Stattleship:
+- player name slug
+- weight
+- height
+- whether or not a player is active
+- years of experience
+'''
 class Stattleship(object):
     headers = {'content-type': 'application/json',
                'authorization': 'Token token=067adb3fdbd52c6a8c12331152bf262f',
@@ -237,7 +244,13 @@ class Stattleship(object):
 
         return data
 
-
+'''
+We collect the following information about a player from NumberFire:
+- salary
+- player position
+- opponent
+- whether the player played at home or away
+'''
 class NumberFireScraper(object):
 
     def get_player_name_slug_map(self):
@@ -327,7 +340,21 @@ class NumberFireScraper(object):
 
         return players
 
-
+'''
+We collect the following information about the players from NBA:
+- the game logs of each player: each game log stores the following information:
+    - Time the game was held
+    - Information on whether the game was played at home or away
+    - The opponent team
+    - Plus minus
+    - How many times the player played in that game
+    - Total rebounds score for the team the player is in
+    - Total assists score
+    - Total steals score
+    - Total blocks score
+    - Total turnovers score
+    - Total points
+'''
 class NBAScraper(object):
     headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 \
                 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'}
@@ -524,6 +551,7 @@ class NBAScraper(object):
             players[p]['allgames'] = ordered
 
         return players
+
 
 
 # class SwishScraper(object):
