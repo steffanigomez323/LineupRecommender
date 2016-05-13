@@ -50,8 +50,11 @@ class FeatureCreator(object):
     SCORER = lambda self, x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 + \
         x['blocks']*2 + x['steals']*2 - x['turnovers']
 
-    # take in pos, height, gamelogs
-    # {id: {position: ssfd, height:fasdf}}
+    '''
+    Takes in the games logs and upcoming games, as
+    a dictonary of player ids to the player
+    gamelog/upcoming game dictionary
+    '''
     def __init__(self, players_gamelogs, upcoming_games):
         self.avg = lambda x: sum(x) / float(len(x))
 
@@ -62,6 +65,9 @@ class FeatureCreator(object):
         self.all_training_fanduel = None
         self.all_average_fanduel = None
 
+    '''
+    Combines a numpy array of features with another feature array
+    '''
     def __append_features(self, target, append_array):
         if len(append_array) == 0:
             return target
@@ -70,12 +76,21 @@ class FeatureCreator(object):
         else:
             return np.vstack((target, append_array))
 
+    '''
+    Gets training features of all players in the gamelog
+    '''
     def calc_all_training_features(self):
         return self.calc_some_training_features(self.players_gamelogs.iterkeys())
 
+    '''
+    Get training features of all players, but just the direct fanduel projections
+    '''
     def calc_all_training_fanduel(self):
         return self.calc_some_training_fanduel(self.players_gamelogs.iterkeys())
 
+    '''
+    Finds training features for the given set of players
+    '''
     def calc_some_training_features(self, player_ids):
         all_features = {"assists": None,
                         "points": None,
@@ -95,6 +110,9 @@ class FeatureCreator(object):
 
         return all_features
 
+    '''
+    Finds training features for the given set of players
+    '''
     def calc_some_training_fanduel(self, player_ids):
         all_features = {"fanduel": None}
 
@@ -109,6 +127,9 @@ class FeatureCreator(object):
 
         return all_features
 
+    '''
+    Gathers all game stat training features for a player
+    '''
     def calc_player_training_features(self, player_id):
         height = float(self.players_gamelogs[player_id]['height'])
 
@@ -261,6 +282,9 @@ class FeatureCreator(object):
                 "turnovers": np.array(turnovers_train),
                 "steals": np.array(steals_train)}
 
+    '''
+    Gathers the game stat projection feature for a player
+    '''
     def calc_player_projection_features(self, player_id):
         height = float(self.players_gamelogs[player_id]['height'])
 
@@ -365,6 +389,9 @@ class FeatureCreator(object):
                 "turnovers": np.array(turnovers_proj).reshape(1, -1),
                 "steals": np.array(steals_proj).reshape(1, -1)}
 
+    '''
+    Gathers the fanduel training features for a player
+    '''
     def calc_player_training_fanduel(self, player_id):
         height = float(self.players_gamelogs[player_id]['height'])
 
@@ -424,6 +451,9 @@ class FeatureCreator(object):
 
         return {"fanduel": np.array(fanduel_train)}
 
+    '''
+    Gathers the fanduel projection features for a player
+    '''
     def calc_player_projection_fanduel(self, player_id):
         height = float(self.players_gamelogs[player_id]['height'])
 
@@ -480,6 +510,9 @@ class FeatureCreator(object):
 
         return {"fanduel": np.array(fanduel_proj).reshape(1, -1)}
 
+    '''
+    Gets the average overall fanduel score of a player
+    '''
     def calc_player_average_fanduel(self, player_id):
         gamelog = self.players_gamelogs[player_id]['gamelogs']
         gamelog = np.array(gamelog)
@@ -506,6 +539,9 @@ class FeatureCreator(object):
 
         return (fanduel / float(num_logs))
 
+    '''
+    Get the average fanduel scores for all players
+    '''
     def calc_all_average_fanduel(self):
         all_pid = []
         all_averages = []
@@ -521,6 +557,10 @@ class FeatureCreator(object):
 
         return {'fanduel': zip(all_averages, all_pid)}
 
+    '''
+    Gets all the game stat training features,
+    with caching if it has already been calculated
+    '''
     def get_all_training_features(self):
         if self.all_training_features is None:
             self.all_training_features = \
@@ -528,6 +568,10 @@ class FeatureCreator(object):
 
         return self.all_training_features
 
+    '''
+    Gets all the fanduel training features,
+    with caching if it has already been calculated
+    '''
     def get_all_training_fanduel(self):
         if self.all_training_fanduel is None:
             self.all_training_fanduel = \
@@ -535,6 +579,10 @@ class FeatureCreator(object):
 
         return self.all_training_fanduel
 
+    '''
+    Gets all the average fanduel scores,
+    with caching if it has already been calculated
+    '''
     def get_all_average_fanduel(self):
         if self.all_average_fanduel is None:
             self.all_average_fanduel = \
@@ -542,24 +590,52 @@ class FeatureCreator(object):
 
         return self.all_average_fanduel
 
+    '''
+    Gets all the training features for a given set of players,
+    without caching
+    '''
     def get_some_training_features(self, player_ids):
         return self.calc_some_training_features(player_ids)
 
+    '''
+    Gets all the fanduel training features for a given set of players,
+    without caching
+    '''
     def get_some_training_fanduel(self, player_ids):
         return self.calc_some_training_fanduel(player_ids)
 
+    '''
+    Gets a player's training features,
+    without caching
+    '''
     def get_player_training_features(self, player_id):
         return self.calc_player_training_features(player_id)
 
+    '''
+    Gets a player's projection features,
+    without caching
+    '''
     def get_player_projection_features(self, player_id):
         return self.calc_player_projection_features(player_id)
 
+    '''
+    Gets a player's fanduel training features,
+    without caching
+    '''
     def get_player_training_fanduel(self, player_id):
         return self.calc_player_training_fanduel(player_id)
 
+    '''
+    Gets a player's fanduel projection features,
+    without caching
+    '''
     def get_player_projection_fanduel(self, player_id):
         return self.calc_player_projection_fanduel(player_id)
 
+    '''
+    Gets a player's average features,
+    without caching
+    '''
     def get_player_average_fanduel(self, player_id):
         return self.calc_player_average_fanduel(player_id)
 
@@ -570,8 +646,10 @@ class FeatureProjector(object):
     SCORER = lambda self, x: x['points'] + x['rebounds']*1.2 + x['assists']*1.5 + \
         x['blocks']*2 + x['steals']*2 - x['turnovers']
 
-    # take in pos, height, gamelogs
-    # {id: {position: ssfd, height:fasdf}}
+    '''
+    Makes a projector that uses a FeatureCreator 
+    and a regression factory method
+    '''
     def __init__(self, feature_creator, regression_maker):
         self.regression_maker = regression_maker
 
@@ -580,6 +658,9 @@ class FeatureProjector(object):
         self.feature_scalers = {}
         self.feature_regressors = {}
 
+    '''
+    Splits a training feature set into training data and labels
+    '''
     def __split_train_xy(self, training_feature):
         y, X = np.hsplit(  # split off first column (labels)
             training_feature,
@@ -587,12 +668,20 @@ class FeatureProjector(object):
 
         return X, np.ravel(y)
 
+    '''
+    Takes a training feature set of observations to labels,
+    and splits it into training and testing sets
+    '''
     def __split_train_test(self, X, y, test_percent):
         return train_test_split(
             X, y,
             test_size=test_percent, random_state=42)
 
-    def fit_all_stats(self):
+    '''
+    Fits all game stat regressors on all player features
+    Returns the r2 score of all regressors, on the testing data
+    '''
+    def fit_all_stat(self):
         fc = self.feature_creator
 
         r2_score = {}
@@ -603,6 +692,10 @@ class FeatureProjector(object):
 
         return r2_score
 
+    '''
+    Fits all fanduel regressors on all player features
+    Returns the r2 score of all regressors, on the testing data
+    '''
     def fit_all_fanduel(self):
         fc = self.feature_creator
 
@@ -614,6 +707,10 @@ class FeatureProjector(object):
 
         return r2_score
 
+    '''
+    Fits all game stat regressors on a particular player's features
+    Returns the r2 score of all regressors, on the testing data
+    '''
     def fit_player(self, player_id):
         fc = self.feature_creator
 
@@ -629,6 +726,10 @@ class FeatureProjector(object):
 
         return r2_score
 
+    '''
+    Fits a particular feature regressor on its features
+    Returns the r2 score of the regressor, on testing data
+    '''
     def fit_feature(self, feature_id, features):
         X, y = self.__split_train_xy(features[feature_id])
 
@@ -646,6 +747,10 @@ class FeatureProjector(object):
         score = regr.score(x_test, y_test)
         return score
 
+    '''
+    Projects using a particular feature regressor (after fitting)
+    on a given projection feature set
+    '''
     def project_feature(self, feature_id, projections):
         x_proj = projections[feature_id]
 
@@ -657,10 +762,16 @@ class FeatureProjector(object):
         proj = regr.predict(x_proj)
         return proj[0]
 
+    '''
+    Calcs a fanduel score based on a game stat projection
+    '''
     def get_fanduel_score(self, stats_projections):
         projected_scores = {k: v for k,v in stats_projections.iteritems()}
         return self.SCORER(projected_scores)
 
+    '''
+    Projects all game stats for the next game, for a player
+    '''
     def get_stat_projection(self, player_id):
         fc = self.feature_creator
 
@@ -685,6 +796,9 @@ class FeatureProjector(object):
                 "turnovers": tov_proj,
                 "steals": stl_proj}
 
+    '''
+    Projects the fanduel score directly for the next game, for a player
+    '''
     def get_fanduel_projection(self, player_id):
         fc = self.feature_creator
 
@@ -695,6 +809,9 @@ class FeatureProjector(object):
         return {"fanduel": proj}
 
 class ClusteringFeatureProjector(FeatureProjector):
+    '''
+    Makes a projector that uses a KMeans clusterer with the needed clusters
+    '''
     def __init__(self, feature_creator, regression_maker, n_clusters=3):
         super(ClusteringFeatureProjector, self).__init__(
             feature_creator,
@@ -703,6 +820,9 @@ class ClusteringFeatureProjector(FeatureProjector):
         self.clusterer = KMeans(n_clusters=n_clusters)
         self.feature_regressors_clustered = {}
 
+    '''
+    Fits the clusterer on all player data
+    '''
     def fit_all_clusters(self):
         fc = self.feature_creator
 
@@ -744,6 +864,9 @@ class ClusteringFeatureProjector(FeatureProjector):
 
         return r2_score_clustered
 
+    '''
+    Gets the cluster label of a particular player
+    '''
     def get_player_cluster(self, player_id):
         x_cluster = \
             self.feature_creator.get_player_average_fanduel(player_id)
@@ -751,6 +874,10 @@ class ClusteringFeatureProjector(FeatureProjector):
         cid = self.clusterer.predict(x_cluster)[0]
         return cid
 
+    '''
+    Same as the superclass, but switches out the regressors used
+    with the regressors for that player's cluster
+    '''
     def get_stat_projection(self, player_id):
         cid = self.get_player_cluster(player_id)
         self.feature_regressors = \
@@ -759,6 +886,10 @@ class ClusteringFeatureProjector(FeatureProjector):
         return (super(ClusteringFeatureProjector, self)
                     .get_stat_projection(player_id))
 
+    '''
+    Same as the superclass, but switches out the regressors used
+    with the regressors for that player's cluster
+    '''
     def get_fanduel_projection(self, player_id):
         cid = self.get_player_cluster(player_id)
         self.feature_regressors = \
@@ -821,6 +952,9 @@ class DailyProjector(object):
     # store all players details
     players = {}
 
+    '''
+    Gathers a player data for use in projecting
+    '''
     def prepare_data_for_projections(self, text_file=None):
         nf_scraper = NumberFireScraper()
 
@@ -846,6 +980,9 @@ class DailyProjector(object):
             if 'team' not in self.upcoming_games[stattleship_slug].keys():
                 self.upcoming_games[stattleship_slug]['team'] = 'UNK'
 
+    '''
+    Projects all players playing today, into a format for lineups
+    '''
     def project_fd_score(self):
         fc = FeatureCreator(self.players, self.upcoming_games)
 
@@ -854,16 +991,15 @@ class DailyProjector(object):
         #print "\nLinear Regression"
         proj = LRFeatureProjector(fc)
         #print "r2 score"
-        r_score = proj.fit_all_fanduel()
-        print r_score
+        r_score = proj.fit_all_stat()
+        #print r_score
         for pid in self.upcoming_games.keys():
             #print "Projecting for", pid
             #print "stats"
-            projections = proj.get_fanduel_projection(pid)
-            print projections
+            projections = proj.get_stat_projection(pid)
             #print projections
-            #stats_fanduel = proj.get_fanduel_score(projections)
-            stats_fanduel = projections['fanduel']
+            #print projections
+            stats_fanduel = proj.get_fanduel_score(projections)
             #print "stats: fanduel", stats_fanduel
             #print "fanduel"
             #projections = LRproj.get_fanduel_projection(pid)
