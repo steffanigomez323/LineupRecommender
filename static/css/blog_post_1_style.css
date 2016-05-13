@@ -33,3 +33,10 @@ thead {
   stroke: steelblue;
   stroke-width: 1.5px;
 }
+
+#logo {
+    width: 55px;
+    height: auto;
+    float: left;
+    margin-right: 20px;
+}
