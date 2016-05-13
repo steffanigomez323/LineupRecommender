@@ -14,7 +14,7 @@ to do this.
 """
 
 from flask import Flask, render_template
-#from redis import Redis
+from redis import Redis
 from data_collector import Stattleship
 from data_collector import NumberFireScraper
 from data_collector import NBAScraper
@@ -32,9 +32,9 @@ app.config.from_object('config.DevelopmentConfig')
 # app.config.from_object(os.environ['APP_SETTINGS'])
 
 # databases
-#redis_db = Redis(host=app.config['REDIS_HOST'],
-#                 port=app.config['REDIS_PORT'],
-#                 password=app.config['REDIS_PASSWORD'])
+redis_db = Redis(host=app.config['REDIS_HOST'],
+                 port=app.config['REDIS_PORT'],
+                 password=app.config['REDIS_PASSWORD'])
 
 # stattleship
 nba_stattleship = Stattleship()
