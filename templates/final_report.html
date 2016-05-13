@@ -16,7 +16,7 @@
 
             <p>In order to come up with an optimal lineup, we needed to make score projections, where we compared the projection results from several regressors, and found out that a Linear Regressor gives the best result.</p>
 
-            <p>Using these score projections, we implemented the knapsack algorithm, which is explained further in the blog post, with constraints. Those constraints are player positions, since we cannot choose just any player, and the salary sum of the players because users will have a limited amount of money.</p>
+            <p>Using these score projections, we implemented the knapsack algorithm, which is explained further in the blog post, with constraints. Those constraints are player positions, since we cannot choose just any player, and the salary sum of the players because users will have a limited amount of money (60,000 to be exact). </p>
 
             <p>Compared to a source that is also finding optimal lineups, our result is shown to be slightly better or more optimal, but our lineup is dependant on the accuracy of our predicted scores for the day’s players.</p>
 
@@ -40,11 +40,11 @@
                 <img class="img-responsive" src="static/images/nba_data.png"</li>
                 <li><a href="https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections">NumberFire</a>, which provides details about the players that are playing in today’s games. We comb through the html of the page to get the player's name, salary, position, the opposing team, and whether the player is playing at home or not, and store this data in a double dictionary, where the key is the player name and the value is another dictionary containing all the fields previously mentioned.
                 <img class="img-responsive" src="static/images/nf_data.png"></li>
-                <li><a href="https://www.stattleship.com/">Stattleship</a>, which has information about each player not directly related to their game statistics. The data we are retrieving for each player is weight, height, name, and years of experience. We were not sure if we should predict the fantasy score directly or if we should predict each stat that contributes to the fantasy score separately and then calculate the fantasy score from those projections. After thinking about it a little more, we realized that predicting each stat could be better because it gives us more fine grained control over the features that are used to predict them. More specifically, the height of the player would effect his ability to rebound but not necessarily his ability to score points and therefore predicting rebounds and points separately and using only the relevant features for each can give us better results. So we use this kind of data to predict a player's different game statistics in trying to create as accurate of a prediction model as we can. 
+                <li><a href="https://www.stattleship.com/">Stattleship</a>, which has information about each player not directly related to their game statistics. The data we are retrieving for each player is weight, height, name, and years of experience. We were not sure if we should predict the fantasy score directly or if we should predict each stat that contributes to the fantasy score separately and then calculate the fantasy score from those projections. After thinking about it a little more, we realized that predicting each stat could be better because it gives us more fine grained control over the features that are used to predict them. More specifically, the height of the player would effect his ability to rebound but not necessarily his ability to score points and therefore predicting rebounds and points separately and using only the relevant features along with prior game data for each can give us better results. So we use this kind of data to predict a player's different game statistics in trying to create as accurate of a prediction model as we can. 
                 <img class="img-responsive" src="static/images/ss_data.png"></li>
             </ul>
 
-            The data displayed above is after combination and cleaning which involved the following steps:
+            The data displayed above is after cleaning and combining the data which involved the following steps:
             <ul>
                 <li>Create id maps to match players between the three data sources. Each data source keeps track of players, their features, and their gamelogs differently, using different player names and different ways to idenfity players. So this involved going through each of the data sources, creating a naming convention that would be used in generating the lineup, and using this convention to match the player data from all the sources to the same player. </li>
                 <li>Accumulate data for the same player from different parts of each website. The NBA data is used for getting the gamelogs for each player as well as the positions for all the players. The Stattleship API is used in getting information about the player himself, and NumberFire is used to get the players that are playing in today's games.</li>
@@ -62,7 +62,6 @@
                             <li>Information on whether the game was played at home or away</li>
                             <li>The opponent team</li>
                             <li>Plus minus</li>
-                            <li>How many times the player played in that game</li>
                             <li>Total rebounds score for the team the player is in</li>
                             <li>Total assists score</li>
                             <li>Total steals score</li>
@@ -141,6 +140,67 @@
                 Other than the SVRs, RFR has the lowest R<sup>2</sup> scores for all projections.
                 These resulting scores suggest that using a linear regressor, with or without L1 regularization, has the best results for projecting.
             </p>
+
+            <p>
+                Once we decided on using a linear regressor, we wanted to explore whether using clustering impacted accuracy. We extended our FeatureProjector class to a ClusteringFeatureProjector. This new projector would additionally cluster each player based on their average FanDuel scores. Once each cluster is determined, we fit regressors for each game stat and each cluster; this means each regressor is only trained on clusters of players with similar performance. We hoped that by only training on similar players, we could better tailor our player projections to levels of similar performance. However, when looking at our R<sup>2</sup> scores:
+            </p>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <th>Game Stat</th>
+                    <th>No Clustering</th>
+                    <th>Clustering (1st cluster)</th>
+                    <th>Clustering (2nd cluster)</th>
+                    <th>Clustering (3rd cluster)</th>
+                </tr>
+                <tr>
+                    <td>Assists</td>
+                    <td>0.523</td>
+                    <td>0.360</td>
+                    <td>0.226</td>
+                    <td>0.516</td>
+                </tr>
+                <tr>
+                    <td>Blocks</td>
+                    <td>0.216</td>
+                    <td>0.192</td>
+                    <td>0.094</td>
+                    <td>0.255</td>
+                </tr>
+                <tr>
+                    <td>Points</td>
+                    <td>0.468</td>
+                    <td>0.235</td>
+                    <td>0.163</td>
+                    <td>0.291</td>
+                </tr>
+                <tr>
+                    <td>Rebounds</td>
+                    <td>0.453</td>
+                    <td>0.353</td>
+                    <td>0.210</td>
+                    <td>0.413</td>
+                </tr>
+                <tr>
+                    <td>Steals</td>
+                    <td>0.132</td>
+                    <td>0.065</td>
+                    <td>0.052</td>
+                    <td>0.079</td>
+                </tr>
+                <tr>
+                    <td>Turnovers</td>
+                    <td>0.248</td>
+                    <td>0.109</td>
+                    <td>0.079</td>
+                    <td>0.147</td>
+                </tr>
+            </table>
+
+            <p>
+                As seen above, the clusters all performed worse than the linear regressor without clustering. The main reason, we discovered, was the low amount of sample used for each cluster. Since the players were now divided amongst each 3 clusters, each linear regressor had less data to use than the no clustering linear regressor. We decided that using ano clustering linear regressor with the full historic data set was the best solution.
+            </p>
+
             <h3>Challenges</h3>
             Feature Flexibility:
             <ul>
@@ -222,7 +282,7 @@
             </p>
 
             <p>
-                Ideally, we would have liked to make an application that would automatically update with the lineup for that day. However, we were unable to get one of the packages we are using for optimization to function properly on heroku, where we are hosting all of our blog posts and final product, so the optimizing the lineup must be done locally, for now. 
+                Ideally, we would have liked to make an application that would automatically update with the lineup for that day. However, we were unable to get one of the packages we are using for optimization to function properly on heroku, where we are hosting all of our blog posts and final product, so the optimization of the lineup must be done locally, for now. 
             </p>
 
             <hr>
