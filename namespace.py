@@ -1,4 +1,6 @@
-
+"""
+This class is used to set global constants.
+"""
 
 class Namespace(object):
     # gamelogs id postfix

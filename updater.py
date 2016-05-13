@@ -15,8 +15,10 @@ from db_helper import CSVHelper
 from optimizer import LineupOptimizer
 import json
 
-# this class gets the today's optimal lineup, and places the json with the updated lineup,
-# optimal_lineup.json in static/data/
+"""
+This class gets the today's optimal lineup, and places the json with the updated lineup, 
+optimal_lineup.json in static/data/
+"""
 
 class DailyUpdater(object):
     def get_todays_optimal_lineup(self):
