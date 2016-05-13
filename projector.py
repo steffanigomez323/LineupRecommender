@@ -946,6 +946,16 @@ class SVRRBFFeatureProjector(ClusteringFeatureProjector):
     def __get_regression_object(self):
         return SVR(kernel='rbf', C=1.)
 
+class LRClusteringFeatureProjector(ClusteringFeatureProjector):
+    def __init__(self, feature_creator, n_clusters=3):
+        super(self.__class__, self).__init__(
+            feature_creator,
+            self.__get_regression_object,
+            n_clusters)
+
+    def __get_regression_object(self):
+        return LinearRegression()
+
 class DailyProjector(object):
     # store upcoming games details
     upcoming_games = {}
@@ -979,6 +989,113 @@ class DailyProjector(object):
             # it is unknown between days when numberfire is switching over
             if 'team' not in self.upcoming_games[stattleship_slug].keys():
                 self.upcoming_games[stattleship_slug]['team'] = 'UNK'
+
+    '''
+    Prints out r-score and projection for clustering and non-clustering linear regressors
+    '''
+    def test_cluster_projectors(self):
+        fc = FeatureCreator(self.players, self.upcoming_games)
+
+        print "\nLinear Regression"
+        LRproj = LRFeatureProjector(fc)
+        print "r2 score"
+        print LRproj.fit_all_stat()
+        for pid in self.upcoming_games.keys():
+            print "Projecting for", pid
+            print "stats"
+            projections = LRproj.get_stat_projection(pid)
+            print projections
+            print "stats-fanduel", LRproj.get_fanduel_score(projections)
+            print "\n------------------------"
+        print "\nLinear Regression, Clustering"
+        LRCproj = LRClusteringFeatureProjector(fc)
+        print "r2 score"
+        print LRCproj.fit_all_clusters()
+        for pid in self.upcoming_games.keys():
+            print "Projecting for", pid
+            print "stats"
+            projections = LRCproj.get_stat_projection(pid)
+            print projections
+            print "stats-fanduel", LRCproj.get_fanduel_score(projections)
+            print "\n------------------------"
+
+    '''
+    Prints out r-score and projections for every projector
+    '''
+    def test_all_projectors(self):
+        fc = FeatureCreator(self.players, self.upcoming_games)
+
+        print "\nLinear Regression"
+        LRproj = LRFeatureProjector(fc)
+        print "r2 score"
+        print LRproj.fit_all_stat()
+        print LRproj.fit_all_fanduel()
+        for pid in self.upcoming_games.keys():
+            print "Projecting for", pid
+            print "stats"
+            projections = LRproj.get_stat_projection(pid)
+            print projections
+            print "stats-fanduel", LRproj.get_fanduel_score(projections)
+            print "fanduel"
+            projections = LRproj.get_fanduel_projection(pid)
+            print projections
+            print "\n------------------------"
+        print "\nLasso Regression"
+        Lproj = LassoFeatureProjector(fc)
+        print "r2 score"
+        print Lproj.fit_all_stat()
+        print Lproj.fit_all_fanduel()
+        for pid in self.upcoming_games.keys():
+            print "Projecting for", pid
+            print "stats"
+            projections = Lproj.get_stat_projection(pid)
+            print projections
+            print "fanduel"
+            projections = Lproj.get_fanduel_projection(pid)
+            print projections
+            print "\n------------------------"
+        print "\nRFR Regression"
+        RFRproj = RFRFeatureProjector(fc)
+        print "r2 score"
+        print RFRproj.fit_all_stat()
+        print RFRproj.fit_all_fanduel()
+        for pid in self.upcoming_games.keys():
+            print "Projecting for", pid
+            print "stats"
+            projections = RFRproj.get_stat_projection(pid)
+            print projections
+            print "fanduel"
+            projections = RFRproj.get_fanduel_projection(pid)
+            print projections
+            print "\n------------------------"
+        print "\nSVR (Linear) Regression"
+        SVRLproj = SVRLinearFeatureProjector(fc, 10)
+        print "r2 score"
+        print SVRLproj.fit_all_clusters()
+        print SVRLproj.fit_all_fanduel()
+        for pid in self.upcoming_games.keys():
+            print "Projecting for", pid
+            print "stats"
+            projections = SVRLproj.get_stat_projection(pid)
+            print projections
+            print "fanduel"
+            projections = SVRLproj.get_fanduel_projection(pid)
+            print projections
+            print "\n------------------------"
+        print "\nSVR (RBF) Regression"
+        SVRRproj = SVRRBFFeatureProjector(fc, 10)
+        print "r2 score"
+        print SVRRproj.fit_all_clusters()
+        print SVRRproj.fit_all_fanduel()
+        for pid in self.upcoming_games.keys():
+            print "Projecting for", pid
+            print "stats"
+            projections = SVRRproj.get_stat_projection(pid)
+            print projections
+            print "fanduel"
+            projections = SVRRproj.get_fanduel_projection(pid)
+            print projections
+            print "\n------------------------"
 
     '''
     Projects all players playing today, into a format for lineups
@@ -1019,7 +1136,9 @@ class DailyProjector(object):
 
         return players_projected
 
-
+'''
+Below were projectors we used for the older blog posts
+'''
 '''
 class SimpleProjector(object):
 

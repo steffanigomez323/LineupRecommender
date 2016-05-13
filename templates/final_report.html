@@ -132,6 +132,67 @@
                 Other than the SVRs, RFR has the lowest R<sup>2</sup> scores for all projections.
                 These resulting scores suggest that using a linear regressor, with or without L1 regularization, has the best results for projecting.
             </p>
+
+            <p>
+                Once we decided on using a linear regressor, we wanted to explore whether using clustering impacted accuracy. We extended our FeatureProjector class to a ClusteringFeatureProjector. This new projector would additionally cluster each player based on their average FanDuel scores. Once each cluster is determined, we fit regressors for each game stat and each cluster; this means each regressor is only trained on clusters of players with similar performance. We hoped that by only training on similar players, we could better tailor our player projections to levels of similar performance. However, when looking at our R<sup>2</sup> scores:
+            </p>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <th>>Game Stat</th>
+                    <th>No Clustering</th>
+                    <th>Clustering (1st cluster)</th>
+                    <th>Clustering (2nd cluster)</th>
+                    <th>Clustering (3rd cluster)</th>
+                </tr>
+                <tr>
+                    <td>Assists</td>
+                    <td>0.523</td>
+                    <td>0.360</td>
+                    <td>0.226</td>
+                    <td>0.516</td>
+                </tr>
+                <tr>
+                    <td>Blocks</td>
+                    <td>0.216</td>
+                    <td>0.192</td>
+                    <td>0.094</td>
+                    <td>0.255</td>
+                </tr>
+                <tr>
+                    <td>Points</td>
+                    <td>0.468</td>
+                    <td>0.235</td>
+                    <td>0.163</td>
+                    <td>0.291</td>
+                </tr>
+                <tr>
+                    <td>Rebounds</td>
+                    <td>0.453</td>
+                    <td>0.353</td>
+                    <td>0.210</td>
+                    <td>0.413</td>
+                </tr>
+                <tr>
+                    <td>Steals</td>
+                    <td>0.132</td>
+                    <td>0.065</td>
+                    <td>0.052</td>
+                    <td>0.079</td>
+                </tr>
+                <tr>
+                    <td>Turnovers</td>
+                    <td>0.248</td>
+                    <td>0.109</td>
+                    <td>0.079</td>
+                    <td>0.147</td>
+                </tr>
+            </table>
+
+            <p>
+                As seen above, the clusters all performed worse than the linear regressor without clustering. The main reason, we discovered, was the low amount of sample used for each cluster. Since the players were now divided amongst each 3 clusters, each linear regressor had lass data to use than the no clustering linear regressor. We decided that using ano clustering linear regressor with the full historic data set was the best solution.
+            </p>
+
             <h3>Challenges</h3>
             Feature Flexibility:
             <ul>
@@ -174,7 +235,7 @@
             <h2>Part 5: Final Product vs. Project Proposal</h2>
 
             <p>
-                We met our 75% goal of creating a framework for projecting fantasy scores. We collected player data over 4 seasons, instead of 5, and used this data to project scores for all the players playing today. Then taking inspiration from the knapsack problem, we created an ideal, optimal lineup consisting of 9 players. We tried different machine learning algorithms in the process of trying to increase the accuracy of our prediction model, but were unable to get the 90%+ accuracy that we originally wanted in our proposal. After comparing all the results from various regressors (like logistic regression, linear regression, SVR, lasso regression, and random forest regression), linear regression had the best R<sup>2</sup> score, suggesting that it had fit the data better than the others. Therefore, we are using linear regression instead of logistic regression. While we were not able to get better accuracy, we were able to evaluate different regression techniques and find the most optimal projector. Our main obstacle to accuracy was due to the variability of game-to-game player performance, and lack of data to create more complex feature sets. Because of the time spent dealing with all of the challenges that arose in doing this project, were were unable suggest multiple lineups, but extending our code to return multiple high variance lineups would not be overly difficult.
+                We met our 75% goal of creating a framework for projecting fantasy scores. We collected player data over 4 seasons, instead of 5, and used this data to project scores for all the players playing today. Then taking inspiration from the knapsack problem, we created an ideal, optimal lineup consisting of 9 players. We tried different machine learning algorithms in the process of trying to increase the accuracy of our prediction model, but were unable to get the 90%+ accuracy that we originally wanted in our proposal. After comparing all the results from various regressors (like logistic regression, linear regression, SVR, lasso regression, and random forest regression), linear regression (no clustering) had the best R<sup>2</sup> score, suggesting that it had fit the data better than the others. Therefore, we are using linear regression instead of logistic regression. While we were not able to get better accuracy, we were able to evaluate different regression techniques and find the most optimal projector. Our main obstacle to accuracy was due to the variability of game-to-game player performance, and lack of data to create more complex feature sets. Because of the time spent dealing with all of the challenges that arose in doing this project, were were unable suggest multiple lineups, but extending our code to return multiple high variance lineups would not be overly difficult.
             </p>
 
             <hr>
