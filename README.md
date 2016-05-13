@@ -30,6 +30,6 @@ Because we were unable to get our website, https://lineup-recommender.herokuapp.
 
 	- if one does not have the flask package installed, it is possible to install it using the command "pip install flask" or downloading it from https://pypi.python.org/pypi/Flask and unzipping it and running python setup.py install from inside the unzipped folder. 
 
-Sometimes it may show the player's team as an unknown team, because sometimes NumberFire does not post positions, teams, etc. until late into the day.
+Sometimes it may show the player's team as an unknown team, UNK, because sometimes NumberFire does not post positions, teams, etc. until late into the day.
 
 We also use anaconda in setting up packages to use in our code. If one wants to use conda, it is downloadable from https://docs.continuum.io/anaconda/install. To create a conda environment run the command "conda create --name &lt;env&gt; --file &lt;this file&gt;", where &lt;env&gt; is the name of the environment and &lt;this file&gt; is conda-requirements.txt. Then to activate the environment, run "source activate &lt;env&gt;". All the packages used are in conda-requirements.txt. If one does not have all the packages listed there, it is recommended to use anaconda to set up the environment along with the packages mentioned above to run our code. 
