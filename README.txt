@@ -4,7 +4,7 @@ Steffani Gomez (smg1) | Vilayvann Ky (vky) | Krishna Aluru (kaluru) | Jiajie Che
 All of our code can be run from updater.py. updater.py contains a class called DailyUpdate, with a function called get_todays_optimal_lineup(). What this function does is it prepares the csvs with all of the data that we are scraping from stats.nba.com and NumberFire and the data we are getting from the Stattleship API. It prepares all the necessary dictionaries from the csvs and runs the regressor in DailyProjector and obtains the projected scores for all the players playing today. Then it optimizes this lineup to get the best 9 players that would get the highest overall score. This is outlined in updater.py in step 0, 1, 2, and 3. 
 
 *** IMPORTANT ***
-To run our code without needing to comment out any of the steps, mainly the step involving optimization, it is necessary to install the following packages
+To run our code without needing to comment out any of the steps, mainly the step involving optimization, it is necessary to install the following packages:
 	
 	- openopt. This can be done from the command line using the command "pip install openopt", or one can download it directly from https://pypi.python.org/pypi/openopt, and unzip the tar.gz file and run "python setup.py install" from inside the unzipped folder.
 
