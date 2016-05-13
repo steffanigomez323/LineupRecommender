@@ -47,7 +47,7 @@ $(document).ready(function() {
             row.onmouseover = function() {
                 linegraph(row);
             }
-            row.onmouseleave = function() {
+            /*row.onmouseleave = function() {
                 $("#viz").empty();
                  var margin = {top: 20, right: 20, bottom: 30, left: 30},
             width = $("#viz").width() - margin.left - margin.right,
@@ -72,14 +72,14 @@ $(document).ready(function() {
                 .scale(y)
                 .orient("left");
 
-           d3.json('static/data/optimal_lineup.json', function(d) {
+           d3.json('static/data/optimal_lineup.json', function(d) {*/
 
             //    d.projection = +d.projection
         //
          //   },function(error, data) {
 
 
-                var svg = d3.select("#viz").append("svg")
+/*                var svg = d3.select("#viz").append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                   .append("g")
@@ -101,7 +101,7 @@ $(document).ready(function() {
 
                   svg.append("g")
                       .attr("class", "y axis")
-                      .call(yAxis);
+                      .call(yAxis);*/
                     /*.append("text")
                       .attr("transform", "rotate(-90)")
                       .attr("y", 6)
@@ -109,7 +109,7 @@ $(document).ready(function() {
                       .style("text-anchor", "end")
                       .text("Scores, Points, Assists");*/
 
-                      var player = svg.selectAll(".player")
+                      /*var player = svg.selectAll(".player")
                           .data(data)
                         .enter().append("g")
                           .attr("class", "projection")
@@ -141,9 +141,9 @@ $(document).ready(function() {
                           .attr("y", 9)
                           .attr("dy", ".35em")
                           .style("text-anchor", "end")
-                          .text(function(d) { return "Projection"; });
-                });
-                    };
+                          .text(function(d) { return "Projection"; });*/
+               // });
+                //    };
             
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
@@ -169,7 +169,7 @@ $(document).ready(function() {
             
         });
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 30},
+        /*var margin = {top: 20, right: 20, bottom: 30, left: 30},
     width = $("#viz").width() - margin.left - margin.right,
     height = $("#viz").height() - margin.top - margin.bottom;
 
@@ -222,7 +222,7 @@ $(document).ready(function() {
               .style("text-anchor", "end")
               .text("Scores, Points, Assists");*/
 
-              var player = svg.selectAll(".player")
+              /*var player = svg.selectAll(".player")
                   .data(data)
                 .enter().append("g")
                   .attr("class", "projection")
@@ -255,7 +255,7 @@ $(document).ready(function() {
                   .attr("dy", ".35em")
                   .style("text-anchor", "end")
                   .text(function(d) { return "Projection"; });
-        //});
+        //});*/
         
     });
 
