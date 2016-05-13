@@ -8,6 +8,10 @@ JJ, Chaitu, Vann, Steffani
 Config
 """
 
+"""
+These classes are used in configuring the redis database which we are no longer using.
+"""
+
 
 class BaseConfig(object):
     DEBUG = False

@@ -5,11 +5,24 @@
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <div class="page-header center">
+                <img id="logo" src="static/images/logo.png"></img>
                 <h1>Lineup Recommender <small>&laquo;Final Report&raquo;</small></h1>
             </div>
 
+            For our final product, please click <a href="https://lineup-recommender.herokuapp.com/">here</a>!
+
+            <h2>Abstract</h2>
+
+            <p>Our Data Science project aims to recommend optimal lineups in fantasy basketball contests, such as those used in online fantasy sports websites. A lineup consists of 9 players who play different positions: one Center, two Point Guards, two Shooting Guards, two Small Forwards, and two Power Forwards. </p>
+
+            <p>In order to come up with an optimal lineup, we needed to make score projections, where we compared the projection results from several regressors, and found out that a Linear Regressor gives the best result.</p>
+
+            <p>Using these score projections, we implemented the knapsack algorithm, which is explained further in the blog post, with constraints. Those constraints are player positions, since we cannot choose just any player, and the salary sum of the players because users will have a limited amount of money (60,000 to be exact). </p>
+
+            <p>Compared to a source that is also finding optimal lineups, our result is shown to be slightly better or more optimal, but our lineup is dependant on the accuracy of our predicted scores for the day’s players.</p>
+
             <h2>Part 1: Overview and Hypothesis</h2>
-            <p> FanDuel and DraftKings have one-day fantasy sports contests. For Basketball, the contests require the user to enter with a lineup of 9 players that are playing in the games for that day. People enter these contests everyday by paying a fixed amount of money. Once the day’s games are done, the users with the lineups containing the best performing players (calculated using a linear combination of their individual stats), win a huge amount of money.
+            <p> <a href="https://www.fanduel.com/games">FanDuel</a> and <a href="https://www.draftkings.com/lobby#/featured">DraftKings</a> have one-day fantasy sports contests. For Basketball, the contests require the user to enter with a lineup of 9 players that are playing in the games for that day. People enter these contests everyday by paying a fixed amount of money. Once the day’s games are done, the users with the lineups containing the best performing players (calculated using a linear combination of their individual stats), win a huge amount of money.
             </p>
             <p>
             With the aim of doing well on the daily FanDuel contests, we hypothesized the following:
@@ -23,21 +36,21 @@
             <h2>Part 2: Data Collection</h2>
             <p> We are using data from 3 different sources:
             <ul>
-                <li>NBA, which returns every player’s historical data
+                <li> The NBA data we used is being scraped from <a href="http://stats.nba.com/">stats.nba.com</a>, which returns every player’s historical data. It contains the player scores, with each entry representing a particular player's score for a certain game. Each player's score is broken down into their 3-point and 2-point field goals made, freethrows, steals, blocks, rebounds, assists, and turnovers. Each score is associated with a player through that player's player id, which we convert into a "slug" in the form of "nba-first_name-last_name":
                 <img class="img-responsive" src="static/images/nba_stats.png"><br>
                 <img class="img-responsive" src="static/images/nba_data.png"</li>
-                <li>NumberFire, which provides details about the players that are playing in today’s games
+                <li><a href="https://www.numberfire.com/nba/daily-fantasy/daily-basketball-projections">NumberFire</a>, which provides details about the players that are playing in today’s games. We comb through the html of the page to get the player's name, salary, position, the opposing team, and whether the player is playing at home or not, and store this data in a double dictionary, where the key is the player name and the value is another dictionary containing all the fields previously mentioned.
                 <img class="img-responsive" src="static/images/nf_data.png"></li>
-                <li>Stattleship, which has information about each player (like height, weight, etc.)
+                <li><a href="https://www.stattleship.com/">Stattleship</a>, which has information about each player not directly related to their game statistics. The data we are retrieving for each player is weight, height, name, and years of experience. We were not sure if we should predict the fantasy score directly or if we should predict each stat that contributes to the fantasy score separately and then calculate the fantasy score from those projections. After thinking about it a little more, we realized that predicting each stat could be better because it gives us more fine grained control over the features that are used to predict them. More specifically, the height of the player would effect his ability to rebound but not necessarily his ability to score points and therefore predicting rebounds and points separately and using only the relevant features along with prior game data for each can give us better results. So we use this kind of data to predict a player's different game statistics in trying to create as accurate of a prediction model as we can. 
                 <img class="img-responsive" src="static/images/ss_data.png"></li>
             </ul>
 
-            The data displayed above is after combination and cleaning which involved the following steps:
+            The data displayed above is after cleaning and combining the data which involved the following steps:
             <ul>
-                <li>Create id maps to match players between the three data sources.</li>
-                <li>Accumulate data for the same player from different parts of each website.</li>
-                <li>Remove games that the player did not play in.</li>
-                <li>Remove bad values from gamelogs.</li>
+                <li>Create id maps to match players between the three data sources. Each data source keeps track of players, their features, and their gamelogs differently, using different player names and different ways to idenfity players. So this involved going through each of the data sources, creating a naming convention that would be used in generating the lineup, and using this convention to match the player data from all the sources to the same player. </li>
+                <li>Accumulate data for the same player from different parts of each website. The NBA data is used for getting the gamelogs for each player as well as the positions for all the players. The Stattleship API is used in getting information about the player himself, and NumberFire is used to get the players that are playing in today's games.</li>
+                <li>Remove games that the player did not play in, so that each player's gamelogs only contains the games that they played in. </li>
+                <li>Remove bad values from gamelogs, such as invalid game dates and negative game statistics.</li>
             </ul>
 
 
@@ -50,7 +63,6 @@
                             <li>Information on whether the game was played at home or away</li>
                             <li>The opponent team</li>
                             <li>Plus minus</li>
-                            <li>How many times the player played in that game</li>
                             <li>Total rebounds score for the team the player is in</li>
                             <li>Total assists score</li>
                             <li>Total steals score</li>
@@ -60,66 +72,136 @@
                         </ul>
                     </li>
                     <li>Position: a list of positions the player has, as some players have more than one position. For instance, Derek Williams plays in Point Forward and Small Forward.</li>
+                    <li>General factual information related to the stats of each game log: height, weight, and years of experience. </li>
             </p>
 
             <h3>Challenges</h3>
-            Data Processing:
+            <p>Data Processing:</p>
             <ul>
                 <li>Collecting  and combining the data from multiple sources (Stattleship, NumberFire and NBA) was time-consuming and complicated.</li>
-                <li>Since player position can change per-game, we had no consistent source of per-game player position data. Ultimately, we decided to not use player position in our projection features.</li>
+                <li>Since player position can change per-game, we had no consistent source of per-game player position data. When we did include some sample positions, we additionally discovered that it had no significant impact on R<sup>2</sup> scores, or on final projections. Ultimately, we decided to not use player position in our projection features.</li>
             </ul>
+            <br>
+            <p>Data Warehousing:</p>
+            <p>
+            We originally stored the cleaned and transformed data into a hosted Redis database. However, the latency of requesting all player data from a remote server ended up making our Redis database slower than using CSV files with our cleaned data.
+            Thus, for our final projections, we switched back to locally hosted CSV files.
+            </p>
 
-            Data Warehousing:
-            <ul>
-                <li>We originally stored the cleaned and transformed data into a hosted Redis database.</li>
-                <li>Latency of requesting all player data ended up making our Redis database slower than using CSV files with our cleaned data.</li>
-                <li>For our final projections, we switched back to locally hosted CSV files.</li>
-            </ul>
-            <hr>
+            <p>
+                One of the main challenges that we did not foresee is that data manipulation is very difficult, because of how rigid our data structure is; since there is not a single source that has all the features and player information we needed, we had to pull and consolidate data from three different sources, which involved a lot of data wrangling and entity resolution. If we wanted to add more features or even change how a feature is represented, we would have to change a large part of the data structure. An example of this would be if we tried to include hustle stats for each player. The hustle stats are hosted on a different website, which means we have to create another scraper to get the data and then link that data to each player, which sounds easy in theory but in reality these hustle stats are not easily associated with each player, since hustle stats are listed by game. 
+            </p>
 
             <h2>Part 3: Regression and Projection</h2>
             <p> We decided to compare 5 different kinds of regression algorithms, and compare their projections:
-                <ul>
+                <ol>
                     <li>A linear regressor</li>
                     <li>A Lasso regressor (linear model using L1 regularization) with an alpha of 0.1</li>
                     <li>A random forest regressor using 1000 estimators (trees) and max splits of sqrt(#-of-features)</li>
                     <li>A support vector regressor with linear kernel, using a penalty coefficient of 1 and epsilon of 0.1</li>
                     <li>A support vector regressor with RBF kernel, using a penalty coefficient of 1 and epsilon of 0.1</li>
-                </ul>
+                </ol>
             </p>
             <p> For training data, we decided to use the following features to project each game statistic independently:
             <img class="img-responsive" src="static/images/features_labels.png">
             </p>
             <p> 
-                <ul>
-                    <li>Our linear, Lasso, and random forest regressors were trained on all player game data from the past 4 seasons. </li>
-                    <li>Our support vector regressors were trained on a single player’s game data (the player we are projecting) from the past 4 seasons. This was because SVM runtime is approximately O(#-of-observations2), forcing us to limit the number of training samples.</li>
-                </ul>
+                Our linear, Lasso, and random forest regressors were trained on all player game data from the past 4 seasons.
+                Our support vector regressors were trained on a single player’s game data (the player we are projecting) from the past 4 seasons. This was because SVM runtime is approximately O(#-of-observations<sup>2</sup>), forcing us to limit the number of training samples.
             </p>
 
+            <p>
+                Grouped bar chart that displays the projected stats:
+            </p>
             <img class="img-responsive" src="static/images/regressor_barchart.png">
 
             <p>
-                Grouped bar chart that displays the projected stats.
-                <ul>
-                    <li>RFR and SVR(Linear) consistently predicted higher than the others</li>
-                    <li>Linear and Lasso were very similar in predictions</li>
-                </ul>
+                Based on each regressor's projections, we were able to see similarities and biases in overall projections.
+                We found that RFR and SVR(Linear) consistently predicted higher stats than the others, indicating that they are biased to predict higher scores.
+                Interestingly, Linear and Lasso were very similar in predictions. This is most likely due to them both being linear regressors; however, their similarities suggest that the L1 regularization has no impact on accuracy or bias of predictions.
     
             </p>
             <img class="img-responsive" src="static/images/regressor_table.png">
             <h4>Analysis</h4>
+
+            <p>Joe Johnson's FanDuel projections changing over the past 4 years of collected data:</p>
+            <img class="img-responsive" src="static/images/joe_johnson_linechart.png">
+            <p>
+                When we graphed player historic game data, we discovered that player performance was highly variable. In the long-term, we saw that player performance often stayed within certain bounds; a particular player often doesn't perform worse than a certain threshold, and often doesn't play better than a certain threshold.
+                When predicting game-to-game performance, we saw that each player had very different performances from game to game, without a discernable pattern. This can be seen in the above line graph, where game-to-game scores often deviated from each other by 5 or greater points.
+            </p>
+
+            <p>R<sup>2</sup> Chart for Stephen Curry:</p>
+
             <img class="img-responsive" src="static/images/r2_chart.png">
 
             <p>
-                R^2 Chart for Stephen Curry:
-                <ul>
-                    <li>Both SVR projections have negative R^2 values, particularly with directly projecting fanduel scores. This is due to the low amount of training data used for SVR.</li>
-                    <li>Other regressors are close to 0.4-0.5 R^2 scores, except when predicting steals, turnovers, and blocks. These three statistics are very dependent on opponents, and have high variance.</li>
-                    <li>Other than the SVRs, RFR has the lowest R^2 scores for all projections</li>
-                </ul>
-                This suggests that using a linear regressor, with or without L1 regularization, has the best results for projecting.
+                When looking at the both SVR projections, we can see that they have negative R<sup>2</sup> values, particularly with directly projecting fanduel scores. This is due to the low amount of training data used for SVR, due to their slow runtime.
+                The other regressors are closer to 0.4-0.5 R<sup>2</sup> scores, except when predicting steals, turnovers, and blocks. When analysing these three statistics, we determined that those are very dependent on opponent team performance. Since we only look at a given player's historic features, and not the opposing player performance, these stats are predicted less accurately.
+                Other than the SVRs, RFR has the lowest R<sup>2</sup> scores for all projections.
+                These resulting scores suggest that using a linear regressor, with or without L1 regularization, has the best results for projecting.
             </p>
+
+            <p>
+                Once we decided on using a linear regressor, we wanted to explore whether using clustering impacted accuracy. We extended our FeatureProjector class to a ClusteringFeatureProjector. This new projector would additionally cluster each player based on their average FanDuel scores. Once each cluster is determined, we fit regressors for each game stat and each cluster; this means each regressor is only trained on clusters of players with similar performance. We hoped that by only training on similar players, we could better tailor our player projections to levels of similar performance. However, when looking at our R<sup>2</sup> scores:
+            </p>
+
+            <table class="table table-striped" border="1" cellpadding="3" cellspacing="3">
+                <tr>
+                    <th>Game Stat</th>
+                    <th>No Clustering</th>
+                    <th>Clustering (1st cluster)</th>
+                    <th>Clustering (2nd cluster)</th>
+                    <th>Clustering (3rd cluster)</th>
+                </tr>
+                <tr>
+                    <td>Assists</td>
+                    <td>0.523</td>
+                    <td>0.360</td>
+                    <td>0.226</td>
+                    <td>0.516</td>
+                </tr>
+                <tr>
+                    <td>Blocks</td>
+                    <td>0.216</td>
+                    <td>0.192</td>
+                    <td>0.094</td>
+                    <td>0.255</td>
+                </tr>
+                <tr>
+                    <td>Points</td>
+                    <td>0.468</td>
+                    <td>0.235</td>
+                    <td>0.163</td>
+                    <td>0.291</td>
+                </tr>
+                <tr>
+                    <td>Rebounds</td>
+                    <td>0.453</td>
+                    <td>0.353</td>
+                    <td>0.210</td>
+                    <td>0.413</td>
+                </tr>
+                <tr>
+                    <td>Steals</td>
+                    <td>0.132</td>
+                    <td>0.065</td>
+                    <td>0.052</td>
+                    <td>0.079</td>
+                </tr>
+                <tr>
+                    <td>Turnovers</td>
+                    <td>0.248</td>
+                    <td>0.109</td>
+                    <td>0.079</td>
+                    <td>0.147</td>
+                </tr>
+            </table>
+
+            <p>
+                As seen above, the clusters all performed worse than the linear regressor without clustering. The main reason, we discovered, was the low amount of sample used for each cluster. Since the players were now divided amongst each 3 clusters, each linear regressor had less data to use than the no clustering linear regressor. We decided that using ano clustering linear regressor with the full historic data set was the best solution.
+            </p>
+
             <h3>Challenges</h3>
             Feature Flexibility:
             <ul>
@@ -159,11 +241,59 @@
             </ul>
             <hr>
 
-            <h2>Part 5: Future Work</h2>
+            <h2>Part 5: Final Product vs. Project Proposal</h2>
+
+            These were our orginal proposal goals:
+            <br>
+            75%:
             <ul>
-            <li>To improve the r-score, the current ideas we have are:
+                <li>Create a framework for projecting fantasy scores.</li>
+                <ul>
+                    <li>Use logistic regression with different combinations of uncorrelated variables and find the best combination. Use historical data from past 5 seasons for each player.</li>
+                    <li>Create an evaluation module for checking accuracy of our projections.</li>
+                </ul>
+                <li>Visualize best lineups based on projections.</li>
+            </ul>
+            <br>
+            100%:
+            <ul>
+                <li>Create a more robust framework for projecting fantasy scores.</li>
+                <ul>
+                    <li>Get historical data from past 30+ seasons and cluster players into groups so that you can use data of similar players to predict current players’ performances. Try other ML algorithms to predict fantasy scores.</li>
+                    <li>Create an evaluation module for checking accuracy of our projections.</li>
+                </ul>
+                <li>Try to glean hidden information from lineups as well. Suggest multiple lineups based on our projections and the information we learn from looking at historical lineup data.</li>
+            </ul>
+            <br>
+            125%:
+            <ul>
+                <li>Create the ultimate framework for projecting fantasy scores.</li>
+                <ul>
+                    <li>Use neural networks with a small number of layers. Try everything possible to increase accuracy above 90%.</li>
+                    <li>Create an evaluation module for checking accuracy of our projections.</li>
+                </ul>
+                <li>Suggest high variance lineups - replace high salaried players in lineups with a low salaried player with high variance. This could beat a lot of usual best lineup systems because when the high variance player outperforms a high salaried player, the user gains two major advantages - 1) overall improved lineup because of increased salary space; 2) already beat most other lineups that resorted to the high salaried player. We’ll try to suggest 10 such lineups for each day’s contests so that the odds of winning at least one increase and you can bet on multiple low salaried, high variance players.</li>
+            </ul>
+
+            <br>
+
+
+            <p>
+                We met our 75% goal of creating a framework for projecting fantasy scores. We collected player data over 4 seasons, instead of 5, and used this data to project scores for all the players playing today. Then taking inspiration from the knapsack problem, we created an ideal, optimal lineup consisting of 9 players. In trying to find hidden information that could boost our regressor accuracy, we used general facts about a player, like weight and height along with prior game performance in our feature set. We tried different machine learning algorithms in the process of trying to increase the accuracy of our prediction model, but were unable to get the 90%+ accuracy that we originally wanted in our proposal. After comparing all the results from various regressors (like logistic regression, linear regression, SVR, lasso regression, and random forest regression), linear regression had the best R<sup>2</sup> score, suggesting that it had fit the data better than the others. Therefore, we are using linear regression instead of logistic regression. While we were not able to get better accuracy, we were able to evaluate different regression techniques and find the most optimal projector. Our main obstacle to accuracy was due to the variability of game-to-game player performance, and lack of data to create more complex feature sets. Because of the time spent dealing with all of the challenges that arose in doing this project, we were were unable suggest multiple lineups, but extending our code to return multiple high variance lineups would not be overly difficult.
+            </p>
+
+            <p>
+                Ideally, we would have liked to make an application that would automatically update with the lineup for that day. However, we were unable to get one of the packages we are using for optimization to function properly on heroku, where we are hosting all of our blog posts and final product, so the optimization of the lineup must be done locally, for now. 
+            </p>
+
+            <hr>
+
+            <h2>Part 6: Future Work</h2>
+            <ul>
+            <li>To improve the R<sup>2</sup>-score, the current ideas we have are:
                 <ol>
                     <li>Find a more specific set of data (like hustle stats, etc.) for predicting steals and blocks.
+                    <li>Gather additional opponent team data as features when predicting steals, blocks, and turnovers.
                     <li>Use rolling averages over games for more features (like minutes played and plus-minus).
                 </ol>
             <li>Replace high salaried players with low salaried high variance players to beat out most traditional lineups.

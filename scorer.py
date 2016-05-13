@@ -24,6 +24,10 @@ class Scorer(object):
     def score_all_players(self, players_dict):
         return {k: self.find_player_scores(v) for k, v in players_dict.items()}
 
+"""
+This class is used to find the fanduel score from the fanduel formula, where each statistic is the projected statistic.
+"""
+
 class FanDuelScorer(Scorer):
     FG3 = 3
     FG2 = 2

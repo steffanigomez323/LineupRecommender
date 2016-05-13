@@ -8,6 +8,11 @@ Vann, Steffani, JJ, Chaitu
 Main
 """
 
+"""
+This class is used to render things a webpage that could be locally hosted. It uses flask
+to do this.
+"""
+
 from flask import Flask, render_template
 from redis import Redis
 from data_collector import Stattleship

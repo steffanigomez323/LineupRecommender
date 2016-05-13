@@ -5,7 +5,7 @@ Spring 2016
 
 Vann, Steffani, JJ, Chaitu
 
-Requests Module
+Requests Module that takes care of making requests to websites.
 """
 
 import requests
